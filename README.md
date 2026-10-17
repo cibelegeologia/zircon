@@ -22,6 +22,7 @@ Para rodar a partir do código: `pip install -r requirements.txt` e `python -m z
 
 ## Conteúdo
 
+- `CHANGELOG.md`: o que muda de versão para versão.
 - `zircon/`: código do programa (`nucleo/` para os cálculos, `interface/` para as janelas).
 - `instalador/`: receita do PyInstaller e do instalador (Inno Setup).
 - `docs/arquitetura_e_privacidade.md`: como o programa é feito, arquivo de projeto, registro e privacidade.
