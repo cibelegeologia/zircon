@@ -7,7 +7,7 @@ Software no-code para calcular idades por isótopos de U, Th e Pb em zircão (U-
 Baixe na página de versões (Releases) do repositório o arquivo do seu sistema:
 
 - Windows: `Zircon-x.y.z-instalador.exe`, com assistente de instalação.
-- macOS: `Zircon-x.y.z-macos-arm64.dmg` (Apple M1 ou mais novo) ou `-x86_64.dmg` (Mac com Intel). Abra e arraste o Zircon para Aplicativos. Na primeira vez, clique com o botão direito no Zircon e escolha Abrir, porque o programa não tem assinatura paga da Apple.
+- macOS: `Zircon-x.y.z-macos-arm64.dmg` (Mac com chip Apple, M1 ou mais novo; Mac com Intel ainda não tem versão). Abra e arraste o Zircon para Aplicativos. Na primeira vez, clique com o botão direito no Zircon e escolha Abrir, porque o programa não tem assinatura paga da Apple.
 - Linux: `Zircon-x.y.z-linux-amd64.deb` (Ubuntu, Debian, Mint; abre na Central de Programas) ou `.tar.gz` (qualquer distribuição; descompacte e rode `Zircon`).
 
  O programa é gratuito, funciona sem internet e não coleta dados.
