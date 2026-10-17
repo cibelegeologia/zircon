@@ -5,6 +5,7 @@ e é trocada pela tradução do arquivo <código>.json desta pasta. Frase sem
 tradução aparece em português, então nada some se faltar uma tradução.
 """
 import json
+import sys
 from pathlib import Path
 
 IDIOMAS = {
@@ -25,6 +26,8 @@ _DECIMAL_VIRGULA = {"pt_BR", "pt_PT", "es", "fr", "de"}
 _FIGURA_EM_INGLES = {"hi", "ar"}
 
 _PASTA = Path(__file__).resolve().parent
+if hasattr(sys, "_MEIPASS"):  # programa instalado: traduções em <programa>/idiomas
+    _PASTA = Path(sys._MEIPASS) / "idiomas"
 _atual = "pt_BR"
 _tabela = {}
 _tabela_en = {}
