@@ -1,0 +1,379 @@
+{
+ "topicos": [
+  {
+   "id": "inicio",
+   "titulo": "Getting started",
+   "serve": "This feature is used to give an overview of Zircon and its workflow; read it before first use or whenever you are unsure where to start.",
+   "explicacao": "Zircon calculates zircon U-Pb, Th-Pb and Pb-Pb ages from the isotope ratios or per-grain ages supplied by the laboratory. It does not process raw mass spectrometer signals: that data reduction is done beforehand, in the laboratory. The work follows five steps: import the spreadsheet, check that the columns were recognised, calculate, interpret the results and warnings, and export figures, tables and the methodology text. Each option in the panel shows the reference for its method below it (the 'Ref.:' line), and the full list is exported in ABNT format. The calculations reproduce those of IsoplotR and work without an internet connection. The program calculates, but the geological interpretation is yours: always check the warnings.",
+   "referencias": [
+    "Vermeesch (2018a)",
+    "Schoene (2014)",
+    "Schaltegger et al. (2015)"
+   ],
+   "como_usar": [
+    "On the 'Welcome to Zircon' screen, click 'Open an example to explore the program' to try it with ready-made data.",
+    "For your own data, use 'File > New project (import spreadsheet)...' and check the 'Check import' window.",
+    "Set the options in the left-hand panel ('What to calculate', 'Grain selection', 'Chart colours') and click 'Calculate'.",
+    "Look at the 'Concordia or isochron', 'Weighted mean', 'Age distribution' and 'Results' tabs (with 'Warnings and interpretation').",
+    "Export with 'File > Export for publication (figures, Excel, interactive, methodology)...' and save the project with 'File > Save'."
+   ]
+  },
+  {
+   "id": "importar",
+   "titulo": "Importing the laboratory spreadsheet",
+   "serve": "This feature is used to bring the results spreadsheet supplied by the laboratory into Zircon; use it whenever you start a new project with data from a sample.",
+   "explicacao": "Zircon reads .xlsx, .xls, .ods, .csv, .txt and .tsv files. In spreadsheets, only the first sheet is read. In text files, it detects the encoding and the column separator (tab, semicolon or comma). The decimal separator (comma or point) is also detected. Title rows at the top are ignored, and two-row headers are merged. Columns are recognised by name (for example 207Pb/235U, 206Pb/238U, rho), and the error column must come immediately after the value. If the error header indicates 2s or 2σ, the value is divided by 2; if it indicates %, it is converted to an absolute error. Caution: a 2σ error without this indication in the header will be read as 1σ. Cells such as '<LOD', 'bdl' or 'n.d.' become missing data.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Choose 'File > New project (import spreadsheet)...' and select the file.",
+    "In the 'Check import' window, read the log: separators, first data row and the column assigned to each ratio and error (1σ or 2σ, absolute or %).",
+    "Check in the preview table that the numbers make sense; if something is wrong, click 'Cancel', correct the spreadsheet header and import again.",
+    "If everything is correct, click 'Use this data'.",
+    "Afterwards, the 'Import log' tab keeps these decisions for reference."
+   ]
+  },
+  {
+   "id": "tipos_de_dados",
+   "titulo": "Recognised data types and error correlation (rho)",
+   "serve": "This feature is used to find out which columns the spreadsheet needs for each type of calculation; consult it when preparing the spreadsheet or when Zircon does not recognise your data.",
+   "explicacao": "Zircon recognises: Wetherill ratios (207Pb/235U and 206Pb/238U); Tera-Wasserburg ratios (238U/206Pb and 207Pb/206Pb); Wetherill ratios with 204Pb/238U, which allow a common Pb correction; Pb-Pb ratios (206Pb/204Pb and 207Pb/204Pb) for isochrons; Th-Pb ratios (232Th/204Pb and 208Pb/204Pb) for isochrons; and per-grain ages only, when there are no ratios. Rho is the correlation coefficient between the errors of the two ratios of each grain, between −1 and 1. It sets the orientation of the error ellipse and enters all concordia and regression calculations. If there is no rho column, Zircon uses rho = 0 and issues a warning; this can make the ellipses and errors incorrect. U-Th isochrons are not yet calculated.",
+   "referencias": [
+    "Wetherill (1956)",
+    "Tera e Wasserburg (1972)",
+    "Ludwig (1980)",
+    "Schoene (2014)"
+   ],
+   "como_usar": [
+    "Import the spreadsheet and, in the 'Check import' window, look at the last line of the log ('Data type').",
+    "If 'Warning: no correlation column (rho); rho = 0 used' appears, look for rho in the laboratory's original spreadsheet.",
+    "In the 'Data and ages per grain' tab, check the ratios, errors and rho of each analysis."
+   ]
+  },
+  {
+   "id": "constantes",
+   "titulo": "Decay constants and the 238U/235U ratio",
+   "serve": "This feature is used to find out which physical constants Zircon uses; consult it when writing the methodology or when comparing your results with those of another program.",
+   "explicacao": "Every age depends on the decay constants. Zircon uses λ238 = 1.55125 × 10−10 per year and λ235 = 9.8485 × 10−10 per year (Jaffey et al., 1971), the natural ratio 238U/235U = 137.818 (Hiess et al., 2012) and λ232 = 4.9475 × 10−11 per year for thorium (Le Roux and Glendenin, 1963; recommended by Steiger and Jäger, 1977). These are the same values as in IsoplotR. The 238U/235U ratio enters the calculation of the 207Pb/206Pb age; the old value of 137.88 gives slightly different ages. When comparing with published data, check which constants were used. The uncertainties of the constants are not included in the reported errors.",
+   "referencias": [
+    "Jaffey et al. (1971)",
+    "Hiess et al. (2012)",
+    "Le Roux e Glendenin (1963)",
+    "Steiger e Jäger (1977)",
+    "Ludwig (2000)"
+   ],
+   "como_usar": [
+    "There is nothing to adjust: the constants are fixed and identical to those of IsoplotR.",
+    "See the constants cited in the 'Methodology (text for the paper)' tab and in the LEIAME.txt (README) file of the repository export.",
+    "When comparing with another study, check whether it used the same 238U/235U value."
+   ]
+  },
+  {
+   "id": "melhor_idade",
+   "titulo": "Preferred age per grain and the 207Pb/206Pb cut-off",
+   "serve": "This feature is used to choose which age represents each grain; adjust the cut-off when your ages are close to 1000 Ma or when following the criterion of another study.",
+   "explicacao": "Each U-Pb analysis yields three ages: 206Pb/238U, 207Pb/235U and 207Pb/206Pb. In young grains little 207Pb has formed and the 207Pb/206Pb age is imprecise, so the 206Pb/238U age is the most precise. In old grains the 207Pb/206Pb age is more precise and less sensitive to recent Pb loss, which changes both U-Pb ratios but barely affects the ratio between the Pb isotopes. Zircon uses the 206Pb/238U age as the preferred age when it is below the cut-off and the 207Pb/206Pb age when it is equal to or above it. The default is 1000 Ma, a value common in the literature, but there is no universal cut-off. A grain near the cut-off may switch age abruptly; report the cut-off used.",
+   "referencias": [
+    "Gehrels (2014)",
+    "Spencer et al. (2016)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'What to calculate', adjust 'Use 207Pb/206Pb above' (default 1000 Ma).",
+    "Click 'Calculate'.",
+    "In the 'Data and ages per grain' tab, compare the preferred age column with the 206Pb/238U and 207Pb/206Pb ages."
+   ]
+  },
+  {
+   "id": "discordancia",
+   "titulo": "Discordance and grain selection",
+   "serve": "This feature is used to identify and separate grains whose U-Pb ages do not agree with each other; use it whenever you calculate a sample age from individual grains.",
+   "explicacao": "A grain is concordant when its 206Pb/238U and 207Pb/206Pb ages agree, that is, when it plots on the concordia curve. Pb loss, common Pb or mixing of domains of different ages make a grain discordant. Zircon calculates discordance as 100 × (1 − t206/238 / t207/206), in %. Positive values generally indicate Pb loss; negative values, reverse discordance. Grains whose absolute discordance exceeds the 'Maximum discordance' (default 10 %) are excluded from the weighted mean and the concordia age, unless you tick 'Include discordant grains in the mean'. In young grains the relative discordance is unreliable, because the 207Pb/206Pb age has a large error. The discordia regression uses all grains.",
+   "referencias": [
+    "Spencer et al. (2016)",
+    "Gehrels (2014)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'Grain selection', adjust 'Maximum discordance' (default 10 %).",
+    "Tick 'Include discordant grains in the mean' only if you have a geological reason to use these grains.",
+    "Click 'Calculate' and look at the discordance and class columns in the 'Data and ages per grain' tab.",
+    "If no grain passes the limit, a warning appears in 'Results'; consider the discordia."
+   ]
+  },
+  {
+   "id": "media_ponderada",
+   "titulo": "Weighted mean, MSWD and p-value",
+   "serve": "This feature is used to calculate the age of a population of grains of the same age, such as those of an igneous rock; use it when the selected grains represent a single event.",
+   "explicacao": "The weighted mean gives more weight to the more precise grains (weight = 1/σ²). The MSWD (mean square of weighted deviates) compares the scatter of the ages with the analytical errors. Values close to 1 indicate that the scatter is explained by the errors. Values well above 1 indicate excess scatter (inheritance, Pb loss, more than one population or underestimated errors); values well below 1 suggest overestimated errors. The acceptable range depends on the number of grains: with few grains, an MSWD of 2 may still be acceptable. For this reason Zircon also shows the p-value of the chi-squared test; p < 0.05 indicates scatter beyond the errors. The 'Weighted mean of' option chooses whether the mean uses the preferred age, the 206Pb/238U age or the 207Pb/206Pb age.",
+   "referencias": [
+    "Wendt e Carl (1991)",
+    "Vermeesch (2018a)",
+    "Spencer et al. (2016)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'What to calculate', choose in 'Weighted mean of' the age to use ('Preferred age per grain', 206Pb/238U or 207Pb/206Pb).",
+    "Click 'Calculate'.",
+    "In the 'Weighted mean' tab, see each grain with its 2σ bar and the band of the mean.",
+    "In the 'Results' tab, read the age, MSWD, p and n, and the 'Warnings and interpretation'."
+   ]
+  },
+  {
+   "id": "efeitos_aleatorios",
+   "titulo": "Geological dispersion (random-effects model)",
+   "serve": "This feature is used to obtain a realistic mean age when the grains scatter more than the analytical errors can explain (high MSWD); use it especially for rocks with protracted crystallisation.",
+   "explicacao": "The ordinary weighted mean assumes that all grains have the same age and that the scatter comes only from the analytical errors. When this is not true, the error of the mean is too small. The random-effects model assumes that the true ages vary around a mean with a geological dispersion (σ) that is estimated by maximum likelihood. The result gives the mean, its error and this dispersion, which appears in 'Warnings and interpretation' in Ma. If the estimated dispersion is zero, the result is the same as the ordinary mean. A large dispersion calls for interpretation: it may indicate more than one population, in which case the mean of all grains may have no geological meaning.",
+   "referencias": [
+    "Galbraith (2005)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'Grain selection', tick 'Account for geological dispersion (random effects)' (ticked by default).",
+    "Click 'Calculate'.",
+    "In 'Results', look for the line 'Geological dispersion beyond analytical uncertainty' among the warnings.",
+    "For comparison, untick the option and calculate again."
+   ]
+  },
+  {
+   "id": "outliers",
+   "titulo": "Outlier rejection (generalised Chauvenet criterion)",
+   "serve": "This feature is used to remove from the mean, objectively, grains that differ greatly from the rest; use it with care and always check which grains were rejected.",
+   "explicacao": "Chauvenet's criterion calculates, for the grain furthest from the mean, the probability of such a large deviation occurring by chance. If this probability, multiplied by the number of grains, is less than 0.5, the grain is rejected and the calculation is repeated, until none is rejected or two grains remain. The generalised version takes the geological dispersion into account when the random-effects model is switched on. Rejected grains appear as 'rejected' in the table and in the charts. Caution: an outlier may be geological information (inheritance, Pb loss, a younger grain). Rejecting grains just to lower the MSWD is a common mistake; report how many grains were rejected.",
+   "referencias": [
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'Grain selection', tick or untick 'Reject outliers automatically' (ticked by default).",
+    "Click 'Calculate'.",
+    "In the 'Data and ages per grain' tab, look for the 'rejected' class and the column showing whether the grain was used in the mean.",
+    "Compare the result with and without the option before deciding."
+   ]
+  },
+  {
+   "id": "concordia",
+   "titulo": "Concordia age",
+   "serve": "This feature is used to calculate a single age from the two U-Pb ratios of a group of concordant grains; use it when the grains plot together on the concordia curve.",
+   "explicacao": "The concordia age (Ludwig, 1998) uses the 207Pb/235U and 206Pb/238U ratios of each grain simultaneously, with their errors and correlation. It first calculates the mean composition of the grains and then finds the age whose point on the concordia curve is closest to that mean. Because it uses both ratios, it is usually more precise than the mean of a single age. The MSWD combines two tests: whether the grains are equivalent to each other and whether the mean is concordant. Zircon uses only the grains within the discordance limit that were not rejected. If p < 0.05, the grains are not concordant and equivalent, and the program issues a warning; in that case prefer the discordia or the weighted mean.",
+   "referencias": [
+    "Ludwig (1998)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Import data with U-Pb ratios (Wetherill or Tera-Wasserburg).",
+    "Adjust 'Maximum discordance' and the other options under 'Grain selection' and click 'Calculate'.",
+    "In the 'Results' tab, read the 'Concordia age' line with MSWD and p.",
+    "In the 'Concordia or isochron' tab, check that the ellipses used plot on the curve."
+   ]
+  },
+  {
+   "id": "discordia",
+   "titulo": "Discordia and upper and lower intercepts",
+   "serve": "This feature is used to obtain ages from grains aligned off the concordia curve; use it when several discordant grains form a straight line, as in Pb loss or mixing of two ages.",
+   "explicacao": "When grains of the same age lose different amounts of Pb in a later event, they line up along a straight line, the discordia, in the Wetherill diagram. The upper intercept with the concordia generally indicates the crystallisation age; the lower intercept, the age of the event that caused the Pb loss. Zircon fits the line by York regression, which accounts for the errors of both ratios and their correlation, and propagates the errors to the intercepts. It uses all grains, without the discordance filter. A lower intercept near zero may indicate recent Pb loss, with no event significance. A high MSWD indicates that the points do not form a single line. At least 3 grains are required.",
+   "referencias": [
+    "York (1968)",
+    "York et al. (2004)",
+    "Wetherill (1956)",
+    "Ludwig (1998)",
+    "Ludwig (2000)"
+   ],
+   "como_usar": [
+    "Import data with U-Pb ratios and click 'Calculate'.",
+    "In the left-hand panel, under 'What to calculate', leave 'Concordia diagram' set to 'Wetherill' to see the dashed discordia line.",
+    "In the 'Results' tab, read 'Discordia: upper intercept' and 'Discordia: lower intercept', with MSWD and p.",
+    "Use 'Groups > Put selected rows in group...' to mark the grains you consider part of the discordia and assess the interpretation."
+   ]
+  },
+  {
+   "id": "diagramas",
+   "titulo": "Wetherill and Tera-Wasserburg concordia diagrams",
+   "serve": "This feature is used to view the grains relative to the concordia curve; use Wetherill for old data and discordias, and Tera-Wasserburg for young grains or grains with common Pb.",
+   "explicacao": "In the Wetherill diagram, the x axis is 207Pb/235U and the y axis is 206Pb/238U. In the Tera-Wasserburg diagram, x is 238U/206Pb and y is 207Pb/206Pb. The concordia curve joins the points where the U-Pb ages agree; the tick marks on it show ages in Ma. Each grain appears as a 2σ error ellipse whose orientation depends on rho. In the Tera-Wasserburg diagram, young grains are more spread out and common Pb shifts the points upwards, towards the 207Pb/206Pb value of common Pb, which makes it easier to recognise. Both diagrams show the same data; the choice is a matter of reading. The discordia line is drawn only in the Wetherill diagram.",
+   "referencias": [
+    "Wetherill (1956)",
+    "Tera e Wasserburg (1972)",
+    "Ludwig (1998)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'What to calculate', choose 'Wetherill' or 'Tera-Wasserburg' in 'Concordia diagram'.",
+    "Open the 'Concordia or isochron' tab.",
+    "Change the ellipse colours in 'Chart colours' > 'Colour by'.",
+    "To save just this chart, use 'File > Export current chart...'."
+   ]
+  },
+  {
+   "id": "pb_comum",
+   "titulo": "Common Pb correction using 204Pb",
+   "serve": "This feature is used to subtract the non-radiogenic Pb incorporated into the grain; use it when the spreadsheet has measured 204Pb/238U and the laboratory has not made the correction.",
+   "explicacao": "Common Pb is the Pb that was already in the grain or was incorporated without coming from U decay. It makes ages older, especially the 207Pb/206Pb age. As 204Pb is not radiogenic, it measures how much common Pb there is; subtracting 204Pb times the common Pb composition leaves the radiogenic Pb. The Stacey and Kramers model estimates that composition at the age of each grain, by iterative calculation. The fixed composition uses the primordial Pb of Canyon Diablo. Do not correct if the laboratory has already done so, or if 204Pb is close to the detection limit or affected by 204Hg interference, which is common in LA-ICP-MS: the correction makes the result worse. Without 204Pb there are other methods, which are not included.",
+   "referencias": [
+    "Stacey e Kramers (1975)",
+    "Tatsumoto et al. (1973)",
+    "Williams (1998)",
+    "Andersen (2002)"
+   ],
+   "como_usar": [
+    "Import a spreadsheet with the 207Pb/235U, 206Pb/238U and 204Pb/238U columns.",
+    "In the left-hand panel, under 'What to calculate', choose in 'Common Pb (if 204Pb is available)': 'Stacey and Kramers (1975)', 'Fixed composition (Canyon Diablo)' or 'No correction'.",
+    "Click 'Calculate' and check the model used in 'Warnings and interpretation'.",
+    "Compare the ages with and without correction before deciding."
+   ]
+  },
+  {
+   "id": "isocronas",
+   "titulo": "Pb-Pb and Th-Pb isochrons",
+   "serve": "This feature is used to obtain an age by regression when the data are Pb-Pb or Th-Pb ratios with 204Pb; use it when the points have variable amounts of common Pb and share the same initial composition.",
+   "explicacao": "An isochron is a straight line formed by analyses with the same age and the same initial Pb composition. In the Th-Pb isochron (232Th/204Pb versus 208Pb/204Pb), the slope gives the age and the intercept gives the initial 208Pb/204Pb ratio. For the Pb-Pb isochron, Zircon uses the inverse form (204Pb/206Pb versus 207Pb/206Pb), as IsoplotR does: the intercept at 204Pb/206Pb = 0 is the radiogenic 207Pb/206Pb ratio, which gives the age. The line is fitted by York regression. If p < 0.05, the program issues a warning: the points scatter more than the errors explain, and the age may have no meaning. Points with little spread in their ratios give imprecise isochrons.",
+   "referencias": [
+    "York et al. (2004)",
+    "Vermeesch (2018a)",
+    "Le Roux e Glendenin (1963)",
+    "Jaffey et al. (1971)"
+   ],
+   "como_usar": [
+    "Import a spreadsheet with 206Pb/204Pb and 207Pb/204Pb (Pb-Pb) or 232Th/204Pb and 208Pb/204Pb (Th-Pb), with errors and rho.",
+    "Click 'Calculate'.",
+    "Open the 'Concordia or isochron' tab to see the 2σ ellipses and the line.",
+    "Read the age, the MSWD and the warnings in the 'Results' tab."
+   ]
+  },
+  {
+   "id": "populacoes",
+   "titulo": "Age populations and age distribution",
+   "serve": "This feature is used to separate grains of different ages into populations; use it mainly for detrital zircon, or for rocks with inheritance, to see how many sources or events there are.",
+   "explicacao": "The 'Age distribution' tab shows the histogram of the preferred ages and the kernel density estimate (KDE), a sum of smooth curves centred on each age. With the populations option, Zircon splits the curve at its minima: each peak becomes a population. Populations with fewer grains than the 'Minimum grains per population' are merged with the neighbouring one. The split depends on the width of the curve and the number of grains: small peaks may be noise. In provenance studies, many grains (usually more than 100) are needed so as not to miss smaller populations. These groups are meant for colouring and exploring the data; confirm them with the geology.",
+   "referencias": [
+    "Vermeesch (2012)",
+    "Vermeesch (2004)",
+    "Andersen (2005)",
+    "Gehrels (2014)",
+    "Fedo et al. (2003)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'Chart colours', choose 'Age populations (automatic)' in 'Colour by'.",
+    "Adjust 'Minimum grains per population' (default 3).",
+    "Click 'Calculate' and open the 'Age distribution' tab.",
+    "See the number of each grain in the group column of the 'Data and ages per grain' tab."
+   ]
+  },
+  {
+   "id": "cores_grupos",
+   "titulo": "Colours by class, population or chosen groups",
+   "serve": "This feature is used to highlight sets of grains in the charts and tables; use it to separate concordant from discordant grains, view populations or mark grains you interpret as belonging to the same event.",
+   "explicacao": "The 'Colour by' option has three modes. 'Concordant / discordant / rejected' colours each grain by class: concordant, discordant (above the maximum discordance) or rejected as an outlier. 'Age populations (automatic)' uses the groups from the density curve. 'Groups I choose' uses group numbers (1 to 8) that you assign to the table rows. The colours appear in the concordia, the weighted mean, the histogram and the exported Excel spreadsheet. Assigning a group only changes the colour: it does not change which grains go into the mean, which depends on the selection options. The groups are saved in the project.",
+   "referencias": [
+    "Spencer et al. (2016)",
+    "Vermeesch (2012)",
+    "Wong (2011)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'Chart colours', choose the mode in 'Colour by'.",
+    "For your own groups, select the rows in the 'Data and ages per grain' tab (click the row number; use Ctrl or Shift for several).",
+    "Use 'Groups > Put selected rows in group...' and enter the group number.",
+    "To return to the classes, use 'Groups > Revert to automatic colours'."
+   ]
+  },
+  {
+   "id": "incertezas",
+   "titulo": "Uncertainty levels",
+   "serve": "This feature is used to find out what the reported uncertainties include; consult it before comparing your ages with others or before publishing.",
+   "explicacao": "Internally all errors are converted to absolute 1σ. In the sample results, Zircon shows 1σ and 2σ, and the methodology text and the charts use 2σ; the exported per-grain tables are in absolute 1σ, as stated in them. The uncertainties include only the analytical part supplied in the laboratory spreadsheet: this is the x ± y level of Horstwood et al. (2016). Neither the decay constant uncertainty nor the systematic calibration uncertainty (reference material, long-term reproducibility), which the laboratory should report, is included. To compare ages obtained in different laboratories or by different methods, these systematic uncertainties must be added. Always state the confidence level (1σ or 2σ) together with each age.",
+   "referencias": [
+    "Horstwood et al. (2016)",
+    "Ludwig (2000)",
+    "Schoene (2014)"
+   ],
+   "como_usar": [
+    "In the 'Results' tab, see the ± 1σ (Ma) and ± 2σ (Ma) columns.",
+    "In the 'Check import' window, confirm that the errors were read at the correct level (1σ or 2σ, absolute or %).",
+    "Ask the laboratory for the systematic uncertainty so you can report it together with the published age."
+   ]
+  },
+  {
+   "id": "exportar",
+   "titulo": "Export for publication",
+   "serve": "This feature is used to generate all the files for a paper or report at once; use it when the results have been checked and are ready to be used outside Zircon.",
+   "explicacao": "The export for publication creates a folder containing: concordia (or isochron), weighted mean and age distribution figures at a width of 1 column (90 mm), 1.5 columns (140 mm) or 2 columns (190 mm), in 600 dpi PNG and TIFF, PDF, SVG and, if requested, EPS, following Elsevier's figure guidelines; a formatted Excel spreadsheet with results, colour-coded per-grain ages, options used, references and log; interactive HTML charts, which open without an internet connection and serve as supplementary material; CSV data with a README (LEIAME) for a repository (Mendeley Data, Zenodo, PANGAEA); and the methodology text. Check each figure before submitting it to the journal, as requirements vary.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Click 'Calculate' before exporting.",
+    "Choose 'File > Export for publication (figures, Excel, interactive, methodology)...' (Ctrl+E).",
+    "Choose the 'Figure width' and tick the formats.",
+    "Click 'Choose folder and export' and choose the folder; the files are placed in a subfolder named after the project.",
+    "For a single file, use the other items in the 'File' menu (Excel spreadsheet, current chart, interactive HTML or methodology)."
+   ]
+  },
+  {
+   "id": "metodologia",
+   "titulo": "Methodology text",
+   "serve": "This feature is used to obtain a draft of the methods section with the options used and the citations; use it when writing a paper, dissertation, thesis or report.",
+   "explicacao": "The 'Methodology (text for the paper)' tab builds a text describing what was calculated: data type, constants, common Pb correction, preferred age and discordance criteria, weighted mean, random effects, outliers, concordia age, discordia, populations and uncertainty level, followed by the results and the references in ABNT format. The text changes according to the data and options. It is a draft: revise it, add the laboratory information (instrument, reference materials, data reduction) and adapt it to the journal. Cite the program with the version used, as it appears in the text: Zircon vX.Y.Z (https://github.com/cibelegeologia/zircon), and also cite the methods, not just the program.",
+   "referencias": [
+    "Horstwood et al. (2016)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Click 'Calculate' and open the 'Methodology (text for the paper)' tab.",
+    "Copy the text or use 'File > Export methodology (Markdown or text)...'.",
+    "Revise the text and add the laboratory's analytical details.",
+    "If you change any option, calculate again: the text is rebuilt."
+   ]
+  },
+  {
+   "id": "projeto",
+   "titulo": "Project file (.zircon)",
+   "serve": "This feature is used to save a working session and reopen it later exactly as it was; use it for each sample or spreadsheet you analyse.",
+   "explicacao": "The .zircon file stores in a single compressed folder the imported data, the import log, the chosen options, the groups you assigned and a copy of the original spreadsheet. This is why the project opens on another computer even without the original spreadsheet and without an internet connection. Each project corresponds to one spreadsheet. When there are unsaved changes, the window title shows an asterisk (*), and the program asks whether you want to save before closing or opening another project. The recent projects menu lists the last eight projects opened or saved. Keep the .zircon file together with the research data: it documents how the ages were obtained.",
+   "referencias": [],
+   "como_usar": [
+    "Use 'File > Save' (Ctrl+S) or 'File > Save as...' to save the project.",
+    "To reopen it, use 'File > Open project...' or 'File > Recent projects'.",
+    "On the start screen, use 'Open saved project...'."
+   ]
+  },
+  {
+   "id": "registro_privacidade",
+   "titulo": "Voluntary registration and privacy",
+   "serve": "This feature is used to tell the author, if you wish, where and for what Zircon is used; use it if you want to be notified of new versions or to support the project.",
+   "explicacao": "Zircon never connects to the internet by itself and does not collect data. Registration is voluntary and all fields are optional: name, institution, country, e-mail and intended use. The data are stored only on this computer until you click a send button, and you see the text before sending it. Sending is done through your browser or your e-mail program, not by Zircon. There is also an anonymous installation code, generated at random, which does not identify you. Your analysis data and projects are never sent. Knowing where the program is used helps to justify its maintenance.",
+   "referencias": [],
+   "como_usar": [
+    "Open 'Help > Register Zircon...' or use the registration button on the start screen.",
+    "Fill in whichever fields you wish.",
+    "Choose 'Send via browser', 'Send by e-mail', 'Copy text' or 'Save without sending'."
+   ]
+  },
+  {
+   "id": "acessibilidade",
+   "titulo": "Accessibility: text size, contrast and colours",
+   "serve": "This feature is used to adapt the window and the charts for people with low vision or colour blindness, and to prepare figures that remain legible when printed in black and white; use it whenever the colours or the text make reading difficult.",
+   "explicacao": "Text size ranges from normal to double. The themes include light, dark and two high-contrast themes, with thick borders and a clearly visible focus. About 1 in 12 men has some form of colour blindness, and the standard colours use green and red, which are easily confused. The accessible palettes avoid this: Okabe-Ito and Tol were designed for colour blindness; cividis runs from blue to yellow and is perceived equally by all types of colour vision; greyscale is suited to printing. Patterns (stripes and dots) separate the groups without relying on colour. Exported figures follow the chosen palette and patterns, always on a white background.",
+   "referencias": [
+    "Okabe e Ito (2008)",
+    "Wong (2011)",
+    "Tol (2021)",
+    "Nuñez et al. (2018)"
+   ],
+   "como_usar": [
+    "In the 'Accessibility' menu, choose 'Text size' or use 'Larger text' and 'Smaller text' (Ctrl + and Ctrl -).",
+    "In 'Accessibility > Theme and contrast', choose the theme.",
+    "In the left-hand panel, under 'Chart colours', tick 'Accessible colours (colour blindness)' and choose the 'Accessible palette'.",
+    "Tick 'Patterns in addition to colours (stripes and dots per group)' to separate groups without colour."
+   ]
+  },
+  {
+   "id": "idiomas",
+   "titulo": "Languages",
+   "serve": "This feature is used to run the program and produce the exports in your preferred language; use it when changing language or when preparing material for a journal in another language.",
+   "explicacao": "Zircon works in Brazilian Portuguese, European Portuguese, Spanish, English, French, German, Simplified Chinese, Hindi and Arabic. On first launch it uses the system language. The window, the Excel spreadsheet, the charts, the interactive HTML and the README (LEIAME) are produced in the chosen language, with that language's decimal separator on screen. The methodology text is produced in the chosen language and also in English, the language of most journals. In Hindi and Arabic, image figures use English labels, because the charting library does not render these scripts correctly. In Arabic the window is laid out from right to left. Changing the language keeps the project and the options.",
+   "referencias": [],
+   "como_usar": [
+    "Use the 'Language' menu and choose the language.",
+    "Or, on the 'Welcome to Zircon' screen, choose from the language list at the top.",
+    "See the English version of the methodology in the 'Methodology (text for the paper)' tab."
+   ]
+  }
+ ]
+}

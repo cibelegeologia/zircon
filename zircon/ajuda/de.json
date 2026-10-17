@@ -1,0 +1,379 @@
+{
+ "topicos": [
+  {
+   "id": "inicio",
+   "titulo": "Erste Schritte",
+   "serve": "Diese Funktion dient dazu, einen Überblick über Zircon und den Arbeitsablauf zu geben; lesen Sie sie vor der ersten Verwendung oder wenn Sie nicht wissen, wo Sie anfangen sollen.",
+   "explicacao": "Zircon berechnet U-Pb-, Th-Pb- und Pb-Pb-Alter an Zirkon aus den Isotopenverhältnissen oder den Einzelkornaltern, die das Labor liefert. Die Rohsignale des Massenspektrometers verarbeitet es nicht: Diese Datenreduktion erfolgt vorher im Labor. Die Arbeit verläuft in fünf Schritten: Tabelle importieren, prüfen, ob die Spalten erkannt wurden, berechnen, Ergebnisse und Hinweise interpretieren und schließlich Abbildungen, Tabellen und den Methodentext exportieren. Jede Option im Bedienfeld zeigt darunter die Literaturangabe zur Methode (Zeile 'Lit.:'), und die vollständige Liste erscheint in den Exporten im ABNT-Format. Die Berechnungen entsprechen denen von IsoplotR und funktionieren ohne Internet. Das Programm rechnet, aber die geologische Interpretation liegt bei Ihnen: Prüfen Sie immer die Hinweise.",
+   "referencias": [
+    "Vermeesch (2018a)",
+    "Schoene (2014)",
+    "Schaltegger et al. (2015)"
+   ],
+   "como_usar": [
+    "Klicken Sie im Bildschirm 'Willkommen bei Zircon' auf 'Ein Beispiel öffnen, um das Programm kennenzulernen', um es mit fertigen Daten auszuprobieren.",
+    "Für Ihre eigenen Daten verwenden Sie 'Datei > Neues Projekt (Tabelle importieren)...' und prüfen das Fenster 'Import prüfen'.",
+    "Stellen Sie die Optionen im linken Bedienfeld ein ('Was berechnen', 'Auswahl der Körner', 'Farben in den Diagrammen') und klicken Sie auf 'Berechnen'.",
+    "Sehen Sie sich die Reiter 'Konkordia oder Isochrone', 'Gewichtetes Mittel', 'Altersverteilung' und 'Ergebnisse' (mit 'Hinweise und Interpretation') an.",
+    "Exportieren Sie mit 'Datei > Für Publikation exportieren (Abbildungen, Excel, interaktiv, Methodik)...' und speichern Sie das Projekt mit 'Datei > Speichern'."
+   ]
+  },
+  {
+   "id": "importar",
+   "titulo": "Labortabelle importieren",
+   "serve": "Diese Funktion dient dazu, die vom Labor gelieferte Ergebnistabelle in Zircon zu laden; verwenden Sie sie immer, wenn Sie ein neues Projekt mit den Daten einer Probe beginnen.",
+   "explicacao": "Zircon liest Dateien im Format .xlsx, .xls, .ods, .csv, .txt und .tsv. Bei Tabellenkalkulationsdateien wird nur das erste Blatt gelesen. Bei Textdateien erkennt es die Kodierung und das Spaltentrennzeichen (Tabulator, Semikolon oder Komma). Auch das Dezimaltrennzeichen (Komma oder Punkt) wird erkannt. Titelzeilen am Anfang werden übersprungen, und zweizeilige Kopfzeilen werden zusammengeführt. Die Spalten werden am Namen erkannt (zum Beispiel 207Pb/235U, 206Pb/238U, rho), und die Fehlerspalte muss direkt auf den Wert folgen. Gibt die Kopfzeile des Fehlers 2s oder 2σ an, wird der Wert durch 2 geteilt; gibt sie % an, wird er in einen absoluten Fehler umgerechnet. Achtung: Ein 2σ-Fehler ohne diese Angabe in der Kopfzeile wird als 1σ gelesen. Zellen wie '<LOD', 'bdl' oder 'n.d.' werden zu fehlenden Werten.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Wählen Sie 'Datei > Neues Projekt (Tabelle importieren)...' und wählen Sie die Datei aus.",
+    "Lesen Sie im Fenster 'Import prüfen' das Protokoll: Trennzeichen, erste Datenzeile und die Spalte, die jedem Verhältnis und jedem Fehler zugeordnet wurde (1σ oder 2σ, absolut oder %).",
+    "Prüfen Sie in der Vorschautabelle, ob die Zahlen stimmig sind; falls etwas nicht stimmt, klicken Sie auf 'Abbrechen', korrigieren Sie die Kopfzeile der Tabelle und importieren Sie erneut.",
+    "Wenn alles stimmt, klicken Sie auf 'Diese Daten verwenden'.",
+    "Danach bewahrt der Reiter 'Importprotokoll' diese Entscheidungen zum Nachschlagen auf."
+   ]
+  },
+  {
+   "id": "tipos_de_dados",
+   "titulo": "Erkannte Datentypen und Fehlerkorrelation (rho)",
+   "serve": "Diese Funktion dient dazu, zu erfahren, welche Spalten die Tabelle für jede Art von Berechnung enthalten muss; schlagen Sie hier nach, wenn Sie die Tabelle vorbereiten oder wenn Zircon Ihre Daten nicht erkennt.",
+   "explicacao": "Zircon erkennt: Wetherill-Verhältnisse (207Pb/235U und 206Pb/238U); Tera-Wasserburg-Verhältnisse (238U/206Pb und 207Pb/206Pb); Wetherill-Verhältnisse mit 204Pb/238U, die eine Korrektur des gewöhnlichen Pb erlauben; Pb-Pb-Verhältnisse (206Pb/204Pb und 207Pb/204Pb) für eine Isochrone; Th-Pb-Verhältnisse (232Th/204Pb und 208Pb/204Pb) für eine Isochrone; und reine Einzelkornalter, wenn keine Verhältnisse vorliegen. Rho ist der Korrelationskoeffizient zwischen den Fehlern der beiden Verhältnisse eines Korns, zwischen −1 und 1. Er bestimmt die Neigung der Fehlerellipse und geht in alle Konkordia- und Regressionsberechnungen ein. Fehlt eine rho-Spalte, verwendet Zircon rho = 0 und weist darauf hin; Ellipsen und Fehler können dann falsch sein. U-Th-Isochronen werden noch nicht berechnet.",
+   "referencias": [
+    "Wetherill (1956)",
+    "Tera e Wasserburg (1972)",
+    "Ludwig (1980)",
+    "Schoene (2014)"
+   ],
+   "como_usar": [
+    "Importieren Sie die Tabelle und sehen Sie sich im Fenster 'Import prüfen' die letzte Zeile des Protokolls an ('Datentyp').",
+    "Erscheint 'keine Korrelationsspalte (rho); rho = 0 verwendet', suchen Sie rho in der Originaltabelle des Labors.",
+    "Prüfen Sie im Reiter 'Daten und Alter je Korn' die Verhältnisse, Fehler und rho-Werte jeder Analyse."
+   ]
+  },
+  {
+   "id": "constantes",
+   "titulo": "Zerfallskonstanten und 238U/235U-Verhältnis",
+   "serve": "Diese Funktion dient dazu, zu erfahren, welche physikalischen Konstanten Zircon verwendet; schlagen Sie hier nach, wenn Sie die Methodik schreiben oder Ihre Ergebnisse mit denen eines anderen Programms vergleichen.",
+   "explicacao": "Jedes Alter hängt von den Zerfallskonstanten ab. Zircon verwendet λ238 = 1,55125 × 10−10 pro Jahr und λ235 = 9,8485 × 10−10 pro Jahr (Jaffey et al., 1971), das natürliche Verhältnis 238U/235U = 137,818 (Hiess et al., 2012) und λ232 = 4,9475 × 10−11 pro Jahr für Thorium (Le Roux und Glendenin, 1963; empfohlen von Steiger und Jäger, 1977). Das sind dieselben Werte wie in IsoplotR. Das 238U/235U-Verhältnis geht in die Berechnung des 207Pb/206Pb-Alters ein; der ältere Wert von 137,88 ergibt leicht abweichende Alter. Prüfen Sie beim Vergleich mit publizierten Daten, welche Konstanten verwendet wurden. Die Unsicherheiten der Konstanten sind in den angegebenen Fehlern nicht enthalten.",
+   "referencias": [
+    "Jaffey et al. (1971)",
+    "Hiess et al. (2012)",
+    "Le Roux e Glendenin (1963)",
+    "Steiger e Jäger (1977)",
+    "Ludwig (2000)"
+   ],
+   "como_usar": [
+    "Es gibt nichts einzustellen: Die Konstanten sind fest und identisch mit denen von IsoplotR.",
+    "Die zitierten Konstanten finden Sie im Reiter 'Methodik (Text für den Artikel)' und in der Datei LEIAME.txt des Exports für Datenrepositorien.",
+    "Prüfen Sie beim Vergleich mit einer anderen Arbeit, ob dort derselbe 238U/235U-Wert verwendet wurde."
+   ]
+  },
+  {
+   "id": "melhor_idade",
+   "titulo": "Bevorzugtes Alter je Korn und 207Pb/206Pb-Grenzwert",
+   "serve": "Diese Funktion dient dazu, festzulegen, welches Alter jedes Korn repräsentiert; passen Sie den Grenzwert an, wenn Ihre Alter nahe 1000 Ma liegen oder wenn Sie dem Kriterium einer anderen Arbeit folgen.",
+   "explicacao": "Jede U-Pb-Analyse liefert drei Alter: 206Pb/238U, 207Pb/235U und 207Pb/206Pb. In jungen Körnern hat sich wenig 207Pb gebildet, und das 207Pb/206Pb-Alter ist ungenau; deshalb ist das 206Pb/238U-Alter am genauesten. In alten Körnern ist das 207Pb/206Pb-Alter genauer und weniger empfindlich gegenüber jungem Pb-Verlust, der beide U-Pb-Verhältnisse verändert, das Verhältnis der Pb-Isotope zueinander aber kaum. Zircon verwendet als bevorzugtes Alter das 206Pb/238U-Alter, wenn es kleiner als der Grenzwert ist, und das 207Pb/206Pb-Alter, wenn es gleich oder größer ist. Der Standardwert ist 1000 Ma, ein in der Literatur üblicher Wert, doch einen allgemeingültigen Grenzwert gibt es nicht. Bei einem Korn nahe dem Grenzwert kann sich das Alter sprunghaft ändern; geben Sie den verwendeten Grenzwert an.",
+   "referencias": [
+    "Gehrels (2014)",
+    "Spencer et al. (2016)"
+   ],
+   "como_usar": [
+    "Stellen Sie im linken Bedienfeld unter 'Was berechnen' den Wert '207Pb/206Pb verwenden ab' ein (Standard 1000 Ma).",
+    "Klicken Sie auf 'Berechnen'.",
+    "Vergleichen Sie im Reiter 'Daten und Alter je Korn' die Spalte des bevorzugten Alters mit den 206Pb/238U- und 207Pb/206Pb-Altern."
+   ]
+  },
+  {
+   "id": "discordancia",
+   "titulo": "Diskordanz und Auswahl der Körner",
+   "serve": "Diese Funktion dient dazu, Körner zu erkennen und auszusondern, deren U-Pb-Alter nicht übereinstimmen; verwenden Sie sie immer, wenn Sie ein Probenalter aus Einzelkörnern berechnen.",
+   "explicacao": "Ein Korn ist konkordant, wenn sein 206Pb/238U- und sein 207Pb/206Pb-Alter übereinstimmen, das heißt, wenn es auf der Konkordiakurve liegt. Pb-Verlust, gewöhnliches Pb oder die Mischung von Domänen unterschiedlichen Alters machen ein Korn diskordant. Zircon berechnet die Diskordanz als 100 × (1 − t206/238 / t207/206) in %. Positive Werte deuten meist auf Pb-Verlust hin, negative auf inverse Diskordanz. Körner, deren Diskordanz dem Betrag nach über der 'Maximale Diskordanz' liegt (Standard 10 %), werden aus dem gewichteten Mittel und dem Konkordiaalter ausgeschlossen, sofern Sie nicht 'Diskordante in das Mittel einbeziehen' aktivieren. Bei jungen Körnern ist die relative Diskordanz wenig zuverlässig, weil das 207Pb/206Pb-Alter einen großen Fehler hat. Die Regression der Diskordia verwendet alle Körner.",
+   "referencias": [
+    "Spencer et al. (2016)",
+    "Gehrels (2014)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "Stellen Sie im linken Bedienfeld unter 'Auswahl der Körner' die 'Maximale Diskordanz' ein (Standard 10 %).",
+    "Aktivieren Sie 'Diskordante in das Mittel einbeziehen' nur, wenn Sie einen geologischen Grund haben, diese Körner zu verwenden.",
+    "Klicken Sie auf 'Berechnen' und sehen Sie sich im Reiter 'Daten und Alter je Korn' die Spalten für Diskordanz und Klasse an.",
+    "Liegt kein Korn innerhalb der Grenze, erscheint der Hinweis unter 'Ergebnisse'; ziehen Sie dann die Diskordia in Betracht."
+   ]
+  },
+  {
+   "id": "media_ponderada",
+   "titulo": "Gewichtetes Mittel, MSWD und p-Wert",
+   "serve": "Diese Funktion dient dazu, das Alter einer Population gleich alter Körner zu berechnen, etwa der Körner eines magmatischen Gesteins; verwenden Sie sie, wenn die ausgewählten Körner ein einziges Ereignis repräsentieren.",
+   "explicacao": "Das gewichtete Mittel gibt den genaueren Körnern mehr Gewicht (Gewicht = 1/σ²). Die MSWD (mittlere gewichtete quadratische Abweichung) vergleicht die Streuung der Alter mit den analytischen Fehlern. Werte nahe 1 zeigen, dass die Streuung durch die Fehler erklärt wird. Deutlich größere Werte zeigen zusätzliche Streuung an (Vererbung, Pb-Verlust, mehr als eine Population oder unterschätzte Fehler); deutlich kleinere Werte deuten auf überschätzte Fehler hin. Der akzeptable Bereich hängt von der Anzahl der Körner ab: Bei wenigen Körnern kann eine MSWD von 2 noch akzeptabel sein. Deshalb zeigt Zircon auch den p-Wert des Chi-Quadrat-Tests; p < 0,05 zeigt eine Streuung über die Fehler hinaus an. Die Option 'Gewichtetes Mittel von' legt fest, ob das Mittel aus dem bevorzugten Alter, dem 206Pb/238U- oder dem 207Pb/206Pb-Alter gebildet wird.",
+   "referencias": [
+    "Wendt e Carl (1991)",
+    "Vermeesch (2018a)",
+    "Spencer et al. (2016)"
+   ],
+   "como_usar": [
+    "Wählen Sie im linken Bedienfeld unter 'Was berechnen' bei 'Gewichtetes Mittel von' das verwendete Alter ('Bevorzugtes Alter je Korn', 206Pb/238U oder 207Pb/206Pb).",
+    "Klicken Sie auf 'Berechnen'.",
+    "Im Reiter 'Gewichtetes Mittel' sehen Sie jedes Korn mit 2σ-Balken und das Band des Mittelwerts.",
+    "Lesen Sie im Reiter 'Ergebnisse' das Alter, die MSWD, p und n sowie die 'Hinweise und Interpretation'."
+   ]
+  },
+  {
+   "id": "efeitos_aleatorios",
+   "titulo": "Geologische Streuung (Modell mit zufälligen Effekten)",
+   "serve": "Diese Funktion dient dazu, ein realistisches mittleres Alter zu erhalten, wenn die Körner stärker streuen, als die analytischen Fehler erklären (hohe MSWD); verwenden Sie sie besonders bei Gesteinen mit lang andauernder Kristallisation.",
+   "explicacao": "Beim gewöhnlichen gewichteten Mittel wird angenommen, dass alle Körner dasselbe Alter haben und die Streuung nur von den analytischen Fehlern stammt. Trifft das nicht zu, wird der Fehler des Mittels zu klein. Das Modell mit zufälligen Effekten nimmt an, dass die wahren Alter um einen Mittelwert mit einer geologischen Streuung (σ) schwanken, die mit der Maximum-Likelihood-Methode geschätzt wird. Das Ergebnis enthält den Mittelwert, seinen Fehler und diese Streuung, die unter 'Hinweise und Interpretation' in Ma erscheint. Ist die geschätzte Streuung null, stimmt das Ergebnis mit dem gewöhnlichen Mittel überein. Eine große Streuung muss interpretiert werden: Sie kann auf mehr als eine Population hindeuten, und dann hat das Mittel aller Körner möglicherweise keine geologische Bedeutung.",
+   "referencias": [
+    "Galbraith (2005)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Aktivieren Sie im linken Bedienfeld unter 'Auswahl der Körner' die Option 'Geologische Streuung berücksichtigen (zufällige Effekte)' (standardmäßig aktiviert).",
+    "Klicken Sie auf 'Berechnen'.",
+    "Unter 'Ergebnisse' finden Sie bei den Hinweisen die Zeile 'Geologische Streuung über den analytischen Fehler hinaus'.",
+    "Zum Vergleich deaktivieren Sie die Option und berechnen erneut."
+   ]
+  },
+  {
+   "id": "outliers",
+   "titulo": "Verwerfen von Ausreißern (verallgemeinertes Chauvenet-Kriterium)",
+   "serve": "Diese Funktion dient dazu, Körner, die stark von den übrigen abweichen, objektiv aus dem Mittel zu entfernen; verwenden Sie sie mit Vorsicht und prüfen Sie immer, welche Körner verworfen wurden.",
+   "explicacao": "Das Chauvenet-Kriterium berechnet für das am weitesten vom Mittel entfernte Korn die Wahrscheinlichkeit, dass eine so große Abweichung zufällig auftritt. Ist diese Wahrscheinlichkeit, multipliziert mit der Anzahl der Körner, kleiner als 0,5, wird das Korn verworfen und die Berechnung wiederholt, bis keines mehr verworfen wird oder nur noch zwei Körner übrig sind. Die verallgemeinerte Version berücksichtigt die geologische Streuung, wenn das Modell mit zufälligen Effekten aktiviert ist. Verworfene Körner erscheinen in der Tabelle und in den Diagrammen als 'verworfen'. Vorsicht: Ein Ausreißer kann geologische Information sein (Vererbung, Pb-Verlust, jüngstes Korn). Körner nur zu verwerfen, um die MSWD zu senken, ist ein häufiger Fehler; geben Sie an, wie viele Körner verworfen wurden.",
+   "referencias": [
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Aktivieren oder deaktivieren Sie im linken Bedienfeld unter 'Auswahl der Körner' die Option 'Ausreißer automatisch verwerfen' (standardmäßig aktiviert).",
+    "Klicken Sie auf 'Berechnen'.",
+    "Sehen Sie sich im Reiter 'Daten und Alter je Korn' die Klasse 'verworfen' und die Spalte an, die angibt, ob das Korn im Mittel verwendet wurde.",
+    "Vergleichen Sie das Ergebnis mit und ohne die Option, bevor Sie sich entscheiden."
+   ]
+  },
+  {
+   "id": "concordia",
+   "titulo": "Konkordiaalter",
+   "serve": "Diese Funktion dient dazu, aus den beiden U-Pb-Verhältnissen einer Gruppe konkordanter Körner ein einziges Alter zu berechnen; verwenden Sie sie, wenn die Körner gemeinsam auf der Konkordiakurve liegen.",
+   "explicacao": "Das Konkordiaalter (Ludwig, 1998) verwendet gleichzeitig die 207Pb/235U- und 206Pb/238U-Verhältnisse jedes Korns mit ihren Fehlern und ihrer Korrelation. Zuerst wird die mittlere Zusammensetzung der Körner berechnet, dann das Alter gesucht, dessen Punkt auf der Konkordiakurve diesem Mittel am nächsten liegt. Da beide Verhältnisse genutzt werden, ist es meist genauer als das Mittel eines einzelnen Alters. Die MSWD kombiniert zwei Tests: ob die Körner untereinander äquivalent sind und ob das Mittel konkordant ist. Zircon verwendet nur Körner innerhalb der Diskordanzgrenze, die nicht verworfen wurden. Ist p < 0,05, sind die Körner nicht konkordant und äquivalent, und das Programm weist darauf hin; verwenden Sie dann besser die Diskordia oder das gewichtete Mittel.",
+   "referencias": [
+    "Ludwig (1998)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Importieren Sie Daten mit U-Pb-Verhältnissen (Wetherill oder Tera-Wasserburg).",
+    "Stellen Sie die 'Maximale Diskordanz' und die übrigen Optionen unter 'Auswahl der Körner' ein und klicken Sie auf 'Berechnen'.",
+    "Lesen Sie im Reiter 'Ergebnisse' die Zeile 'Konkordiaalter' mit MSWD und p.",
+    "Prüfen Sie im Reiter 'Konkordia oder Isochrone', ob die verwendeten Ellipsen auf der Kurve liegen."
+   ]
+  },
+  {
+   "id": "discordia",
+   "titulo": "Diskordia sowie oberer und unterer Schnittpunkt",
+   "serve": "Diese Funktion dient dazu, Alter aus Körnern zu bestimmen, die außerhalb der Konkordiakurve auf einer Linie liegen; verwenden Sie sie, wenn mehrere diskordante Körner eine Gerade bilden, etwa bei Pb-Verlust oder bei der Mischung zweier Alter.",
+   "explicacao": "Verlieren gleich alte Körner bei einem späteren Ereignis unterschiedlich viel Pb, ordnen sie sich im Wetherill-Diagramm auf einer Geraden an, der Diskordia. Der obere Schnittpunkt mit der Konkordia gibt meist das Kristallisationsalter an, der untere das Alter des Ereignisses, das den Pb-Verlust verursacht hat. Zircon passt die Gerade mit der York-Regression an, die die Fehler beider Verhältnisse und ihre Korrelation berücksichtigt, und überträgt die Fehler auf die Schnittpunkte. Es verwendet alle Körner, ohne den Diskordanzfilter. Ein unterer Schnittpunkt nahe null kann auf jungen Pb-Verlust ohne Bedeutung als Ereignis hinweisen. Eine hohe MSWD zeigt, dass die Punkte keine einzelne Gerade bilden. Es werden mindestens 3 Körner benötigt.",
+   "referencias": [
+    "York (1968)",
+    "York et al. (2004)",
+    "Wetherill (1956)",
+    "Ludwig (1998)",
+    "Ludwig (2000)"
+   ],
+   "como_usar": [
+    "Importieren Sie Daten mit U-Pb-Verhältnissen und klicken Sie auf 'Berechnen'.",
+    "Lassen Sie im linken Bedienfeld unter 'Was berechnen' das 'Konkordiadiagramm' auf 'Wetherill', um die gestrichelte Diskordia zu sehen.",
+    "Lesen Sie im Reiter 'Ergebnisse' 'Diskordia: oberer Schnittpunkt' und 'Diskordia: unterer Schnittpunkt' mit MSWD und p.",
+    "Verwenden Sie 'Gruppen > Ausgewählte Zeilen in Gruppe einordnen...', um die Körner zu markieren, die Sie zur Diskordia zählen, und die Interpretation zu bewerten."
+   ]
+  },
+  {
+   "id": "diagramas",
+   "titulo": "Konkordiadiagramme nach Wetherill und Tera-Wasserburg",
+   "serve": "Diese Funktion dient dazu, die Körner im Verhältnis zur Konkordiakurve darzustellen; verwenden Sie Wetherill für alte Daten und Diskordien und Tera-Wasserburg für junge Körner oder Körner mit gewöhnlichem Pb.",
+   "explicacao": "Im Wetherill-Diagramm ist die x-Achse 207Pb/235U und die y-Achse 206Pb/238U. Im Tera-Wasserburg-Diagramm ist x 238U/206Pb und y 207Pb/206Pb. Die Konkordiakurve verbindet die Punkte, an denen die U-Pb-Alter übereinstimmen; die Markierungen auf ihr geben Alter in Ma an. Jedes Korn erscheint als 2σ-Fehlerellipse, deren Neigung von rho abhängt. Im Tera-Wasserburg-Diagramm liegen junge Körner weiter auseinander, und gewöhnliches Pb verschiebt die Punkte nach oben, in Richtung des 207Pb/206Pb-Werts des gewöhnlichen Pb, was es leichter erkennbar macht. Beide Diagramme zeigen dieselben Daten; die Wahl ist eine Frage der Lesbarkeit. Die Diskordia wird nur im Wetherill-Diagramm gezeichnet.",
+   "referencias": [
+    "Wetherill (1956)",
+    "Tera e Wasserburg (1972)",
+    "Ludwig (1998)"
+   ],
+   "como_usar": [
+    "Wählen Sie im linken Bedienfeld unter 'Was berechnen' im 'Konkordiadiagramm' 'Wetherill' oder 'Tera-Wasserburg'.",
+    "Öffnen Sie den Reiter 'Konkordia oder Isochrone'.",
+    "Ändern Sie die Farben der Ellipsen unter 'Farben in den Diagrammen' > 'Einfärben nach'.",
+    "Um nur dieses Diagramm zu speichern, verwenden Sie 'Datei > Aktuelles Diagramm exportieren...'."
+   ]
+  },
+  {
+   "id": "pb_comum",
+   "titulo": "Korrektur des gewöhnlichen Pb über 204Pb",
+   "serve": "Diese Funktion dient dazu, das in das Korn eingebaute nicht radiogene Pb abzuziehen; verwenden Sie sie, wenn die Tabelle gemessenes 204Pb/238U enthält und das Labor die Korrektur nicht vorgenommen hat.",
+   "explicacao": "Gewöhnliches Pb ist Pb, das bereits im Korn vorhanden war oder eingebaut wurde, ohne aus dem Zerfall von U zu stammen. Es macht die Alter zu hoch, vor allem das 207Pb/206Pb-Alter. Da 204Pb nicht radiogen ist, misst es die Menge an gewöhnlichem Pb; zieht man 204Pb mal die Zusammensetzung des gewöhnlichen Pb ab, bleibt das radiogene Pb übrig. Das Modell von Stacey und Kramers schätzt diese Zusammensetzung zum Alter jedes Korns, iterativ berechnet. Die feste Zusammensetzung verwendet das primordiale Pb von Canyon Diablo. Korrigieren Sie nicht, wenn das Labor bereits korrigiert hat oder wenn 204Pb nahe der Nachweisgrenze liegt oder durch 204Hg gestört ist, was bei LA-ICP-MS häufig vorkommt: Die Korrektur verschlechtert dann das Ergebnis. Ohne 204Pb gibt es andere Methoden, die nicht enthalten sind.",
+   "referencias": [
+    "Stacey e Kramers (1975)",
+    "Tatsumoto et al. (1973)",
+    "Williams (1998)",
+    "Andersen (2002)"
+   ],
+   "como_usar": [
+    "Importieren Sie eine Tabelle mit den Spalten 207Pb/235U, 206Pb/238U und 204Pb/238U.",
+    "Wählen Sie im linken Bedienfeld unter 'Was berechnen' bei 'Gewöhnliches Pb (falls 204Pb vorhanden)': 'Stacey und Kramers (1975)', 'Feste Zusammensetzung (Canyon Diablo)' oder 'Nicht korrigieren'.",
+    "Klicken Sie auf 'Berechnen' und prüfen Sie unter 'Hinweise und Interpretation' das verwendete Modell.",
+    "Vergleichen Sie die Alter mit und ohne Korrektur, bevor Sie sich entscheiden."
+   ]
+  },
+  {
+   "id": "isocronas",
+   "titulo": "Pb-Pb- und Th-Pb-Isochronen",
+   "serve": "Diese Funktion dient dazu, ein Alter durch Regression zu bestimmen, wenn die Daten Pb-Pb- oder Th-Pb-Verhältnisse mit 204Pb sind; verwenden Sie sie, wenn die Punkte unterschiedliche Mengen an gewöhnlichem Pb enthalten und dieselbe Anfangszusammensetzung haben.",
+   "explicacao": "Eine Isochrone ist eine Gerade aus Analysen gleichen Alters und gleicher Pb-Anfangszusammensetzung. In der Th-Pb-Isochrone (232Th/204Pb gegen 208Pb/204Pb) ergibt die Steigung das Alter und der Achsenabschnitt das anfängliche 208Pb/204Pb-Verhältnis. Bei der Pb-Pb-Isochrone verwendet Zircon wie IsoplotR die inverse Form (204Pb/206Pb gegen 207Pb/206Pb): Der Achsenabschnitt bei 204Pb/206Pb = 0 ist das radiogene 207Pb/206Pb-Verhältnis, aus dem sich das Alter ergibt. Die Gerade wird mit der York-Regression angepasst. Ist p < 0,05, weist das Programm darauf hin: Die Punkte streuen stärker, als die Fehler erklären, und das Alter hat möglicherweise keine Bedeutung. Punkte mit geringer Variation der Verhältnisse ergeben ungenaue Isochronen.",
+   "referencias": [
+    "York et al. (2004)",
+    "Vermeesch (2018a)",
+    "Le Roux e Glendenin (1963)",
+    "Jaffey et al. (1971)"
+   ],
+   "como_usar": [
+    "Importieren Sie eine Tabelle mit 206Pb/204Pb und 207Pb/204Pb (Pb-Pb) oder 232Th/204Pb und 208Pb/204Pb (Th-Pb), mit Fehlern und rho.",
+    "Klicken Sie auf 'Berechnen'.",
+    "Öffnen Sie den Reiter 'Konkordia oder Isochrone', um die 2σ-Ellipsen und die Gerade zu sehen.",
+    "Lesen Sie das Alter, die MSWD und die Hinweise im Reiter 'Ergebnisse'."
+   ]
+  },
+  {
+   "id": "populacoes",
+   "titulo": "Alterspopulationen und Altersverteilung",
+   "serve": "Diese Funktion dient dazu, Körner unterschiedlichen Alters in Populationen zu trennen; verwenden Sie sie vor allem bei detritischem Zirkon oder bei Gesteinen mit ererbten Körnern, um zu sehen, wie viele Quellen oder Ereignisse es gibt.",
+   "explicacao": "Der Reiter 'Altersverteilung' zeigt das Histogramm der bevorzugten Alter und die Kerndichteschätzung (KDE), eine Summe glatter Kurven, die um jedes Alter zentriert sind. Bei der Option Populationen teilt Zircon die Kurve an ihren Minima: Jeder Gipfel wird zu einer Population. Populationen mit weniger Körnern als die 'Mindestanzahl Körner je Population' werden mit der benachbarten zusammengelegt. Die Einteilung hängt von der Breite der Kurve und der Anzahl der Körner ab: Kleine Gipfel können Rauschen sein. In Provenienzstudien sind viele Körner (meist mehr als 100) nötig, um kleinere Populationen nicht zu übersehen. Diese Gruppen dienen zum Einfärben und Erkunden der Daten; bestätigen Sie sie anhand der Geologie.",
+   "referencias": [
+    "Vermeesch (2012)",
+    "Vermeesch (2004)",
+    "Andersen (2005)",
+    "Gehrels (2014)",
+    "Fedo et al. (2003)"
+   ],
+   "como_usar": [
+    "Wählen Sie im linken Bedienfeld unter 'Farben in den Diagrammen' bei 'Einfärben nach' 'Alterspopulationen (automatisch)'.",
+    "Stellen Sie die 'Mindestanzahl Körner je Population' ein (Standard 3).",
+    "Klicken Sie auf 'Berechnen' und öffnen Sie den Reiter 'Altersverteilung'.",
+    "Die Nummer jedes Korns sehen Sie in der Gruppenspalte des Reiters 'Daten und Alter je Korn'."
+   ]
+  },
+  {
+   "id": "cores_grupos",
+   "titulo": "Farben nach Klasse, Population oder selbst gewählten Gruppen",
+   "serve": "Diese Funktion dient dazu, Gruppen von Körnern in Diagrammen und Tabellen hervorzuheben; verwenden Sie sie, um konkordante von diskordanten Körnern zu trennen, Populationen zu sehen oder Körner zu markieren, die Sie demselben Ereignis zuordnen.",
+   "explicacao": "Die Option 'Einfärben nach' hat drei Modi. 'Konkordant / diskordant / verworfen' färbt jedes Korn nach seiner Klasse: konkordant, diskordant (über der maximalen Diskordanz) oder als Ausreißer verworfen. 'Alterspopulationen (automatisch)' verwendet die Gruppen aus der Dichtekurve. 'Selbst gewählte Gruppen' verwendet Gruppennummern (1 bis 8), die Sie den Zeilen der Tabelle zuweisen. Die Farben erscheinen in der Konkordia, im gewichteten Mittel, im Histogramm und in der exportierten Excel-Tabelle. Das Zuweisen einer Gruppe ändert nur die Farbe: Es ändert nicht, welche Körner in das Mittel eingehen; das hängt von den Auswahloptionen ab. Die Gruppen werden im Projekt gespeichert.",
+   "referencias": [
+    "Spencer et al. (2016)",
+    "Vermeesch (2012)",
+    "Wong (2011)"
+   ],
+   "como_usar": [
+    "Wählen Sie im linken Bedienfeld unter 'Farben in den Diagrammen' den Modus bei 'Einfärben nach'.",
+    "Für eigene Gruppen wählen Sie im Reiter 'Daten und Alter je Korn' die Zeilen aus (Klick auf die Zeilennummer; Strg oder Umschalt für mehrere).",
+    "Verwenden Sie 'Gruppen > Ausgewählte Zeilen in Gruppe einordnen...' und geben Sie die Gruppennummer an.",
+    "Um zu den Klassen zurückzukehren, verwenden Sie 'Gruppen > Zurück zu automatischen Farben'."
+   ]
+  },
+  {
+   "id": "incertezas",
+   "titulo": "Unsicherheitsniveaus",
+   "serve": "Diese Funktion dient dazu, zu erfahren, was die angegebenen Unsicherheiten enthalten; schlagen Sie hier nach, bevor Sie Ihre Alter mit anderen vergleichen oder publizieren.",
+   "explicacao": "Intern werden alle Fehler in absolute 1σ umgerechnet. In den Probenergebnissen zeigt Zircon 1σ und 2σ, der Methodentext und die Diagramme verwenden 2σ; die exportierten Einzelkorntabellen sind, wie dort angegeben, in absoluten 1σ. Die Unsicherheiten enthalten nur den analytischen Anteil aus der Labortabelle: Das ist das Niveau x ± y nach Horstwood et al. (2016). Nicht enthalten sind die Unsicherheit der Zerfallskonstanten und die der systematischen Kalibrierung (Referenzmaterial, Langzeitreproduzierbarkeit), die das Labor angeben muss. Um Alter aus verschiedenen Laboren oder mit verschiedenen Methoden zu vergleichen, müssen diese systematischen Unsicherheiten hinzugerechnet werden. Geben Sie zu jedem Alter immer das Konfidenzniveau (1σ oder 2σ) an.",
+   "referencias": [
+    "Horstwood et al. (2016)",
+    "Ludwig (2000)",
+    "Schoene (2014)"
+   ],
+   "como_usar": [
+    "Sehen Sie sich im Reiter 'Ergebnisse' die Spalten ± 1σ (Ma) und ± 2σ (Ma) an.",
+    "Bestätigen Sie im Fenster 'Import prüfen', dass die Fehler auf dem richtigen Niveau gelesen wurden (1σ oder 2σ, absolut oder %).",
+    "Fragen Sie das Labor nach der systematischen Unsicherheit, um sie zusammen mit dem publizierten Alter anzugeben."
+   ]
+  },
+  {
+   "id": "exportar",
+   "titulo": "Für Publikation exportieren",
+   "serve": "Diese Funktion dient dazu, die Dateien für einen Artikel oder Bericht in einem Schritt zu erzeugen; verwenden Sie sie, wenn die Ergebnisse geprüft und bereit für die Verwendung außerhalb von Zircon sind.",
+   "explicacao": "Der Export für die Publikation erstellt einen Ordner mit: Abbildungen der Konkordia (oder Isochrone), des gewichteten Mittels und der Altersverteilung in der Breite von 1 Spalte (90 mm), 1,5 Spalten (140 mm) oder 2 Spalten (190 mm), als PNG und TIFF mit 600 dpi, PDF, SVG und auf Wunsch EPS, gemäß den Abbildungsrichtlinien von Elsevier; einer formatierten Excel-Tabelle mit Ergebnissen, farbig markierten Einzelkornaltern, verwendeten Optionen, Literatur und Protokoll; interaktiven HTML-Diagrammen, die offline funktionieren und als ergänzendes Material dienen; Daten als CSV mit LEIAME für Datenrepositorien (Mendeley Data, Zenodo, PANGAEA); und dem Methodentext. Prüfen Sie jede Abbildung, bevor Sie sie an die Zeitschrift senden, da die Anforderungen unterschiedlich sind.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Klicken Sie vor dem Export auf 'Berechnen'.",
+    "Wählen Sie 'Datei > Für Publikation exportieren (Abbildungen, Excel, interaktiv, Methodik)...' (Strg+E).",
+    "Wählen Sie die 'Breite der Abbildungen' und markieren Sie die Formate.",
+    "Klicken Sie auf 'Ordner wählen und exportieren' und wählen Sie den Ordner; die Dateien landen in einem Unterordner mit dem Namen des Projekts.",
+    "Für eine einzelne Datei verwenden Sie die anderen Einträge im Menü 'Datei' (Excel-Tabelle, aktuelles Diagramm, interaktives HTML oder Methodik)."
+   ]
+  },
+  {
+   "id": "metodologia",
+   "titulo": "Methodentext",
+   "serve": "Diese Funktion dient dazu, einen Entwurf des Methodenteils mit den verwendeten Optionen und Zitaten zu erhalten; verwenden Sie sie beim Schreiben eines Artikels, einer Masterarbeit, einer Dissertation oder eines Berichts.",
+   "explicacao": "Der Reiter 'Methodik (Text für den Artikel)' erstellt einen Text, der beschreibt, was berechnet wurde: Datentyp, Konstanten, Korrektur des gewöhnlichen Pb, Kriterien für das bevorzugte Alter und die Diskordanz, gewichtetes Mittel, zufällige Effekte, Ausreißer, Konkordiaalter, Diskordia, Populationen und Unsicherheitsniveau, gefolgt von den Ergebnissen und der Literatur im ABNT-Format. Der Text ändert sich je nach Daten und Optionen. Es ist ein Entwurf: Überarbeiten Sie ihn, ergänzen Sie die Angaben des Labors (Gerät, Referenzmaterialien, Datenreduktion) und passen Sie ihn an die Zeitschrift an. Zitieren Sie das Programm mit der verwendeten Version, wie sie im Text erscheint: Zircon vX.Y.Z (https://github.com/cibelegeologia/zircon), und zitieren Sie auch die Methoden, nicht nur das Programm.",
+   "referencias": [
+    "Horstwood et al. (2016)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Klicken Sie auf 'Berechnen' und öffnen Sie den Reiter 'Methodik (Text für den Artikel)'.",
+    "Kopieren Sie den Text oder verwenden Sie 'Datei > Methodik exportieren (Markdown oder Text)...'.",
+    "Überarbeiten Sie den Text und ergänzen Sie die analytischen Angaben des Labors.",
+    "Wenn Sie eine Option ändern, berechnen Sie erneut: Der Text wird neu erstellt."
+   ]
+  },
+  {
+   "id": "projeto",
+   "titulo": "Projektdatei (.zircon)",
+   "serve": "Diese Funktion dient dazu, eine Arbeitssitzung zu speichern und sie später genau so wieder zu öffnen; verwenden Sie sie für jede Probe oder Tabelle, die Sie auswerten.",
+   "explicacao": "Die .zircon-Datei fasst in einem einzigen komprimierten Archiv die importierten Daten, das Importprotokoll, die gewählten Optionen, die von Ihnen zugewiesenen Gruppen und eine Kopie der Originaltabelle zusammen. Daher lässt sich das Projekt auch auf einem anderen Computer ohne die Originaltabelle und ohne Internet öffnen. Jedes Projekt entspricht einer Tabelle. Bei ungespeicherten Änderungen zeigt der Fenstertitel ein Sternchen (*), und das Programm fragt vor dem Schließen oder dem Öffnen eines anderen Projekts, ob gespeichert werden soll. Das Menü der zuletzt verwendeten Projekte listet die letzten acht geöffneten oder gespeicherten Projekte. Bewahren Sie die .zircon-Datei zusammen mit den Forschungsdaten auf: Sie dokumentiert, wie die Alter gewonnen wurden.",
+   "referencias": [],
+   "como_usar": [
+    "Verwenden Sie 'Datei > Speichern' (Strg+S) oder 'Datei > Speichern unter...', um das Projekt zu sichern.",
+    "Zum erneuten Öffnen verwenden Sie 'Datei > Projekt öffnen...' oder 'Datei > Zuletzt verwendete Projekte'.",
+    "Im Startbildschirm verwenden Sie 'Gespeichertes Projekt öffnen...'."
+   ]
+  },
+  {
+   "id": "registro_privacidade",
+   "titulo": "Freiwillige Registrierung und Datenschutz",
+   "serve": "Diese Funktion dient dazu, der Autorin, wenn Sie möchten, mitzuteilen, wo und wofür Zircon verwendet wird; verwenden Sie sie, wenn Sie Hinweise auf neue Versionen erhalten oder das Projekt unterstützen möchten.",
+   "explicacao": "Zircon verbindet sich nie von selbst mit dem Internet und sammelt keine Daten. Die Registrierung ist freiwillig, und alle Felder sind optional: Name, Institution, Land, E-Mail und Verwendungszweck. Die Angaben werden nur auf diesem Computer gespeichert, bis Sie auf eine Senden-Schaltfläche klicken, und Sie sehen den Text vor dem Senden. Das Senden erfolgt über Ihren Browser oder Ihr E-Mail-Programm, nicht über Zircon. Es gibt außerdem einen anonymen, zufällig erzeugten Code der Installation, der Sie nicht identifiziert. Ihre Analysedaten und Projekte werden nie gesendet. Zu wissen, wo das Programm verwendet wird, hilft, seine Pflege zu begründen.",
+   "referencias": [],
+   "como_usar": [
+    "Öffnen Sie 'Hilfe > Zircon registrieren...' oder die Registrierungsschaltfläche im Startbildschirm.",
+    "Füllen Sie die gewünschten Felder aus.",
+    "Wählen Sie 'Über den Browser senden', 'Per E-Mail senden', 'Text kopieren' oder 'Speichern ohne Senden'."
+   ]
+  },
+  {
+   "id": "acessibilidade",
+   "titulo": "Barrierefreiheit: Schrift, Kontrast und Farben",
+   "serve": "Diese Funktion dient dazu, das Fenster und die Diagramme an Menschen mit Sehschwäche oder Farbenblindheit anzupassen und Abbildungen vorzubereiten, die auch im Schwarz-Weiß-Druck lesbar sind; verwenden Sie sie immer, wenn Farben oder Text das Lesen erschweren.",
+   "explicacao": "Die Schriftgröße reicht von normal bis zum Doppelten. Zu den Designs gehören hell, dunkel und zwei mit hohem Kontrast, mit dicken Rahmen und gut sichtbarem Fokus. Etwa 1 von 12 Männern hat eine Form von Farbenblindheit, und die Standardfarben verwenden Grün und Rot, die sich dabei verwechseln lassen. Die barrierefreien Paletten vermeiden das: Okabe-Ito und Tol wurden für Farbenblindheit entworfen; cividis reicht von Blau bis Gelb und wird von allen Arten des Sehens gleich wahrgenommen; Graustufen eignen sich für den Druck. Die Muster (Streifen und Punkte) unterscheiden die Gruppen unabhängig von der Farbe. Die exportierten Abbildungen folgen der gewählten Palette und den gewählten Mustern, immer mit weißem Hintergrund.",
+   "referencias": [
+    "Okabe e Ito (2008)",
+    "Wong (2011)",
+    "Tol (2021)",
+    "Nuñez et al. (2018)"
+   ],
+   "como_usar": [
+    "Wählen Sie im Menü 'Barrierefreiheit' die 'Schriftgröße' oder verwenden Sie 'Schrift vergrößern' und 'Schrift verkleinern' (Strg + und Strg -).",
+    "Wählen Sie unter 'Barrierefreiheit > Design und Kontrast' das Design.",
+    "Aktivieren Sie im linken Bedienfeld unter 'Farben in den Diagrammen' die Option 'Barrierefreie Farben (Farbenblindheit)' und wählen Sie die 'Barrierefreie Palette'.",
+    "Aktivieren Sie 'Muster zusätzlich zu Farben (Streifen und Punkte je Gruppe)', um Gruppen ohne Farbe zu unterscheiden."
+   ]
+  },
+  {
+   "id": "idiomas",
+   "titulo": "Sprachen",
+   "serve": "Diese Funktion dient dazu, das Programm in der Sprache Ihrer Wahl zu verwenden und die Exporte darin zu erzeugen; verwenden Sie sie, wenn Sie die Sprache wechseln oder Material für eine Zeitschrift in einer anderen Sprache vorbereiten.",
+   "explicacao": "Zircon ist verfügbar in brasilianischem Portugiesisch, europäischem Portugiesisch, Spanisch, Englisch, Französisch, Deutsch, vereinfachtem Chinesisch, Hindi und Arabisch. Beim ersten Start verwendet es die Systemsprache. Das Fenster, die Excel-Tabelle, die Diagramme, das interaktive HTML und die LEIAME-Datei werden in der gewählten Sprache erstellt, mit dem Dezimaltrennzeichen dieser Sprache auf dem Bildschirm. Der Methodentext wird in der gewählten Sprache und zusätzlich auf Englisch erstellt, der Sprache der meisten Zeitschriften. Auf Hindi und Arabisch verwenden die Abbildungen als Bilddateien englische Beschriftungen, weil die Diagrammbibliothek diese Schriften nicht korrekt setzt. Auf Arabisch wird das Fenster von rechts nach links dargestellt. Ein Sprachwechsel behält das Projekt und die Optionen bei.",
+   "referencias": [],
+   "como_usar": [
+    "Verwenden Sie das Menü 'Sprache (Language)' und wählen Sie die Sprache.",
+    "Oder wählen Sie im Bildschirm 'Willkommen bei Zircon' in der Sprachliste oben.",
+    "Die englische Fassung der Methodik finden Sie im Reiter 'Methodik (Text für den Artikel)'."
+   ]
+  }
+ ]
+}

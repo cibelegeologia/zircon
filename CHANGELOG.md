@@ -2,6 +2,16 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.6.0 (17/10/2026)
+
+Ajuda e leitores de tela.
+
+- Guia do Zircon (menu Ajuda ou F1), com 23 tópicos e busca. Cada tópico diz para que serve o recurso e em que casos usar, indica o artigo original em ABNT e explica como usar no programa. Cada opção do painel tem um botão "?" que abre o tópico dela.
+- Botão "?  O que é isto?" na barra de ferramentas: com ele ligado, o mouse vira uma interrogação e mostra uma legenda curta sobre botões, menus, abas e opções. Clicando, a legenda fica parada até o próximo clique. Esc desliga.
+- Passando o mouse sobre um grão nos gráficos aparece um resumo: amostra, análise, idades ± 2σ, discordância, classe e grupo.
+- Leitores de tela (NVDA, JAWS e Narrador no Windows, VoiceOver no Mac, Orca no Linux): cada campo, botão, tabela e gráfico tem nome e descrição. Cada gráfico tem um resumo em texto do resultado.
+- Barra de ferramentas com ícones para Novo, Abrir, Salvar, Calcular, Exportar e Guia; as dicas da barra dos gráficos foram traduzidas.
+
 ## 0.5.0 (17/10/2026)
 
 Acessibilidade. Tudo é opcional e fica guardado no computador de cada usuário.

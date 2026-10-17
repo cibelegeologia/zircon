@@ -1,0 +1,379 @@
+{
+ "topicos": [
+  {
+   "id": "inicio",
+   "titulo": "Primeros pasos",
+   "serve": "Este recurso sirve para dar una visión general de Zircon y del flujo de trabajo; léalo antes del primer uso o cuando no sepa por dónde empezar.",
+   "explicacao": "Zircon calcula edades U-Pb, Th-Pb y Pb-Pb de circón a partir de las razones isotópicas o de las edades por grano que entrega el laboratorio. No procesa las señales brutas del espectrómetro: esa reducción de datos se hace antes, en el laboratorio. El trabajo sigue cinco etapas: importar la hoja de cálculo, comprobar que las columnas se reconocieron, calcular, interpretar los resultados y avisos, y exportar figuras, tablas y el texto de metodología. Cada opción del panel muestra debajo la referencia del método (línea 'Ref.:'), y la lista completa se exporta en formato ABNT. Los cálculos reproducen los de IsoplotR y funcionan sin internet. El programa calcula, pero la interpretación geológica es suya: revise siempre los avisos.",
+   "referencias": [
+    "Vermeesch (2018a)",
+    "Schoene (2014)",
+    "Schaltegger et al. (2015)"
+   ],
+   "como_usar": [
+    "En la pantalla 'Bienvenido a Zircon', haga clic en 'Abrir un ejemplo para conocer el programa' para probarlo con datos listos.",
+    "Para sus datos, use 'Archivo > Nuevo proyecto (importar hoja de cálculo)...' y revise la ventana 'Revisar importación'.",
+    "Ajuste las opciones en el panel de la izquierda ('Qué calcular', 'Cómo seleccionar los granos', 'Colores en los gráficos') y haga clic en 'Calcular'.",
+    "Vea las pestañas 'Concordia o isócrona', 'Media ponderada', 'Distribución de edades' y 'Resultados' (con 'Avisos e interpretación').",
+    "Exporte con 'Archivo > Exportar para publicación (figuras, Excel, interactivo, metodología)...' y guarde el proyecto con 'Archivo > Guardar'."
+   ]
+  },
+  {
+   "id": "importar",
+   "titulo": "Importar la hoja de cálculo del laboratorio",
+   "serve": "Este recurso sirve para traer a Zircon la hoja de cálculo de resultados entregada por el laboratorio; úselo siempre que empiece un proyecto nuevo con datos de una muestra.",
+   "explicacao": "Zircon lee archivos .xlsx, .xls, .ods, .csv, .txt y .tsv. En las hojas de cálculo, solo se lee la primera pestaña. En los archivos de texto, detecta la codificación y el separador de columnas (tabulación, punto y coma o coma). El separador decimal (coma o punto) también se detecta. Las filas de título en la parte superior se ignoran, y los encabezados en dos filas se unen. Las columnas se reconocen por el nombre (por ejemplo 207Pb/235U, 206Pb/238U, rho), y la columna de error debe ir justo después del valor. Si el encabezado del error indica 2s o 2σ, el valor se divide entre 2; si indica %, se convierte en error absoluto. Atención: un error en 2σ sin esa indicación en el encabezado se leerá como 1σ. Celdas como '<LOD', 'bdl' o 'n.d.' se convierten en datos ausentes.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Elija 'Archivo > Nuevo proyecto (importar hoja de cálculo)...' y seleccione el archivo.",
+    "En la ventana 'Revisar importación', lea el registro: separadores, fila de inicio de los datos y la columna asignada a cada razón y error (1σ o 2σ, absoluto o %).",
+    "Compruebe en la tabla de vista previa que los números son coherentes; si algo está mal, haga clic en 'Cancelar', corrija el encabezado de la hoja de cálculo e importe de nuevo.",
+    "Si todo está bien, haga clic en 'Usar estos datos'.",
+    "Después, la pestaña 'Registro de la importación' conserva esas decisiones para consulta."
+   ]
+  },
+  {
+   "id": "tipos_de_dados",
+   "titulo": "Tipos de datos reconocidos y correlación de errores (rho)",
+   "serve": "Este recurso sirve para saber qué columnas necesita la hoja de cálculo para cada tipo de cálculo; consúltelo al preparar la hoja de cálculo o cuando Zircon no reconozca sus datos.",
+   "explicacao": "Zircon reconoce: razones de Wetherill (207Pb/235U y 206Pb/238U); razones de Tera-Wasserburg (238U/206Pb y 207Pb/206Pb); razones de Wetherill con 204Pb/238U, que permiten corregir el Pb común; razones Pb-Pb (206Pb/204Pb y 207Pb/204Pb) para isócrona; razones Th-Pb (232Th/204Pb y 208Pb/204Pb) para isócrona; y solo edades por grano, cuando no hay razones. El rho es el coeficiente de correlación entre los errores de las dos razones de cada grano, entre −1 y 1. Define la inclinación de la elipse de error y entra en todos los cálculos de concordia y regresión. Si no hay columna de rho, Zircon usa rho = 0 y avisa; esto puede hacer que las elipses y los errores sean incorrectos. Las isócronas U-Th aún no se calculan.",
+   "referencias": [
+    "Wetherill (1956)",
+    "Tera e Wasserburg (1972)",
+    "Ludwig (1980)",
+    "Schoene (2014)"
+   ],
+   "como_usar": [
+    "Importe la hoja de cálculo y, en la ventana 'Revisar importación', mire la última línea del registro ('Tipo de dato').",
+    "Si aparece 'Atención: sin columna de correlación (rho); se usó rho = 0', busque el rho en la hoja de cálculo original del laboratorio.",
+    "En la pestaña 'Datos y edades por grano', revise las razones, los errores y el rho de cada análisis."
+   ]
+  },
+  {
+   "id": "constantes",
+   "titulo": "Constantes de desintegración y razón 238U/235U",
+   "serve": "Este recurso sirve para saber qué constantes físicas usa Zircon; consúltelo al redactar la metodología o al comparar sus resultados con los de otro programa.",
+   "explicacao": "Toda edad depende de las constantes de desintegración. Zircon usa λ238 = 1,55125 × 10−10 por año y λ235 = 9,8485 × 10−10 por año (Jaffey et al., 1971), la razón natural 238U/235U = 137,818 (Hiess et al., 2012) y λ232 = 4,9475 × 10−11 por año para el torio (Le Roux y Glendenin, 1963; recomendada por Steiger y Jäger, 1977). Son los mismos valores de IsoplotR. La razón 238U/235U entra en el cálculo de la edad 207Pb/206Pb; el valor antiguo de 137,88 da edades ligeramente diferentes. Al comparar con datos publicados, compruebe qué constantes se usaron. Las incertidumbres de las constantes no están incluidas en los errores presentados.",
+   "referencias": [
+    "Jaffey et al. (1971)",
+    "Hiess et al. (2012)",
+    "Le Roux e Glendenin (1963)",
+    "Steiger e Jäger (1977)",
+    "Ludwig (2000)"
+   ],
+   "como_usar": [
+    "No hay nada que ajustar: las constantes son fijas e iguales a las de IsoplotR.",
+    "Vea las constantes citadas en la pestaña 'Metodología (texto para el artículo)' y en el archivo LEIAME.txt (LÉAME) de la exportación para repositorio.",
+    "Al comparar con otro trabajo, compruebe si usó el mismo valor de 238U/235U."
+   ]
+  },
+  {
+   "id": "melhor_idade",
+   "titulo": "Mejor edad por grano y corte de 207Pb/206Pb",
+   "serve": "Este recurso sirve para elegir qué edad representa cada grano; ajuste el corte cuando sus edades estén cerca de 1000 Ma o cuando siga el criterio de otro trabajo.",
+   "explicacao": "Cada análisis U-Pb da tres edades: 206Pb/238U, 207Pb/235U y 207Pb/206Pb. En granos jóvenes se ha formado poco 207Pb y la edad 207Pb/206Pb es imprecisa; por eso la 206Pb/238U es la más precisa. En granos antiguos, la edad 207Pb/206Pb es más precisa y menos sensible a la pérdida reciente de Pb, que altera las dos razones U-Pb pero apenas la razón entre los isótopos de Pb. Zircon usa como mejor edad la 206Pb/238U cuando es menor que el corte y la 207Pb/206Pb cuando es igual o mayor. El valor predeterminado es 1000 Ma, habitual en la literatura, pero no hay un corte universal. Un grano cerca del corte puede cambiar de edad de forma brusca; indique el corte usado.",
+   "referencias": [
+    "Gehrels (2014)",
+    "Spencer et al. (2016)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Qué calcular', ajuste 'Usar 207Pb/206Pb por encima de' (predeterminado 1000 Ma).",
+    "Haga clic en 'Calcular'.",
+    "En la pestaña 'Datos y edades por grano', compare la columna de la mejor edad con las edades 206Pb/238U y 207Pb/206Pb."
+   ]
+  },
+  {
+   "id": "discordancia",
+   "titulo": "Discordancia y selección de los granos",
+   "serve": "Este recurso sirve para identificar y separar granos cuyas edades U-Pb no concuerdan entre sí; úselo siempre que calcule una edad de muestra a partir de granos individuales.",
+   "explicacao": "Un grano es concordante cuando las edades 206Pb/238U y 207Pb/206Pb coinciden, es decir, cuando cae sobre la curva concordia. La pérdida de Pb, el Pb común o la mezcla de dominios de distintas edades hacen que el grano sea discordante. Zircon calcula la discordancia como 100 × (1 − t206/238 / t207/206), en %. Los valores positivos indican en general pérdida de Pb; los negativos, discordancia inversa. Los granos con discordancia, en valor absoluto, mayor que la 'Discordancia máxima' (predeterminado 10 %) quedan fuera de la media ponderada y de la edad de concordia, a menos que marque 'Incluir discordantes en la media'. En granos jóvenes la discordancia relativa es poco fiable, porque la edad 207Pb/206Pb tiene un error grande. La regresión de la discordia usa todos los granos.",
+   "referencias": [
+    "Spencer et al. (2016)",
+    "Gehrels (2014)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Cómo seleccionar los granos', ajuste 'Discordancia máxima' (predeterminado 10 %).",
+    "Marque 'Incluir discordantes en la media' solo si tiene un motivo geológico para usar esos granos.",
+    "Haga clic en 'Calcular' y vea en la pestaña 'Datos y edades por grano' las columnas de discordancia y clase.",
+    "Si ningún grano pasa el límite, el aviso aparece en 'Resultados'; considere la discordia."
+   ]
+  },
+  {
+   "id": "media_ponderada",
+   "titulo": "Media ponderada, MSWD y valor p",
+   "serve": "Este recurso sirve para calcular la edad de una población de granos de la misma edad, como los de una roca ígnea; úselo cuando los granos seleccionados representan un único evento.",
+   "explicacao": "La media ponderada da más peso a los granos más precisos (peso = 1/σ²). El MSWD (media de los cuadrados de las desviaciones ponderadas) compara la dispersión de las edades con los errores analíticos. Los valores cercanos a 1 indican que la dispersión se explica por los errores. Los valores muy por encima de 1 indican dispersión adicional (herencia, pérdida de Pb, más de una población o errores subestimados); los valores muy por debajo de 1 sugieren errores sobreestimados. El intervalo aceptable depende del número de granos: con pocos granos, un MSWD de 2 todavía puede ser aceptable. Por eso Zircon muestra también el valor p de la prueba de chi cuadrado; p < 0,05 indica dispersión más allá de los errores. La opción 'Media ponderada de' elige si la media usa la mejor edad, la 206Pb/238U o la 207Pb/206Pb.",
+   "referencias": [
+    "Wendt e Carl (1991)",
+    "Vermeesch (2018a)",
+    "Spencer et al. (2016)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Qué calcular', elija en 'Media ponderada de' la edad usada ('Mejor edad por grano', 206Pb/238U o 207Pb/206Pb).",
+    "Haga clic en 'Calcular'.",
+    "En la pestaña 'Media ponderada', vea cada grano con su barra de 2σ y la franja de la media.",
+    "En la pestaña 'Resultados', lea la edad, el MSWD, el p y el n, y los 'Avisos e interpretación'."
+   ]
+  },
+  {
+   "id": "efeitos_aleatorios",
+   "titulo": "Dispersión geológica (modelo de efectos aleatorios)",
+   "serve": "Este recurso sirve para obtener una edad media realista cuando los granos se dispersan más de lo que explican los errores analíticos (MSWD alto); úselo especialmente en rocas con cristalización prolongada.",
+   "explicacao": "En la media ponderada común, se supone que todos los granos tienen la misma edad y que la dispersión proviene solo de los errores analíticos. Cuando esto no es cierto, el error de la media resulta demasiado pequeño. El modelo de efectos aleatorios supone que las edades verdaderas varían en torno a una media con una dispersión geológica (σ) que se estima por máxima verosimilitud. El resultado da la media, su error y esa dispersión, que aparece en 'Avisos e interpretación' en Ma. Si la dispersión estimada es cero, el resultado coincide con la media común. Una dispersión grande requiere interpretación: puede indicar más de una población y, en ese caso, la media de todos los granos puede no tener significado geológico.",
+   "referencias": [
+    "Galbraith (2005)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Cómo seleccionar los granos', marque 'Considerar dispersión geológica (efectos aleatorios)' (viene marcada).",
+    "Haga clic en 'Calcular'.",
+    "En 'Resultados', vea la línea 'Dispersión geológica más allá del error analítico' en los avisos.",
+    "Para comparar, desmarque la opción y calcule de nuevo."
+   ]
+  },
+  {
+   "id": "outliers",
+   "titulo": "Rechazo de outliers (criterio de Chauvenet generalizado)",
+   "serve": "Este recurso sirve para retirar de la media, de forma objetiva, los granos que se apartan mucho de los demás; úselo con cuidado y compruebe siempre qué granos se rechazaron.",
+   "explicacao": "El criterio de Chauvenet calcula, para el grano más alejado de la media, la probabilidad de que una desviación tan grande ocurra por azar. Si esa probabilidad, multiplicada por el número de granos, es menor que 0,5, el grano se rechaza y el cálculo se repite, hasta que no se rechace ninguno o queden dos granos. La versión generalizada tiene en cuenta la dispersión geológica cuando el modelo de efectos aleatorios está activado. Los granos rechazados aparecen como 'rechazado' en la tabla y en los gráficos. Cuidado: un outlier puede ser información geológica (herencia, pérdida de Pb, grano más joven). Rechazar granos solo para bajar el MSWD es un error común; indique cuántos granos se rechazaron.",
+   "referencias": [
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Cómo seleccionar los granos', marque o desmarque 'Rechazar outliers automáticamente' (viene marcada).",
+    "Haga clic en 'Calcular'.",
+    "En la pestaña 'Datos y edades por grano', vea la clase 'rechazado' y la columna que indica si el grano se usó en la media.",
+    "Compare el resultado con y sin la opción antes de decidir."
+   ]
+  },
+  {
+   "id": "concordia",
+   "titulo": "Edad de concordia",
+   "serve": "Este recurso sirve para calcular una única edad a partir de las dos razones U-Pb de un grupo de granos concordantes; úselo cuando los granos caen juntos sobre la curva concordia.",
+   "explicacao": "La edad de concordia (Ludwig, 1998) usa a la vez las razones 207Pb/235U y 206Pb/238U de cada grano, con sus errores y correlación. Primero calcula la composición media de los granos y después busca la edad cuyo punto en la curva concordia está más cerca de esa media. Al usar las dos razones, suele ser más precisa que la media de una sola edad. El MSWD combina dos pruebas: si los granos son equivalentes entre sí y si la media es concordante. Zircon solo usa los granos dentro del límite de discordancia y no rechazados. Si p < 0,05, los granos no son concordantes y equivalentes, y el programa avisa; en ese caso prefiera la discordia o la media ponderada.",
+   "referencias": [
+    "Ludwig (1998)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Importe datos con razones U-Pb (Wetherill o Tera-Wasserburg).",
+    "Ajuste 'Discordancia máxima' y las demás opciones en 'Cómo seleccionar los granos' y haga clic en 'Calcular'.",
+    "En la pestaña 'Resultados', lea la línea 'Edad de concordia' con MSWD y p.",
+    "En la pestaña 'Concordia o isócrona', compruebe que las elipses usadas están sobre la curva."
+   ]
+  },
+  {
+   "id": "discordia",
+   "titulo": "Discordia e interceptos superior e inferior",
+   "serve": "Este recurso sirve para obtener edades a partir de granos alineados fuera de la curva concordia; úselo cuando varios granos discordantes forman una recta, como en la pérdida de Pb o la mezcla de dos edades.",
+   "explicacao": "Cuando granos de la misma edad pierden cantidades distintas de Pb en un evento posterior, se alinean en una recta, la discordia, en el diagrama de Wetherill. El intercepto superior con la concordia indica en general la edad de cristalización; el inferior, la edad del evento que causó la pérdida de Pb. Zircon ajusta la recta por regresión de York, que tiene en cuenta los errores de las dos razones y su correlación, y propaga los errores a los interceptos. Usa todos los granos, sin el filtro de discordancia. Un intercepto inferior cercano a cero puede indicar pérdida de Pb reciente, sin significado de evento. Un MSWD alto indica que los puntos no forman una única recta. Se necesitan al menos 3 granos.",
+   "referencias": [
+    "York (1968)",
+    "York et al. (2004)",
+    "Wetherill (1956)",
+    "Ludwig (1998)",
+    "Ludwig (2000)"
+   ],
+   "como_usar": [
+    "Importe datos con razones U-Pb y haga clic en 'Calcular'.",
+    "En el panel de la izquierda, en 'Qué calcular', deje 'Diagrama de concordia' en 'Wetherill' para ver la recta de la discordia discontinua.",
+    "En la pestaña 'Resultados', lea 'Discordia: intercepto superior' y 'Discordia: intercepto inferior', con MSWD y p.",
+    "Use 'Grupos > Poner las filas seleccionadas en el grupo...' para marcar los granos que considera parte de la discordia y evaluar la interpretación."
+   ]
+  },
+  {
+   "id": "diagramas",
+   "titulo": "Diagramas de concordia de Wetherill y Tera-Wasserburg",
+   "serve": "Este recurso sirve para visualizar los granos en relación con la curva concordia; use Wetherill para datos antiguos y discordias, y Tera-Wasserburg para granos jóvenes o con Pb común.",
+   "explicacao": "En el diagrama de Wetherill, el eje x es 207Pb/235U y el eje y es 206Pb/238U. En el de Tera-Wasserburg, x es 238U/206Pb e y es 207Pb/206Pb. La curva concordia reúne los puntos en los que las edades U-Pb coinciden; las marcas sobre ella indican edades en Ma. Cada grano aparece como una elipse de error 2σ, cuya inclinación depende del rho. En el Tera-Wasserburg, los granos jóvenes quedan más separados y el Pb común desplaza los puntos hacia arriba, hacia el valor de 207Pb/206Pb del Pb común, lo que facilita reconocerlo. Los dos diagramas muestran los mismos datos; la elección es de lectura. La recta de la discordia solo se dibuja en el Wetherill.",
+   "referencias": [
+    "Wetherill (1956)",
+    "Tera e Wasserburg (1972)",
+    "Ludwig (1998)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Qué calcular', elija en 'Diagrama de concordia' 'Wetherill' o 'Tera-Wasserburg'.",
+    "Abra la pestaña 'Concordia o isócrona'.",
+    "Cambie los colores de las elipses en 'Colores en los gráficos' > 'Colorear por'.",
+    "Para guardar solo este gráfico, use 'Archivo > Exportar gráfico actual...'."
+   ]
+  },
+  {
+   "id": "pb_comum",
+   "titulo": "Corrección de Pb común mediante 204Pb",
+   "serve": "Este recurso sirve para descontar el Pb no radiogénico incorporado al grano; úselo cuando la hoja de cálculo tenga 204Pb/238U medido y el laboratorio no haya hecho la corrección.",
+   "explicacao": "El Pb común es el Pb que ya estaba en el grano o se incorporó sin provenir de la desintegración del U. Hace que las edades sean más antiguas, sobre todo la 207Pb/206Pb. Como el 204Pb no es radiogénico, mide cuánto Pb común hay; al restar el 204Pb multiplicado por la composición del Pb común, queda el Pb radiogénico. El modelo de Stacey y Kramers estima esa composición a la edad de cada grano, con un cálculo iterativo. La composición fija usa el Pb primordial de Canyon Diablo. No corrija si el laboratorio ya lo hizo, o si el 204Pb está cerca del límite de detección o tiene interferencia de 204Hg, habitual en LA-ICP-MS: la corrección empeora el resultado. Sin 204Pb existen otros métodos, no incluidos.",
+   "referencias": [
+    "Stacey e Kramers (1975)",
+    "Tatsumoto et al. (1973)",
+    "Williams (1998)",
+    "Andersen (2002)"
+   ],
+   "como_usar": [
+    "Importe una hoja de cálculo con las columnas 207Pb/235U, 206Pb/238U y 204Pb/238U.",
+    "En el panel de la izquierda, en 'Qué calcular', elija en 'Pb común (si hay 204Pb)': 'Stacey y Kramers (1975)', 'Composición fija (Canyon Diablo)' o 'No corregir'.",
+    "Haga clic en 'Calcular' y compruebe en 'Avisos e interpretación' el modelo usado.",
+    "Compare las edades con y sin corrección antes de decidir."
+   ]
+  },
+  {
+   "id": "isocronas",
+   "titulo": "Isócronas Pb-Pb y Th-Pb",
+   "serve": "Este recurso sirve para obtener una edad por regresión cuando los datos son razones Pb-Pb o Th-Pb con 204Pb; úselo cuando los puntos tienen cantidades variables de Pb común y comparten la misma composición inicial.",
+   "explicacao": "Una isócrona es una recta formada por análisis de la misma edad y la misma composición inicial de Pb. En la isócrona Th-Pb (232Th/204Pb frente a 208Pb/204Pb), la pendiente da la edad y el intercepto da la razón 208Pb/204Pb inicial. En la isócrona Pb-Pb, Zircon usa la forma inversa (204Pb/206Pb frente a 207Pb/206Pb), como IsoplotR: el intercepto en 204Pb/206Pb = 0 es la razón 207Pb/206Pb radiogénica, que da la edad. La recta se ajusta por regresión de York. Si p < 0,05, el programa avisa: los puntos se dispersan más de lo que explican los errores, y la edad puede no tener significado. Los puntos con poca variación en las razones dan isócronas imprecisas.",
+   "referencias": [
+    "York et al. (2004)",
+    "Vermeesch (2018a)",
+    "Le Roux e Glendenin (1963)",
+    "Jaffey et al. (1971)"
+   ],
+   "como_usar": [
+    "Importe una hoja de cálculo con 206Pb/204Pb y 207Pb/204Pb (Pb-Pb) o 232Th/204Pb y 208Pb/204Pb (Th-Pb), con errores y rho.",
+    "Haga clic en 'Calcular'.",
+    "Abra la pestaña 'Concordia o isócrona' para ver las elipses 2σ y la recta.",
+    "Lea la edad, el MSWD y los avisos en la pestaña 'Resultados'."
+   ]
+  },
+  {
+   "id": "populacoes",
+   "titulo": "Poblaciones de edad y distribución de edades",
+   "serve": "Este recurso sirve para separar granos de distintas edades en poblaciones; úselo sobre todo en circón detrítico, o en rocas con herencia, para ver cuántas fuentes o eventos existen.",
+   "explicacao": "La pestaña 'Distribución de edades' muestra el histograma de las mejores edades y la curva de densidad por kernel (KDE), una suma de curvas suaves centradas en cada edad. Con la opción de poblaciones, Zircon corta la curva en sus mínimos: cada pico se convierte en una población. Las poblaciones con menos granos que el 'Mínimo de granos por población' se unen a la vecina. La división depende del ancho de la curva y del número de granos: los picos pequeños pueden ser ruido. En estudios de procedencia se necesitan muchos granos (en general más de 100) para no perder las poblaciones menores. Estos grupos sirven para colorear y explorar los datos; confírmelos con la geología.",
+   "referencias": [
+    "Vermeesch (2012)",
+    "Vermeesch (2004)",
+    "Andersen (2005)",
+    "Gehrels (2014)",
+    "Fedo et al. (2003)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Colores en los gráficos', elija en 'Colorear por' 'Poblaciones de edad (automático)'.",
+    "Ajuste 'Mínimo de granos por población' (predeterminado 3).",
+    "Haga clic en 'Calcular' y abra la pestaña 'Distribución de edades'.",
+    "Vea el número de cada grano en la columna de grupo de la pestaña 'Datos y edades por grano'."
+   ]
+  },
+  {
+   "id": "cores_grupos",
+   "titulo": "Colores por clase, población o grupos elegidos",
+   "serve": "Este recurso sirve para destacar conjuntos de granos en los gráficos y tablas; úselo para separar concordantes de discordantes, ver poblaciones o marcar granos que interpreta como de un mismo evento.",
+   "explicacao": "La opción 'Colorear por' tiene tres modos. 'Concordante / discordante / rechazado' colorea cada grano según su clase: concordante, discordante (por encima de la discordancia máxima) o rechazado como outlier. 'Poblaciones de edad (automático)' usa los grupos de la curva de densidad. 'Grupos que yo elija' usa números de grupo (1 a 8) que usted asigna a las filas de la tabla. Los colores aparecen en la concordia, la media ponderada, el histograma y la hoja de cálculo Excel exportada. Asignar un grupo solo cambia el color: no cambia qué granos entran en la media, lo que depende de las opciones de selección. Los grupos se guardan en el proyecto.",
+   "referencias": [
+    "Spencer et al. (2016)",
+    "Vermeesch (2012)",
+    "Wong (2011)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Colores en los gráficos', elija el modo en 'Colorear por'.",
+    "Para grupos propios, en la pestaña 'Datos y edades por grano' seleccione las filas (haga clic en el número de fila; use Ctrl o Shift para varias).",
+    "Use 'Grupos > Poner las filas seleccionadas en el grupo...' e indique el número del grupo.",
+    "Para volver a las clases, use 'Grupos > Volver a los colores automáticos'."
+   ]
+  },
+  {
+   "id": "incertezas",
+   "titulo": "Niveles de incertidumbre",
+   "serve": "Este recurso sirve para saber qué incluyen las incertidumbres presentadas; consúltelo antes de comparar sus edades con otras o de publicar.",
+   "explicacao": "Internamente todos los errores se convierten a 1σ absoluto. En los resultados de la muestra, Zircon muestra 1σ y 2σ, y el texto de metodología y los gráficos usan 2σ; las tablas por grano exportadas están en 1σ absoluto, como se indica en ellas. Las incertidumbres incluyen solo la parte analítica que venía en la hoja de cálculo del laboratorio: es el nivel x ± y de Horstwood et al. (2016). No están incluidas la incertidumbre de las constantes de desintegración ni la de la calibración sistemática (material de referencia, reproducibilidad a largo plazo), que el laboratorio debe informar. Para comparar edades obtenidas en laboratorios o con métodos diferentes, hay que sumar esas incertidumbres sistemáticas. Indique siempre el nivel de confianza (1σ o 2σ) junto a cada edad.",
+   "referencias": [
+    "Horstwood et al. (2016)",
+    "Ludwig (2000)",
+    "Schoene (2014)"
+   ],
+   "como_usar": [
+    "En la pestaña 'Resultados', vea las columnas ± 1σ (Ma) y ± 2σ (Ma).",
+    "En la ventana 'Revisar importación', confirme que los errores se leyeron en el nivel correcto (1σ o 2σ, absoluto o %).",
+    "Pida al laboratorio la incertidumbre sistemática para declararla junto a la edad publicada."
+   ]
+  },
+  {
+   "id": "exportar",
+   "titulo": "Exportar para publicación",
+   "serve": "Este recurso sirve para generar de una vez los archivos de un artículo o informe; úselo cuando los resultados estén revisados y listos para usarse fuera de Zircon.",
+   "explicacao": "La exportación para publicación crea una carpeta con: figuras de la concordia (o isócrona), la media ponderada y la distribución de edades con un ancho de 1 columna (90 mm), 1,5 columnas (140 mm) o 2 columnas (190 mm), en PNG y TIFF a 600 ppp, PDF, SVG y, si se solicita, EPS, siguiendo las instrucciones de figuras de Elsevier; una hoja de cálculo Excel formateada con resultados, edades por grano coloreadas, opciones usadas, referencias y registro; gráficos interactivos en HTML, que se abren sin internet y sirven como material suplementario; datos en CSV con LEEME para repositorio (Mendeley Data, Zenodo, PANGAEA); y el texto de metodología. Revise cada figura antes de enviarla a la revista, pues los requisitos varían.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Haga clic en 'Calcular' antes de exportar.",
+    "Elija 'Archivo > Exportar para publicación (figuras, Excel, interactivo, metodología)...' (Ctrl+E).",
+    "Elija el 'Ancho de las figuras' y marque los formatos.",
+    "Haga clic en 'Elegir carpeta y exportar' y elija la carpeta; los archivos quedan en una subcarpeta con el nombre del proyecto.",
+    "Para un solo archivo, use los otros elementos del menú 'Archivo' (hoja de cálculo Excel, gráfico actual, HTML interactivo o metodología)."
+   ]
+  },
+  {
+   "id": "metodologia",
+   "titulo": "Texto de metodología",
+   "serve": "Este recurso sirve para obtener un borrador de la sección de métodos con las opciones usadas y las citas; úselo al redactar un artículo, tesina, tesis o informe.",
+   "explicacao": "La pestaña 'Metodología (texto para el artículo)' compone un texto que describe lo que se calculó: tipo de dato, constantes, corrección de Pb común, criterios de mejor edad y de discordancia, media ponderada, efectos aleatorios, outliers, edad de concordia, discordia, poblaciones y nivel de las incertidumbres, seguido de los resultados y de las referencias en formato ABNT. El texto cambia según los datos y las opciones. Es un borrador: revíselo, complételo con la información del laboratorio (equipo, materiales de referencia, reducción de datos) y adáptelo a la revista. Cite el programa con la versión usada, tal como aparece en el texto: Zircon vX.Y.Z (https://github.com/cibelegeologia/zircon), y cite también los métodos, no solo el programa.",
+   "referencias": [
+    "Horstwood et al. (2016)",
+    "Vermeesch (2018a)"
+   ],
+   "como_usar": [
+    "Haga clic en 'Calcular' y abra la pestaña 'Metodología (texto para el artículo)'.",
+    "Copie el texto o use 'Archivo > Exportar metodología (Markdown o texto)...'.",
+    "Revise el texto y añada los datos analíticos del laboratorio.",
+    "Si cambia alguna opción, calcule de nuevo: el texto se rehace."
+   ]
+  },
+  {
+   "id": "projeto",
+   "titulo": "Archivo de proyecto (.zircon)",
+   "serve": "Este recurso sirve para guardar una sesión de trabajo y volver a abrirla después exactamente como estaba; úselo para cada muestra u hoja de cálculo que analice.",
+   "explicacao": "El archivo .zircon guarda en una sola carpeta comprimida los datos importados, el registro de la importación, las opciones elegidas, los grupos que usted asignó y una copia de la hoja de cálculo original. Por eso el proyecto se abre en otro ordenador incluso sin la hoja de cálculo original y sin internet. Cada proyecto corresponde a una hoja de cálculo. Cuando hay cambios sin guardar, el título de la ventana muestra un asterisco (*), y el programa pregunta si desea guardar antes de cerrar o abrir otro proyecto. El menú de proyectos recientes lista los últimos ocho proyectos abiertos o guardados. Guarde el archivo .zircon junto con los datos de la investigación: documenta cómo se obtuvieron las edades.",
+   "referencias": [],
+   "como_usar": [
+    "Use 'Archivo > Guardar' (Ctrl+S) o 'Archivo > Guardar como...' para guardar el proyecto.",
+    "Para volver a abrirlo, use 'Archivo > Abrir proyecto...' o 'Archivo > Proyectos recientes'.",
+    "En la pantalla inicial, use 'Abrir proyecto guardado...'."
+   ]
+  },
+  {
+   "id": "registro_privacidade",
+   "titulo": "Registro voluntario y privacidad",
+   "serve": "Este recurso sirve para informar a la autora, si usted lo desea, de dónde y para qué se usa Zircon; úselo si desea recibir avisos de nuevas versiones o apoyar el proyecto.",
+   "explicacao": "Zircon nunca se conecta a internet por sí solo y no recopila datos. El registro es voluntario y todos los campos son opcionales: nombre, institución, país, correo electrónico y uso previsto. Los datos se guardan solo en este ordenador hasta que haga clic en un botón de envío, y verá el texto antes de enviarlo. El envío se hace a través de su navegador o de su programa de correo electrónico, no de Zircon. Hay también un código anónimo de la instalación, generado al azar, que no lo identifica. Sus datos de análisis y proyectos nunca se envían. Saber dónde se usa el programa ayuda a justificar su mantenimiento.",
+   "referencias": [],
+   "como_usar": [
+    "Abra 'Ayuda > Registrar Zircon...' o el botón de registro en la pantalla inicial.",
+    "Rellene los campos que quiera.",
+    "Elija 'Enviar por el navegador', 'Enviar por correo electrónico', 'Copiar texto' o 'Guardar sin enviar'."
+   ]
+  },
+  {
+   "id": "acessibilidade",
+   "titulo": "Accesibilidad: letra, contraste y colores",
+   "serve": "Este recurso sirve para adaptar la ventana y los gráficos a personas con baja visión o daltonismo, y para preparar figuras legibles al imprimirse en blanco y negro; úselo siempre que los colores o el texto dificulten la lectura.",
+   "explicacao": "El tamaño de letra va de normal hasta el doble. Los temas incluyen claro, oscuro y dos de alto contraste, con bordes gruesos y un foco bien visible. Alrededor de 1 de cada 12 hombres tiene alguna forma de daltonismo, y los colores habituales usan verde y rojo, que se confunden. Las paletas accesibles lo evitan: Okabe-Ito y Tol se diseñaron para el daltonismo; cividis va del azul al amarillo y la perciben igual todos los tipos de visión; la escala de grises sirve para imprimir. Los patrones (rayas y puntos) separan los grupos sin depender del color. Las figuras exportadas siguen la paleta y los patrones elegidos, siempre con fondo blanco.",
+   "referencias": [
+    "Okabe e Ito (2008)",
+    "Wong (2011)",
+    "Tol (2021)",
+    "Nuñez et al. (2018)"
+   ],
+   "como_usar": [
+    "En el menú 'Accesibilidad', elija 'Tamaño de letra' o use 'Aumentar la letra' y 'Reducir la letra' (Ctrl + y Ctrl -).",
+    "En 'Accesibilidad > Tema y contraste', elija el tema.",
+    "En el panel de la izquierda, en 'Colores en los gráficos', marque 'Colores accesibles (daltonismo)' y elija la 'Paleta accesible'.",
+    "Marque 'Patrones además de los colores (rayas y puntos en los grupos)' para separar grupos sin color."
+   ]
+  },
+  {
+   "id": "idiomas",
+   "titulo": "Idiomas",
+   "serve": "Este recurso sirve para usar el programa y generar las exportaciones en el idioma que prefiera; úselo al cambiar de idioma o al preparar material para una revista en otra lengua.",
+   "explicacao": "Zircon funciona en portugués de Brasil, portugués de Portugal, español, inglés, francés, alemán, chino simplificado, hindi y árabe. Al abrirse por primera vez usa el idioma del sistema. La ventana, la hoja de cálculo Excel, los gráficos, el HTML interactivo y el LEEME salen en el idioma elegido, con el separador decimal de ese idioma en pantalla. El texto de metodología sale en el idioma elegido y también en inglés, que es la lengua de la mayoría de las revistas. En hindi y árabe, las figuras en imagen usan etiquetas en inglés, porque la biblioteca de gráficos no compone correctamente esas escrituras. En árabe la ventana se dispone de derecha a izquierda. Cambiar el idioma conserva el proyecto y las opciones.",
+   "referencias": [],
+   "como_usar": [
+    "Use el menú 'Idioma (Language)' y elija el idioma.",
+    "O, en la pantalla 'Bienvenido a Zircon', elija en la lista de idiomas de la parte superior.",
+    "Vea la versión en inglés de la metodología en la pestaña 'Metodología (texto para el artículo)'."
+   ]
+  }
+ ]
+}

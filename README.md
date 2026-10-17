@@ -28,6 +28,12 @@ A metodologia sai no idioma escolhido e também em inglês. Nos gráficos em ima
 
 Tudo é opcional. No menu Acessibilidade há tamanho da letra (até o dobro; atalhos Ctrl + e Ctrl -) e temas claro, escuro e de alto contraste. No painel de opções, "Cores nos gráficos" alterna entre cores comuns e cores acessíveis para daltonismo (Okabe-Ito, Tol, cividis ou tons de cinza), e pode acrescentar padrões (listras e pontos) para separar os grupos sem depender da cor. As figuras exportadas seguem essas escolhas de cor.
 
+O Zircon funciona com os leitores de tela mais comuns (NVDA, JAWS, Narrador, VoiceOver e Orca): cada campo, tabela e gráfico tem nome e descrição, e cada gráfico tem um resumo em texto.
+
+## Ajuda
+
+O Guia do Zircon (F1) explica cada recurso: para que serve, o artigo original e como usar. O botão "?  O que é isto?" mostra uma legenda curta sobre qualquer coisa na tela, inclusive os grãos dos gráficos. O programa não usa inteligência artificial: os cálculos são fórmulas fixas dos artigos citados e os textos de ajuda são arquivos fixos.
+
 Para rodar a partir do código: `pip install -r requirements.txt` e `python -m zircon`.
 
 ## Conteúdo

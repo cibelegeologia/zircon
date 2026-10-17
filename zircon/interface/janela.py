@@ -380,7 +380,7 @@ class Janela(QMainWindow):
         partes = [tr("{n} análises.").format(n=len(g))]
         if "classe" in g:
             contagem = g["classe"].value_counts()
-            partes.append(", ".join(f"{contagem[c]} {tr(c)}" for c in ("concordante", "discordante", "rejeitado")
+            partes.append(", ".join(f"{tr(c)}: {contagem[c]}" for c in ("concordante", "discordante", "rejeitado")
                                     if c in contagem) + ".")
         for r in self.resultado.conjunto:
             partes.append(f"{tr(r['Cálculo'])}: {idiomas.num(r['Idade (Ma)'])} ± {idiomas.num(r['± 2σ (Ma)'])} "
