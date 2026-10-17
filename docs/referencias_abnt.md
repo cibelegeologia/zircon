@@ -24,6 +24,8 @@ FEDO, C. M.; SIRCOMBE, K. N.; RAINBIRD, R. H. Detrital zircon analysis of the se
 
 FRYER, B. J.; JACKSON, S. E.; LONGERICH, H. P. The application of laser ablation microprobe-inductively coupled plasma-mass spectrometry (LAM-ICP-MS) to in situ (U)-Pb geochronology. **Chemical Geology**, v. 109, p. 1-8, 1993. DOI: https://doi.org/10.1016/0009-2541(93)90058-Q.
 
+GALBRAITH, R. F. **Statistics for fission track analysis**. Boca Raton: Chapman and Hall/CRC, 2005. 219 p.
+
 GEHRELS, G. Detrital zircon U-Pb geochronology applied to tectonics. **Annual Review of Earth and Planetary Sciences**, v. 42, p. 127-149, 2014. DOI: https://doi.org/10.1146/annurev-earth-050212-124012.
 
 HIESS, J. et al. 238U/235U systematics in terrestrial uranium-bearing minerals. **Science**, v. 335, p. 1610-1614, 2012. DOI: https://doi.org/10.1126/science.1215507.
@@ -63,6 +65,8 @@ MATTINSON, J. M. Zircon U–Pb chemical abrasion ("CA-TIMS") method: combined an
 McLEAN, N. M.; BOWRING, J. F.; BOWRING, S. A. An algorithm for U-Pb isotope dilution data reduction and uncertainty propagation. **Geochemistry, Geophysics, Geosystems**, v. 12, 2011. DOI: https://doi.org/10.1029/2010GC003478.
 
 McLEAN, N. M. et al. Evaluating uncertainties in the calibration of isotopic reference materials and multi-element isotopic tracers (EARTHTIME Tracer Calibration Part II). **Geochimica et Cosmochimica Acta**, v. 164, p. 481-501, 2015. DOI: https://doi.org/10.1016/j.gca.2015.02.040.
+
+OKABE, M.; ITO, K. **Color universal design (CUD)**: how to make figures and presentations that are friendly to colorblind people. 2008. Disponível em: https://jfly.uni-koeln.de/color/. Acesso em: 17 out. 2026.
 
 PARRISH, R. R.; NOBLE, S. R. Zircon U-Th-Pb geochronology by isotope dilution–thermal ionization mass spectrometry (ID-TIMS). **Reviews in Mineralogy and Geochemistry**, v. 53, p. 183-214, 2003. DOI: https://doi.org/10.2113/0530183.
 
@@ -129,6 +133,8 @@ WETHERILL, G. W. Discordant uranium-lead ages, I. **Transactions, American Geoph
 WIEDENBECK, M. et al. Three natural zircon standards for U-Th-Pb, Lu-Hf, trace element and REE analyses. **Geostandards Newsletter**, v. 19, p. 1-23, 1995. DOI: https://doi.org/10.1111/j.1751-908X.1995.tb00147.x.
 
 WILLIAMS, I. S. U-Th-Pb geochronology by ion microprobe. **Reviews in Economic Geology**, v. 7, p. 1-35, 1998.
+
+WONG, B. Points of view: color blindness. **Nature Methods**, v. 8, p. 441, 2011. DOI: https://doi.org/10.1038/nmeth.1618.
 
 YORK, D. Least squares fitting of a straight line with correlated errors. **Earth and Planetary Science Letters**, v. 5, p. 320-324, 1968. DOI: https://doi.org/10.1016/S0012-821X(68)80059-7.
 

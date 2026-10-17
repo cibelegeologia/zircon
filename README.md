@@ -2,10 +2,21 @@
 
 Software no-code para calcular idades por isótopos de U, Th e Pb em zircão (U-Pb, Th-Pb, Pb-Pb e U-Th). O usuário escolhe em menus o que calcular e como, e cada opção traz a referência bibliográfica do método.
 
+## Instalar
+
+Baixe o instalador `Zircon-x.y.z-instalador.exe` na página de versões (Releases) do repositório e siga o assistente. O programa é gratuito, funciona sem internet e não coleta dados.
+
+Para rodar a partir do código: `pip install -r requirements.txt` e `python -m zircon`.
+
 ## Conteúdo
+
+- `zircon/`: código do programa (`nucleo/` para os cálculos, `interface/` para as janelas).
+- `instalador/`: receita do PyInstaller e do instalador (Inno Setup).
+- `docs/arquitetura_e_privacidade.md`: como o programa é feito, arquivo de projeto, registro e privacidade.
 
 - `docs/especificacao_e_bibliografia.md`: bibliografia anotada, métodos de cálculo e estatísticos, menu de opções e planilha de entrada.
 - `docs/referencias_abnt.md`: lista de referências no formato ABNT NBR 6023:2018.
+- `testes/unitarios/`: testes que conferem os cálculos com o IsoplotR.
 - `testes/modulo2/`: arquivos de entrada em .xlsx, .ods, .csv e .txt e resultados de referência calculados com o IsoplotR 7.1.
 
 ## Estrutura do software

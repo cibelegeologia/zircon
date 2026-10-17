@@ -1,0 +1,20 @@
+ZIRCON - software livre e gratuito
+
+O Zircon é de domínio público (CC0 1.0 Universal). Você pode usar, copiar,
+modificar e distribuir o programa, inclusive para fins comerciais, sem pedir
+permissão. Não há licença paga nem chave de ativação.
+
+Os dados de exemplo derivados do IsoplotR (pasta testes/modulo2) seguem a
+licença GPL-3, como o original.
+
+Privacidade
+- O Zircon funciona sem internet e não se conecta a nenhum servidor.
+- Nenhuma informação sobre você ou seus dados é coletada ou enviada.
+- O registro é voluntário: você preenche, confere o texto e decide se envia.
+
+Sem garantia
+O programa é fornecido "como está", sem garantia de qualquer tipo. Confira
+os resultados antes de publicá-los; cada cálculo traz a referência do método
+para isso.
+
+Código e referências: https://github.com/cibelegeologia/zircon
