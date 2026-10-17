@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Zircon
+Comment=Idades U-Pb, Th-Pb e Pb-Pb em zircão
+Exec=/opt/zircon/Zircon %f
+Terminal=false
+Categories=Science;Education;
+MimeType=application/x-zircon;

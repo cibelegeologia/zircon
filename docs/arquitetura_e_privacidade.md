@@ -8,7 +8,7 @@ Decisão de 17/10/2026: o Zircon é um programa de desktop para Windows, instala
 - `zircon/nucleo/`: cálculos, sem interface. Conferidos com o IsoplotR 7.1 pelos testes em `testes/unitarios/`.
 - `zircon/interface/`: janelas, menus e gráficos.
 - O PyInstaller junta tudo numa pasta com `Zircon.exe`; o Inno Setup gera o instalador com assistente.
-- O GitHub Actions (`.github/workflows/instalador-windows.yml`) roda os testes e gera o instalador a cada envio. Uma etiqueta `v0.1.0` publica o instalador na página de versões do repositório.
+- O GitHub Actions (`.github/workflows/instaladores.yml`) roda os testes e gera os instaladores de Windows (.exe), macOS (.dmg, Apple Silicon e Intel) e Linux (.deb e .tar.gz) a cada envio. Uma etiqueta `v0.1.0` publica o instalador na página de versões do repositório.
 
 ## Arquivo de projeto (.zircon)
 

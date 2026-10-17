@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+command -v update-desktop-database >/dev/null && update-desktop-database -q /usr/share/applications || true
+command -v update-mime-database >/dev/null && update-mime-database /usr/share/mime || true
+exit 0

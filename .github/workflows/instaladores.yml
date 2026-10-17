@@ -1,0 +1,95 @@
+name: Instaladores
+
+on:
+  push:
+    branches: [main, app-desktop]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest -q testes/unitarios
+
+  windows:
+    needs: testes
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --noconfirm --distpath dist --workpath build instalador/zircon.spec
+      - name: Instalar Inno Setup
+        run: choco install innosetup --no-progress -y
+      - name: Montar instalador
+        shell: pwsh
+        run: |
+          $versao = (python -c "import zircon; print(zircon.__version__)")
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DVersao=$versao" instalador\zircon.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Zircon-instalador-windows
+          path: dist/Zircon-*-instalador.exe
+
+  linux:
+    needs: testes
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y libegl1 libxkbcommon-x11-0 libxcb-cursor0
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --noconfirm --distpath dist --workpath build instalador/zircon.spec
+      - run: sh instalador/linux_deb.sh "$(python -c 'import zircon; print(zircon.__version__)')"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Zircon-linux
+          path: |
+            dist/Zircon-*.deb
+            dist/Zircon-*.tar.gz
+
+  macos:
+    needs: testes
+    strategy:
+      matrix:
+        runner: [macos-14, macos-13]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller --noconfirm --distpath dist --workpath build instalador/zircon.spec
+      - run: sh instalador/macos_dmg.sh "$(python -c 'import zircon; print(zircon.__version__)')"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Zircon-macos-${{ matrix.runner }}
+          path: dist/Zircon-*.dmg
+
+  publicar:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: pacotes
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: pacotes/*

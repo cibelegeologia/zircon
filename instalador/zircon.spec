@@ -1,8 +1,11 @@
 # Receita do PyInstaller: gera a pasta dist/Zircon com o Zircon.exe.
 # Uso: pyinstaller instalador/zircon.spec
+import re
+import sys
 from pathlib import Path
 
 raiz = Path(SPECPATH).parent
+versao = re.search(r'__version__ = "(.+)"', (raiz / "zircon" / "__init__.py").read_text()).group(1)
 
 a = Analysis(
     [str(raiz / "iniciar_zircon.py")],
@@ -20,3 +23,20 @@ pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name="Zircon", console=False,
           icon=str(raiz / "instalador" / "zircon.ico") if (raiz / "instalador" / "zircon.ico").exists() else None)
 coll = COLLECT(exe, a.binaries, a.datas, name="Zircon")
+
+if sys.platform == "darwin":
+    app = BUNDLE(
+        coll,
+        name="Zircon.app",
+        icon=str(raiz / "instalador" / "zircon.icns") if (raiz / "instalador" / "zircon.icns").exists() else None,
+        bundle_identifier="io.github.cibelegeologia.zircon",
+        info_plist={
+            "CFBundleShortVersionString": versao,
+            "NSHighResolutionCapable": True,
+            "CFBundleDocumentTypes": [{
+                "CFBundleTypeName": "Projeto do Zircon",
+                "CFBundleTypeExtensions": ["zircon"],
+                "CFBundleTypeRole": "Editor",
+            }],
+        },
+    )

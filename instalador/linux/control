@@ -1,0 +1,12 @@
+Package: zircon
+Version: @VERSAO@
+Section: science
+Priority: optional
+Architecture: amd64
+Installed-Size: @TAMANHO@
+Maintainer: Cibele <https://github.com/cibelegeologia/zircon>
+Homepage: https://github.com/cibelegeologia/zircon
+Description: Idades U-Pb, Th-Pb e Pb-Pb em zircão
+ Programa livre (CC0) para calcular idades por isótopos de U, Th e Pb em
+ zircão, com a referência bibliográfica de cada método. Funciona sem
+ internet e não coleta dados.
