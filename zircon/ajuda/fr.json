@@ -346,6 +346,20 @@
    ]
   },
   {
+   "id": "atualizacoes",
+   "titulo": "Rechercher des mises à jour",
+   "serve": "Cette fonction sert à savoir s'il existe une nouvelle version de Zircon, avec des corrections ou de nouvelles fonctions ; utilisez-la de temps en temps ou quand quelqu'un vous signale une correction.",
+   "explicacao": "C'est la seule fonction de Zircon qui utilise internet, et uniquement lorsque vous cliquez dessus. Le programme demande à GitHub, où Zircon est publié, quelle est la version la plus récente. La requête ne contient aucune de vos données : ni nom, ni version, ni système, ni projets. Comme pour n'importe quel site, GitHub voit seulement l'adresse internet de l'ordinateur. La réponse est vérifiée par un certificat de sécurité, pour garantir qu'elle provient bien de GitHub. Zircon ne télécharge et n'installe rien de lui-même : il affiche la nouvelle version et ouvre la page de téléchargement dans le navigateur. Les anciennes versions restent sur la même page, marquées comme préversions, au cas où il faudrait revenir à l'une d'elles pour comparer des résultats.",
+   "referencias": [],
+   "como_usar": [
+    "Ouvrez Aide > 'Rechercher des mises à jour...'.",
+    "S'il existe une nouvelle version, cliquez sur 'Ouvrir la page de téléchargement' et téléchargez le fichier indiqué pour votre système.",
+    "Sous Windows, lancez le programme d'installation : il signale qu'une version est déjà installée et demande s'il doit la remplacer. Vos projets et préférences sont conservés.",
+    "Sous Linux, installez le nouveau .deb par-dessus l'ancien. Sur Mac, faites glisser le nouveau Zircon dans Applications et confirmez le remplacement.",
+    "Si l'ordinateur n'a pas internet, téléchargez le programme d'installation sur un autre ordinateur, sur la page github.com/cibelegeologia/zircon/releases, et transférez-le avec une clé USB."
+   ]
+  },
+  {
    "id": "acessibilidade",
    "titulo": "Accessibilité : texte, contraste et couleurs",
    "serve": "Cette fonction sert à adapter la fenêtre et les graphiques aux personnes malvoyantes ou daltoniennes, et à préparer des figures lisibles en impression noir et blanc ; utilisez-la chaque fois que les couleurs ou le texte gênent la lecture.",

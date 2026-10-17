@@ -346,6 +346,20 @@
    ]
   },
   {
+   "id": "atualizacoes",
+   "titulo": "Verificar atualizações",
+   "serve": "Este recurso serve para saber se há uma versão nova do Zircon, com correções ou recursos novos; use-o de tempos em tempos ou quando alguém avisar de uma correção.",
+   "explicacao": "Esta é a única função do Zircon que usa a internet, e só quando você clica nela. O programa pergunta ao GitHub, onde o Zircon é publicado, qual é a versão mais recente. O pedido não leva nenhum dado seu: nem nome, nem versão, nem sistema, nem projetos. Como em qualquer site, o GitHub vê apenas o endereço de internet do computador. A resposta é conferida por certificado de segurança, para garantir que vem mesmo do GitHub. O Zircon não baixa nem instala nada sozinho: ele mostra a versão nova e abre a página de download no navegador. As versões antigas continuam na mesma página, marcadas como pré-lançamento, caso seja preciso voltar a uma delas para comparar resultados.",
+   "referencias": [],
+   "como_usar": [
+    "Abra Ajuda > 'Verificar atualizações...'.",
+    "Se houver versão nova, clique em 'Abrir a página de download' e baixe o arquivo indicado para o seu sistema.",
+    "No Windows, rode o instalador: ele avisa que há uma versão instalada e pergunta se deve substituí-la. Seus projetos e preferências são mantidos.",
+    "No Linux, instale o .deb novo por cima do antigo. No Mac, arraste o Zircon novo para Aplicativos e confirme a substituição.",
+    "Se o computador não tiver internet, baixe o instalador em outro computador, na página github.com/cibelegeologia/zircon/releases, e leve-o num pendrive."
+   ]
+  },
+  {
    "id": "acessibilidade",
    "titulo": "Acessibilidade: letra, contraste e cores",
    "serve": "Este recurso serve para adaptar a janela e os gráficos a quem tem baixa visão ou daltonismo, e para preparar figuras legíveis em impressão em preto e branco; use-o sempre que as cores ou o texto dificultarem a leitura.",

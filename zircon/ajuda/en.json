@@ -346,6 +346,20 @@
    ]
   },
   {
+   "id": "atualizacoes",
+   "titulo": "Check for updates",
+   "serve": "This feature is used to find out whether there is a new version of Zircon, with fixes or new features; use it from time to time or when someone tells you about a fix.",
+   "explicacao": "This is the only Zircon function that uses the internet, and only when you click it. The program asks GitHub, where Zircon is published, which version is the latest. The request carries none of your data: no name, version, system or projects. As with any website, GitHub sees only the computer's internet address. The reply is checked against a security certificate to make sure it really comes from GitHub. Zircon does not download or install anything on its own: it shows the new version and opens the download page in the browser. Older versions remain on the same page, marked as pre-release, in case you need to go back to one of them to compare results.",
+   "referencias": [],
+   "como_usar": [
+    "Open Help > 'Check for updates...'.",
+    "If there is a new version, click 'Open the download page' and download the file indicated for your system.",
+    "On Windows, run the installer: it notes that a version is already installed and asks whether to replace it. Your projects and preferences are kept.",
+    "On Linux, install the new .deb over the old one. On Mac, drag the new Zircon to Applications and confirm the replacement.",
+    "If the computer has no internet, download the installer on another computer, from github.com/cibelegeologia/zircon/releases, and bring it over on a USB stick."
+   ]
+  },
+  {
    "id": "acessibilidade",
    "titulo": "Accessibility: text size, contrast and colours",
    "serve": "This feature is used to adapt the window and the charts for people with low vision or colour blindness, and to prepare figures that remain legible when printed in black and white; use it whenever the colours or the text make reading difficult.",

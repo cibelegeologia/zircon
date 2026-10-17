@@ -373,5 +373,15 @@
  "Metodologia": "Methodik",
  "{n} análises.": "{n} Analysen.",
  "Gráfico: {nome}": "Diagramm: {nome}",
- "Ajuda sobre: {opcao}": "Hilfe zu: {opcao}"
+ "Ajuda sobre: {opcao}": "Hilfe zu: {opcao}",
+ "Verificar atualizações...": "Nach Updates suchen...",
+ "Verificar atualizações": "Nach Updates suchen",
+ "Abrir a página de download": "Download-Seite öffnen",
+ "Agora não": "Jetzt nicht",
+ "Pergunta ao GitHub, só agora, se há versão nova. Não envia nenhum dado seu e não baixa nada sozinho.": "Fragt GitHub, nur jetzt, ob es eine neue Version gibt. Es werden keine Ihrer Daten gesendet und nichts von selbst heruntergeladen.",
+ "Não foi possível consultar o GitHub. Confira a conexão com a internet ou veja as versões no navegador.": "GitHub konnte nicht abgefragt werden. Prüfen Sie die Internetverbindung oder sehen Sie sich die Versionen im Browser an.",
+ "Abrir a página de versões": "Seite mit den Versionen öffnen",
+ "Há uma versão nova do Zircon: {nova} (você usa a {atual}).": "Es gibt eine neue Version von Zircon: {nova} (Sie verwenden {atual}).",
+ "Na página que vai abrir, baixe o arquivo {arquivo} e instale por cima da versão atual. Seus projetos e preferências continuam onde estão.": "Laden Sie auf der Seite, die sich öffnet, die Datei {arquivo} herunter und installieren Sie sie über die aktuelle Version. Ihre Projekte und Einstellungen bleiben erhalten.",
+ "Você já usa a versão mais recente ({versao}).": "Sie verwenden bereits die neueste Version ({versao})."
 }

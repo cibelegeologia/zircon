@@ -12,7 +12,7 @@ from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleS
                                QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget, QToolBar, QToolButton, QStyle,
                                QVBoxLayout, QWidget)
 
-from .. import __version__, idiomas
+from .. import __version__, atualizacao, idiomas
 from ..idiomas import N_, tr
 from ..nucleo import calculo, exportacao, grupos, metodologia
 from ..nucleo.importacao import importar
@@ -117,6 +117,9 @@ class Janela(QMainWindow):
         self._acao(m, tr("Primeiros passos"), lambda: self.guia("inicio"),
                    explica=N_("Mostra o caminho básico: importar, conferir, calcular e exportar."))
         m.addSeparator()
+        self._acao(m, tr("Verificar atualizações..."), self.verificar_atualizacoes,
+                   explica=N_("Pergunta ao GitHub, só agora, se há versão nova. Não envia nenhum dado seu "
+                              "e não baixa nada sozinho."))
         self._acao(m, tr("Registrar o Zircon..."), lambda: Registro(self).exec(),
                    explica=N_("Registro voluntário: você vê o texto e decide se envia."))
         self._acao(m, tr("Sobre o Zircon"), lambda: QMessageBox.about(self, tr("Sobre"), sobre_texto()),
@@ -412,6 +415,42 @@ class Janela(QMainWindow):
         b.setAccessibleName(tr("Ajuda sobre esta opção"))
         b.clicked.connect(lambda: self.guia(topico))
         return b
+
+    def verificar_atualizacoes(self):
+        """Única conexão do Zircon com a internet, sempre a pedido do usuário."""
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            versao, pagina, novidades = atualizacao.ultima_versao()
+        except Exception:
+            QApplication.restoreOverrideCursor()
+            caixa = QMessageBox(QMessageBox.Warning, tr("Verificar atualizações"),
+                                tr("Não foi possível consultar o GitHub. Confira a conexão com a internet "
+                                   "ou veja as versões no navegador."), parent=self)
+            abrir = caixa.addButton(tr("Abrir a página de versões"), QMessageBox.AcceptRole)
+            caixa.addButton(tr("Fechar"), QMessageBox.RejectRole)
+            caixa.exec()
+            if caixa.clickedButton() is abrir:
+                QDesktopServices.openUrl(QUrl(atualizacao.URL_RELEASES))
+            return
+        QApplication.restoreOverrideCursor()
+        if not atualizacao.ha_versao_nova(versao):
+            QMessageBox.information(self, tr("Verificar atualizações"),
+                                    tr("Você já usa a versão mais recente ({versao}).").format(versao=__version__))
+            return
+        caixa = QMessageBox(QMessageBox.Information, tr("Verificar atualizações"),
+                            tr("Há uma versão nova do Zircon: {nova} (você usa a {atual}).").format(
+                                nova=versao, atual=__version__), parent=self)
+        caixa.setInformativeText(
+            tr("Na página que vai abrir, baixe o arquivo {arquivo} e instale por cima da versão atual. "
+               "Seus projetos e preferências continuam onde estão.").format(
+                arquivo=atualizacao.arquivo_do_sistema(versao)))
+        if novidades:
+            caixa.setDetailedText(novidades)
+        abrir = caixa.addButton(tr("Abrir a página de download"), QMessageBox.AcceptRole)
+        caixa.addButton(tr("Agora não"), QMessageBox.RejectRole)
+        caixa.exec()
+        if caixa.clickedButton() is abrir:
+            QDesktopServices.openUrl(QUrl(pagina))
 
     def guia(self, topico="inicio"):
         janela_ajuda.mostrar(self, topico, arquivo_referencias())

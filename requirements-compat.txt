@@ -9,3 +9,4 @@ openpyxl>=3.0,<3.2
 xlrd>=2.0
 odfpy>=1.4
 plotly>=5.10,<6
+certifi>=2023.7

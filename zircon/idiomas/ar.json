@@ -373,5 +373,15 @@
  "Metodologia": "المنهجية",
  "{n} análises.": "{n} تحليلات.",
  "Gráfico: {nome}": "رسم بياني: {nome}",
- "Ajuda sobre: {opcao}": "مساعدة حول: {opcao}"
+ "Ajuda sobre: {opcao}": "مساعدة حول: {opcao}",
+ "Verificar atualizações...": "التحقق من التحديثات...",
+ "Verificar atualizações": "التحقق من التحديثات",
+ "Abrir a página de download": "فتح صفحة التنزيل",
+ "Agora não": "ليس الآن",
+ "Pergunta ao GitHub, só agora, se há versão nova. Não envia nenhum dado seu e não baixa nada sozinho.": "يسأل GitHub، الآن فقط، عمّا إذا كان هناك إصدار جديد. لا يرسل أي بيانات خاصة بك ولا ينزّل أي شيء من تلقاء نفسه.",
+ "Não foi possível consultar o GitHub. Confira a conexão com a internet ou veja as versões no navegador.": "تعذّر الاتصال بـ GitHub. تحقق من الاتصال بالإنترنت أو اطّلع على الإصدارات في المتصفح.",
+ "Abrir a página de versões": "فتح صفحة الإصدارات",
+ "Há uma versão nova do Zircon: {nova} (você usa a {atual}).": "يتوفر إصدار جديد من Zircon: {nova} (تستخدم حاليًا {atual}).",
+ "Na página que vai abrir, baixe o arquivo {arquivo} e instale por cima da versão atual. Seus projetos e preferências continuam onde estão.": "في الصفحة التي ستُفتح، نزّل الملف {arquivo} وثبّته فوق الإصدار الحالي. تبقى مشاريعك وتفضيلاتك كما هي.",
+ "Você já usa a versão mais recente ({versao}).": "أنت تستخدم أحدث إصدار بالفعل ({versao})."
 }

@@ -346,6 +346,20 @@
    ]
   },
   {
+   "id": "atualizacoes",
+   "titulo": "Buscar actualizaciones",
+   "serve": "Este recurso sirve para saber si hay una versión nueva de Zircon, con correcciones o funciones nuevas; úselo de vez en cuando o cuando alguien avise de una corrección.",
+   "explicacao": "Esta es la única función de Zircon que usa internet, y solo cuando usted hace clic en ella. El programa pregunta a GitHub, donde se publica Zircon, cuál es la versión más reciente. La consulta no lleva ningún dato suyo: ni nombre, ni versión, ni sistema, ni proyectos. Como en cualquier sitio web, GitHub solo ve la dirección de internet del ordenador. La respuesta se verifica mediante un certificado de seguridad, para garantizar que realmente viene de GitHub. Zircon no descarga ni instala nada por sí solo: muestra la versión nueva y abre la página de descarga en el navegador. Las versiones antiguas siguen en la misma página, marcadas como prelanzamiento, por si hace falta volver a una de ellas para comparar resultados.",
+   "referencias": [],
+   "como_usar": [
+    "Abra Ayuda > 'Buscar actualizaciones...'.",
+    "Si hay una versión nueva, haga clic en 'Abrir la página de descarga' y descargue el archivo indicado para su sistema.",
+    "En Windows, ejecute el instalador: avisa de que hay una versión instalada y pregunta si debe reemplazarla. Sus proyectos y preferencias se conservan.",
+    "En Linux, instale el .deb nuevo sobre el anterior. En Mac, arrastre el Zircon nuevo a Aplicaciones y confirme el reemplazo.",
+    "Si el ordenador no tiene internet, descargue el instalador en otro ordenador, en la página github.com/cibelegeologia/zircon/releases, y llévelo en una memoria USB."
+   ]
+  },
+  {
    "id": "acessibilidade",
    "titulo": "Accesibilidad: letra, contraste y colores",
    "serve": "Este recurso sirve para adaptar la ventana y los gráficos a personas con baja visión o daltonismo, y para preparar figuras legibles al imprimirse en blanco y negro; úselo siempre que los colores o el texto dificulten la lectura.",

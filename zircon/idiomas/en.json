@@ -373,5 +373,15 @@
  "Metodologia": "Methodology",
  "{n} análises.": "{n} analyses.",
  "Gráfico: {nome}": "Plot: {nome}",
- "Ajuda sobre: {opcao}": "Help on: {opcao}"
+ "Ajuda sobre: {opcao}": "Help on: {opcao}",
+ "Verificar atualizações...": "Check for updates...",
+ "Verificar atualizações": "Check for updates",
+ "Abrir a página de download": "Open the download page",
+ "Agora não": "Not now",
+ "Pergunta ao GitHub, só agora, se há versão nova. Não envia nenhum dado seu e não baixa nada sozinho.": "Asks GitHub, only now, whether there is a new version. It sends none of your data and downloads nothing on its own.",
+ "Não foi possível consultar o GitHub. Confira a conexão com a internet ou veja as versões no navegador.": "Could not reach GitHub. Check your internet connection or see the versions in the browser.",
+ "Abrir a página de versões": "Open the versions page",
+ "Há uma versão nova do Zircon: {nova} (você usa a {atual}).": "A new version of Zircon is available: {nova} (you are using {atual}).",
+ "Na página que vai abrir, baixe o arquivo {arquivo} e instale por cima da versão atual. Seus projetos e preferências continuam onde estão.": "On the page that opens, download the file {arquivo} and install it over the current version. Your projects and preferences stay where they are.",
+ "Você já usa a versão mais recente ({versao}).": "You are already using the latest version ({versao})."
 }

@@ -373,5 +373,15 @@
  "Metodologia": "कार्यप्रणाली",
  "{n} análises.": "{n} विश्लेषण।",
  "Gráfico: {nome}": "ग्राफ़: {nome}",
- "Ajuda sobre: {opcao}": "सहायता: {opcao}"
+ "Ajuda sobre: {opcao}": "सहायता: {opcao}",
+ "Verificar atualizações...": "अपडेट जाँचें...",
+ "Verificar atualizações": "अपडेट जाँचें",
+ "Abrir a página de download": "डाउनलोड पेज खोलें",
+ "Agora não": "अभी नहीं",
+ "Pergunta ao GitHub, só agora, se há versão nova. Não envia nenhum dado seu e não baixa nada sozinho.": "केवल इसी समय GitHub से पूछता है कि कोई नया संस्करण है या नहीं। आपका कोई डेटा नहीं भेजता और अपने आप कुछ भी डाउनलोड नहीं करता।",
+ "Não foi possível consultar o GitHub. Confira a conexão com a internet ou veja as versões no navegador.": "GitHub से जानकारी नहीं मिल सकी। इंटरनेट कनेक्शन जाँचें या ब्राउज़र में संस्करण देखें।",
+ "Abrir a página de versões": "संस्करणों का पेज खोलें",
+ "Há uma versão nova do Zircon: {nova} (você usa a {atual}).": "Zircon का नया संस्करण उपलब्ध है: {nova} (आप {atual} उपयोग कर रहे हैं)।",
+ "Na página que vai abrir, baixe o arquivo {arquivo} e instale por cima da versão atual. Seus projetos e preferências continuam onde estão.": "खुलने वाले पेज पर {arquivo} फ़ाइल डाउनलोड करें और उसे मौजूदा संस्करण के ऊपर इंस्टॉल करें। आपके प्रोजेक्ट और प्राथमिकताएँ जहाँ हैं वहीं रहती हैं।",
+ "Você já usa a versão mais recente ({versao}).": "आप पहले से ही नवीनतम संस्करण ({versao}) उपयोग कर रहे हैं।"
 }

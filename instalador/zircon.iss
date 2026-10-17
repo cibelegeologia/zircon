@@ -48,6 +48,18 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 
 [CustomMessages]
+pt.JaInstalado=O Zircon %1 já está instalado neste computador.%n%nDeseja substituí-lo pela versão %2? Seus projetos e preferências serão mantidos.
+ptpt.JaInstalado=O Zircon %1 já está instalado neste computador.%n%nPretende substituí-lo pela versão %2? Os seus projetos e preferências serão mantidos.
+en.JaInstalado=Zircon %1 is already installed on this computer.%n%nReplace it with version %2? Your projects and preferences will be kept.
+es.JaInstalado=Zircon %1 ya está instalado en este equipo.%n%n¿Desea reemplazarlo por la versión %2? Sus proyectos y preferencias se conservarán.
+fr.JaInstalado=Zircon %1 est déjà installé sur cet ordinateur.%n%nLe remplacer par la version %2 ? Vos projets et préférences seront conservés.
+de.JaInstalado=Zircon %1 ist auf diesem Computer bereits installiert.%n%nDurch Version %2 ersetzen? Ihre Projekte und Einstellungen bleiben erhalten.
+pt.MesmaVersao=O Zircon %1 já está instalado neste computador.%n%nDeseja instalá-lo de novo?
+ptpt.MesmaVersao=O Zircon %1 já está instalado neste computador.%n%nPretende instalá-lo novamente?
+en.MesmaVersao=Zircon %1 is already installed on this computer.%n%nInstall it again?
+es.MesmaVersao=Zircon %1 ya está instalado en este equipo.%n%n¿Desea instalarlo de nuevo?
+fr.MesmaVersao=Zircon %1 est déjà installé sur cet ordinateur.%n%nLe réinstaller ?
+de.MesmaVersao=Zircon %1 ist auf diesem Computer bereits installiert.%n%nErneut installieren?
 pt.TipoCompleta=Instalação completa
 ptpt.TipoCompleta=Instalação completa
 en.TipoCompleta=Full installation
@@ -243,9 +255,38 @@ Filename: "{app}\Zircon.exe"; Parameters: "--registrar"; Description: "{cm:Abrir
 Filename: "{app}\Zircon.exe"; Description: "{cm:AbrirAgora}"; Flags: nowait postinstall skipifsilent
 
 [Code]
+const
+  ChaveDesinstalar = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{6E7A1F2C-3B8D-4C51-9E0A-7D2B5C4F1A90}_is1';
+
 var
   PaginaUsuario: TInputQueryWizardPage;
   CaixaRegistro: TNewCheckBox;
+
+{ Versão do Zircon já instalada (vazio se não houver) }
+function VersaoInstalada: String;
+begin
+  Result := '';
+  if not RegQueryStringValue(HKCU, ChaveDesinstalar, 'DisplayVersion', Result) then
+    if not RegQueryStringValue(HKLM, ChaveDesinstalar, 'DisplayVersion', Result) then
+      if IsWin64 then
+        RegQueryStringValue(HKLM64, ChaveDesinstalar, 'DisplayVersion', Result);
+end;
+
+{ Avisa que há uma versão instalada e pergunta se substitui }
+function InitializeSetup: Boolean;
+var
+  Antiga, Texto: String;
+begin
+  Result := True;
+  Antiga := VersaoInstalada;
+  if (Antiga = '') or WizardSilent then
+    Exit;
+  if Antiga = '{#Versao}' then
+    Texto := FmtMessage(CustomMessage('MesmaVersao'), [Antiga])
+  else
+    Texto := FmtMessage(CustomMessage('JaInstalado'), [Antiga, '{#Versao}']);
+  Result := MsgBox(Texto, mbConfirmation, MB_YESNO) = IDYES;
+end;
 
 procedure InitializeWizard;
 begin

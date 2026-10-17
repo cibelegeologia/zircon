@@ -20,7 +20,8 @@ Etapas: boas-vindas, licença (CC0, gratuito), formulário opcional (nome, insti
 
 ## Registro e privacidade
 
-- O programa não tem nenhum código que acesse a internet.
+- O programa só acessa a internet num ponto, e apenas quando o usuário clica em Ajuda > Verificar atualizações (desde a 0.7.0, decisão da Cibele em 17/10/2026). Ele faz um único pedido HTTPS a `api.github.com/repos/cibelegeologia/zircon/releases/latest`, com o cabeçalho `User-Agent: Zircon` e nenhum outro dado (sem versão, sistema, identificador ou dados do projeto). O certificado é sempre conferido (pacote `certifi`). Nada é baixado nem instalado: o programa mostra a versão nova e abre a página de download no navegador. Código em `zircon/atualizacao.py`.
+- O instalador do Windows confere se há um Zircon instalado (chave de desinstalação no registro) e pergunta antes de substituí-lo.
 - O formulário do instalador é opcional e fica salvo só no computador (`%APPDATA%\Zircon\Zircon\registro.json`).
 - Registrar é voluntário: o usuário abre Ajuda > Registrar, confere o texto e escolhe enviar por e-mail ou pelo navegador. Cada instalação tem um código anônimo aleatório, sem ligação com o computador.
 - Para contar instalações sem coletar nada, use o número de downloads da página de versões do GitHub.

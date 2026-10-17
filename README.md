@@ -32,7 +32,7 @@ O Zircon funciona com os leitores de tela mais comuns (NVDA, JAWS, Narrador, Voi
 
 ## Ajuda
 
-O Guia do Zircon (F1) explica cada recurso: para que serve, o artigo original e como usar. O botão "?  O que é isto?" mostra uma legenda curta sobre qualquer coisa na tela, inclusive os grãos dos gráficos. O programa não usa inteligência artificial: os cálculos são fórmulas fixas dos artigos citados e os textos de ajuda são arquivos fixos.
+O Guia do Zircon (F1) explica cada recurso: para que serve, o artigo original e como usar. O botão "?  O que é isto?" mostra uma legenda curta sobre qualquer coisa na tela, inclusive os grãos dos gráficos. Para saber se há versão nova, use Ajuda > Verificar atualizações: é a única função que usa a internet, só quando você clica, e não envia nenhum dado seu. O programa não usa inteligência artificial: os cálculos são fórmulas fixas dos artigos citados e os textos de ajuda são arquivos fixos.
 
 Para rodar a partir do código: `pip install -r requirements.txt` e `python -m zircon`.
 

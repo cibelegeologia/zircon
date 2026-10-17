@@ -346,6 +346,20 @@
    ]
   },
   {
+   "id": "atualizacoes",
+   "titulo": "Nach Updates suchen",
+   "serve": "Diese Funktion dient dazu, zu erfahren, ob es eine neue Version von Zircon mit Korrekturen oder neuen Funktionen gibt; verwenden Sie sie von Zeit zu Zeit oder wenn jemand auf eine Korrektur hinweist.",
+   "explicacao": "Dies ist die einzige Funktion von Zircon, die das Internet nutzt, und nur, wenn Sie darauf klicken. Das Programm fragt bei GitHub, wo Zircon veröffentlicht wird, welche Version die neueste ist. Die Anfrage enthält keine Ihrer Daten: weder Name noch Version, System oder Projekte. Wie bei jeder Website sieht GitHub nur die Internetadresse des Computers. Die Antwort wird anhand eines Sicherheitszertifikats geprüft, damit sicher ist, dass sie wirklich von GitHub stammt. Zircon lädt nichts von selbst herunter und installiert nichts: Es zeigt die neue Version an und öffnet die Download-Seite im Browser. Ältere Versionen bleiben auf derselben Seite, als Vorabversion gekennzeichnet, falls Sie zu einer von ihnen zurückkehren müssen, um Ergebnisse zu vergleichen.",
+   "referencias": [],
+   "como_usar": [
+    "Öffnen Sie Hilfe > 'Nach Updates suchen...'.",
+    "Wenn es eine neue Version gibt, klicken Sie auf 'Download-Seite öffnen' und laden Sie die für Ihr System angegebene Datei herunter.",
+    "Unter Windows führen Sie das Installationsprogramm aus: Es weist darauf hin, dass bereits eine Version installiert ist, und fragt, ob sie ersetzt werden soll. Ihre Projekte und Einstellungen bleiben erhalten.",
+    "Unter Linux installieren Sie das neue .deb über das alte. Auf dem Mac ziehen Sie das neue Zircon in den Ordner Programme und bestätigen das Ersetzen.",
+    "Hat der Computer kein Internet, laden Sie das Installationsprogramm auf einem anderen Computer von der Seite github.com/cibelegeologia/zircon/releases herunter und übertragen Sie es mit einem USB-Stick."
+   ]
+  },
+  {
    "id": "acessibilidade",
    "titulo": "Barrierefreiheit: Schrift, Kontrast und Farben",
    "serve": "Diese Funktion dient dazu, das Fenster und die Diagramme an Menschen mit Sehschwäche oder Farbenblindheit anzupassen und Abbildungen vorzubereiten, die auch im Schwarz-Weiß-Druck lesbar sind; verwenden Sie sie immer, wenn Farben oder Text das Lesen erschweren.",

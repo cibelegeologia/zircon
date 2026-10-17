@@ -2,6 +2,12 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.7.0 (17/10/2026)
+
+- Ajuda > Verificar atualizações: pergunta ao GitHub se há versão nova e, se houver, indica o arquivo certo para o seu sistema e abre a página de download. É a única função do Zircon que usa a internet, e só quando você clica nela; não envia nenhum dado seu e não baixa nem instala nada sozinho.
+- O instalador do Windows avisa quando já existe um Zircon instalado e pergunta se deve substituí-lo. Projetos e preferências são mantidos.
+- Novo tópico no guia: "Verificar atualizações".
+
 ## 0.6.1 (17/10/2026)
 
 - Linux: as janelas voltam a ter barra de título com os botões de minimizar, maximizar e fechar no Pop!_OS 24.04 e em outros sistemas com Wayland. O Zircon agora abre pelo XWayland, e quem desenha a barra é a própria área de trabalho.
