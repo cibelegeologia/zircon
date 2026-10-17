@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from .qt import QSettings, Qt, QUrl
-from .qt import QAction, QDesktopServices, QKeySequence
+from .qt import QSettings, Qt, QTimer, QUrl
+from .qt import QAction, QDesktopServices, QIcon, QKeySequence
 from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
                                QPlainTextEdit, QPushButton, QScrollArea, QSplitter, QTableView, QTabWidget,
@@ -487,8 +487,15 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Zircon")
     app.setOrganizationName("Zircon")
+    app.setDesktopFileName("zircon")  # liga a janela ao atalho no Linux (GNOME, COSMIC, KDE)
+    icone = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[2] / "instalador")) / "zircon.png"
+    if icone.exists():
+        app.setWindowIcon(QIcon(str(icone)))
     j = Janela()
     j.show()
+    if "--teste-inicio" in sys.argv:  # usado na montagem para conferir que o programa abre
+        QTimer.singleShot(3000, app.quit)
+        return app.exec()
     arq = next((a for a in sys.argv[1:] if a.endswith(EXTENSAO)), None)
     if "--registrar" in sys.argv:
         Registro(j).exec()

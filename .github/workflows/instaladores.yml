@@ -68,10 +68,17 @@ jobs:
       - name: Ferramentas de montagem
         run: |
           sed -i 's|deb.debian.org|archive.debian.org|g; s|security.debian.org|archive.debian.org|g; /buster-updates/d' /etc/apt/sources.list
-          apt-get update && apt-get install -y --no-install-recommends binutils dpkg git libglib2.0-0 libgl1 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3
+          apt-get update && apt-get install -y --no-install-recommends binutils dpkg git libglib2.0-0 libgl1 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3 \
+            libxcb-icccm4 libxcb-image0 libxcb-util0 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-xkb1
       - uses: actions/checkout@v4
       - run: pip install --prefer-binary -r requirements-compat.txt "pyinstaller==5.13.2"
       - run: pyinstaller --noconfirm --distpath dist --workpath build instalador/zircon.spec
+      - name: Incluir bibliotecas do X11 que o Qt 5 precisa (Pop!_OS, Ubuntu 22.04+)
+        run: sh instalador/linux_bibliotecas.sh
+      - name: Abrir o programa numa tela virtual (confere se ele inicia)
+        run: |
+          apt-get install -y --no-install-recommends xvfb xauth
+          timeout 40 xvfb-run -a sh -c 'dist/Zircon/Zircon --teste-inicio'
       - run: sh instalador/linux_deb.sh "$(python -c 'import zircon; print(zircon.__version__)')"
       - uses: actions/upload-artifact@v4
         with:

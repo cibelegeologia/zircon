@@ -12,7 +12,7 @@ Baixe na página de versões (Releases) do repositório o arquivo do seu sistema
 | Windows 32 bits | `Zircon-x.y.z-instalador-windows-x86.exe` | Windows 7 SP1, 8.1 e 10 |
 | Mac com Intel | `Zircon-x.y.z-macos-x86_64.dmg` | macOS 10.13 (High Sierra) ou mais novo; roda também em Mac com chip Apple |
 | Mac com chip Apple | `Zircon-x.y.z-macos-arm64.dmg` | macOS 14 (Sonoma) ou mais novo |
-| Linux 64 bits | `Zircon-x.y.z-linux-amd64.deb` ou `.tar.gz` | Ubuntu 20.04, Debian 10, Mint 20, Fedora 29 ou mais novos |
+| Linux 64 bits | `Zircon-x.y.z-linux-amd64.deb` ou `.tar.gz` | Ubuntu 20.04, Debian 10, Mint 20, Pop!_OS 20.04, Fedora 29 ou mais novos; funciona em X11 e Wayland (GNOME, KDE, COSMIC) |
 
 No Windows 7, o sistema precisa das atualizações KB2533623 e KB2999226 (vêm pelo Windows Update). Windows e Mac avisam na primeira abertura porque o programa não tem assinatura digital paga: no Windows, clique em "Mais informações > Executar assim mesmo"; no Mac, clique com o botão direito no Zircon e escolha Abrir.
 
