@@ -4,13 +4,19 @@ Software no-code para calcular idades por isótopos de U, Th e Pb em zircão (U-
 
 ## Instalar
 
-Baixe na página de versões (Releases) do repositório o arquivo do seu sistema:
+Baixe na página de versões (Releases) do repositório o arquivo do seu sistema. O Zircon roda em computadores de 2010 para cá:
 
-- Windows: `Zircon-x.y.z-instalador.exe`, com assistente de instalação.
-- macOS: `Zircon-x.y.z-macos-arm64.dmg` (Mac com chip Apple, M1 ou mais novo; Mac com Intel ainda não tem versão). Abra e arraste o Zircon para Aplicativos. Na primeira vez, clique com o botão direito no Zircon e escolha Abrir, porque o programa não tem assinatura paga da Apple.
-- Linux: `Zircon-x.y.z-linux-amd64.deb` (Ubuntu, Debian, Mint; abre na Central de Programas) ou `.tar.gz` (qualquer distribuição; descompacte e rode `Zircon`).
+| Sistema | Arquivo | Versões |
+| --- | --- | --- |
+| Windows 64 bits | `Zircon-x.y.z-instalador-windows-x64.exe` | Windows 7 SP1, 8.1, 10 e 11 |
+| Windows 32 bits | `Zircon-x.y.z-instalador-windows-x86.exe` | Windows 7 SP1, 8.1 e 10 |
+| Mac com Intel | `Zircon-x.y.z-macos-x86_64.dmg` | macOS 10.13 (High Sierra) ou mais novo; roda também em Mac com chip Apple |
+| Mac com chip Apple | `Zircon-x.y.z-macos-arm64.dmg` | macOS 14 (Sonoma) ou mais novo |
+| Linux 64 bits | `Zircon-x.y.z-linux-amd64.deb` ou `.tar.gz` | Ubuntu 20.04, Debian 10, Mint 20, Fedora 29 ou mais novos |
 
- O programa é gratuito, funciona sem internet e não coleta dados.
+No Windows 7, o sistema precisa das atualizações KB2533623 e KB2999226 (vêm pelo Windows Update). Windows e Mac avisam na primeira abertura porque o programa não tem assinatura digital paga: no Windows, clique em "Mais informações > Executar assim mesmo"; no Mac, clique com o botão direito no Zircon e escolha Abrir.
+
+Windows, Linux e Mac com Intel usam a montagem compatível (Python 3.8 e Qt 5, as últimas versões que rodam nesses sistemas). Os cálculos são os mesmos e passam pelos mesmos testes.
 
 Para rodar a partir do código: `pip install -r requirements.txt` e `python -m zircon`.
 

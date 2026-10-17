@@ -3,9 +3,9 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from PySide6.QtCore import QSettings, Qt, QUrl
-from PySide6.QtGui import QAction, QDesktopServices, QKeySequence
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
+from .qt import QSettings, Qt, QUrl
+from .qt import QAction, QDesktopServices, QKeySequence
+from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
                                QPlainTextEdit, QPushButton, QScrollArea, QSplitter, QTableView, QTabWidget,
                                QVBoxLayout, QWidget)
@@ -122,7 +122,7 @@ class Janela(QMainWindow):
         self.abas.addTab(self.log, "Registro da importação")
         divisor.addWidget(self.abas)
         divisor.setStretchFactor(1, 1)
-        divisor.setSizes([400, 880])
+        divisor.setSizes([460, 820])
         self.setCentralWidget(divisor)
         for g in (self.graf_conc, self.graf_media, self.graf_dens):
             g.limpar()
@@ -197,7 +197,7 @@ class Janela(QMainWindow):
         rolagem = QScrollArea()
         rolagem.setWidget(w)
         rolagem.setWidgetResizable(True)
-        rolagem.setMinimumWidth(380)
+        rolagem.setMinimumWidth(440)
         return rolagem
 
     # ---------- opções ----------

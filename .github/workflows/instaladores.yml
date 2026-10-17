@@ -1,8 +1,12 @@
 name: Instaladores
 
+# Windows e Linux usam a montagem compatível (Python 3.8 + Qt 5), que roda
+# em sistemas de 2010 para cá. O Mac tem duas: Intel compatível (macOS 10.13+,
+# também roda em chip Apple) e chip Apple moderna (macOS 14+).
+
 on:
   push:
-    branches: [main, app-desktop]
+    branches: [main]
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
@@ -13,46 +17,60 @@ permissions:
 jobs:
   testes:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python: "3.12"
+            requisitos: requirements.txt
+          - python: "3.8"
+            requisitos: requirements-compat.txt
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt pytest
+          python-version: ${{ matrix.python }}
+      - run: pip install --prefer-binary -r ${{ matrix.requisitos }} pytest
       - run: python -m pytest -q testes/unitarios
 
   windows:
     needs: testes
     runs-on: windows-latest
+    strategy:
+      matrix:
+        arquitetura: [x64, x86]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt pyinstaller
+          python-version: "3.8"
+          architecture: ${{ matrix.arquitetura }}
+      - run: pip install --prefer-binary -r requirements-compat.txt "pyinstaller==5.13.2"
       - run: pyinstaller --noconfirm --distpath dist --workpath build instalador/zircon.spec
-      - name: Instalar Inno Setup
-        run: choco install innosetup --no-progress -y
+      - name: Instalar Inno Setup 6.2 (o instalador roda no Windows 7)
+        run: choco install innosetup --version 6.2.2 --no-progress -y --allow-downgrade
       - name: Montar instalador
         shell: pwsh
+        env:
+          ARQ: ${{ matrix.arquitetura }}
         run: |
           $versao = (python -c "import zircon; print(zircon.__version__)")
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DVersao=$versao" instalador\zircon.iss
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DVersao=$versao" "/DArq=$env:ARQ" instalador\zircon.iss
       - uses: actions/upload-artifact@v4
         with:
-          name: Zircon-instalador-windows
-          path: dist/Zircon-*-instalador.exe
+          name: Zircon-windows-${{ matrix.arquitetura }}
+          path: dist/Zircon-*-instalador*.exe
 
   linux:
     needs: testes
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    container: python:3.8-slim-buster
     steps:
+      - name: Ferramentas de montagem
+        run: |
+          sed -i 's|deb.debian.org|archive.debian.org|g; s|security.debian.org|archive.debian.org|g; /buster-updates/d' /etc/apt/sources.list
+          apt-get update && apt-get install -y --no-install-recommends binutils dpkg git libglib2.0-0 libgl1 libxkbcommon-x11-0 libfontconfig1 libdbus-1-3
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y libegl1 libxkbcommon-x11-0 libxcb-cursor0
-      - run: pip install -r requirements.txt pyinstaller
+      - run: pip install --prefer-binary -r requirements-compat.txt "pyinstaller==5.13.2"
       - run: pyinstaller --noconfirm --distpath dist --workpath build instalador/zircon.spec
       - run: sh instalador/linux_deb.sh "$(python -c 'import zircon; print(zircon.__version__)')"
       - uses: actions/upload-artifact@v4
@@ -62,12 +80,9 @@ jobs:
             dist/Zircon-*.deb
             dist/Zircon-*.tar.gz
 
-  macos:
+  macos-chip-apple:
     needs: testes
-    strategy:
-      matrix:
-        runner: [macos-14]
-    runs-on: ${{ matrix.runner }}
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -78,12 +93,12 @@ jobs:
       - run: sh instalador/macos_dmg.sh "$(python -c 'import zircon; print(zircon.__version__)')"
       - uses: actions/upload-artifact@v4
         with:
-          name: Zircon-macos-${{ matrix.runner }}
+          name: Zircon-macos-chip-apple
           path: dist/Zircon-*.dmg
 
   publicar:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [windows, linux, macos]
+    needs: [windows, linux, macos-chip-apple]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

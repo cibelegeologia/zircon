@@ -5,9 +5,9 @@ import uuid
 from pathlib import Path
 from urllib.parse import quote
 
-from PySide6.QtCore import QStandardPaths, Qt, QUrl
-from PySide6.QtGui import QDesktopServices, QGuiApplication
-from PySide6.QtWidgets import (QCheckBox, QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+from .qt import QStandardPaths, Qt, QUrl
+from .qt import QDesktopServices, QGuiApplication
+from .qt import (QCheckBox, QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
                                QPlainTextEdit, QPushButton, QTableView, QVBoxLayout)
 
 from .. import __version__
@@ -170,7 +170,7 @@ class ExportaPublicacao(QDialog):
 
     def __init__(self, parent=None):
         from ..nucleo.exportacao import LARGURAS_MM
-        from PySide6.QtWidgets import QComboBox
+        from .qt import QComboBox
         super().__init__(parent)
         self.setWindowTitle("Exportar para publicação")
         lay = QVBoxLayout(self)

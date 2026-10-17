@@ -152,6 +152,11 @@ def _clarear(cor, f=0.75):
     return "".join(f"{int(v + (255 - v) * f):02X}" for v in (r, g, b))
 
 
+def _rgba(cor, alfa):
+    r, g, b = (int(cor[i:i + 2], 16) for i in (1, 3, 5))
+    return f"rgba({r},{g},{b},{alfa})"
+
+
 def _elipse_xy(x, y, sx, sy, rho, n_sigma=2, n=60):
     cov = np.array([[sx**2, rho * sx * sy], [rho * sx * sy, sy**2]])
     val, vec = np.linalg.eigh(cov)
@@ -201,7 +206,7 @@ def interativo(caminho, resultado, opcoes, titulo="Zircon"):
             ex, ey = _elipse_xy(r.r75, r.r68, r.s75, r.s68, r.rho)
             k = r[chave]
             fig.add_trace(go.Scatter(x=ex, y=ey, fill="toself", mode="lines", line=dict(color=r.cor, width=1),
-                                     fillcolor=r.cor + "80", name=rotulo(k), legendgroup=str(k),
+                                     fillcolor=_rgba(r.cor, 0.5), name=rotulo(k), legendgroup=str(k),
                                      showlegend=k not in vistos, hovertext=dica(r), hoverinfo="text"),
                           row=1, col=1)
             vistos.add(k)
@@ -245,7 +250,7 @@ def _interativo_isocrona(caminho, g, iso, titulo):
     for _, r in g.iterrows():
         ex, ey = _elipse_xy(r[cx], r[cy], r["s" + cx[1:]], r["s" + cy[1:]], r.rho)
         fig.add_trace(go.Scatter(x=ex, y=ey, fill="toself", mode="lines", line=dict(color=r.cor, width=1),
-                                 fillcolor=r.cor + "80", showlegend=False, hoverinfo="text",
+                                 fillcolor=_rgba(r.cor, 0.5), showlegend=False, hoverinfo="text",
                                  hovertext=f"<b>{r.analise}</b><br>{nx}: {r[cx]:.4g}<br>{ny}: {r[cy]:.4g}"))
     xx = np.linspace(min(0, g[cx].min()), g[cx].max() * 1.05, 10)
     fig.add_trace(go.Scatter(x=xx, y=a + b * xx, mode="lines", line=dict(color="#D55E00", dash="dash"),

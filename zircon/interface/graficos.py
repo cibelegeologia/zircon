@@ -1,7 +1,6 @@
 """Widget de gráfico da interface; o desenho fica em nucleo/desenho.py."""
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QVBoxLayout, QWidget
+from .qt import FigureCanvasQTAgg, NavigationToolbar2QT, QVBoxLayout, QWidget
 
 from ..nucleo.desenho import concordia, densidade, isocrona, media_ponderada  # noqa: F401 (usados pela janela)
 

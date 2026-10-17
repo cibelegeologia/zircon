@@ -7,6 +7,9 @@
 #ifndef Versao
   #define Versao "0.1.0"
 #endif
+#ifndef Arq
+  #define Arq "x64"
+#endif
 
 [Setup]
 AppId={{6E7A1F2C-3B8D-4C51-9E0A-7D2B5C4F1A90}
@@ -21,13 +24,18 @@ DefaultGroupName=Zircon
 PrivilegesRequiredOverridesAllowed=dialog
 LicenseFile=licenca_instalador.txt
 OutputDir=..\dist
-OutputBaseFilename=Zircon-{#Versao}-instalador
+OutputBaseFilename=Zircon-{#Versao}-instalador-windows-{#Arq}
+MinVersion=6.1sp1
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 ChangesAssociations=yes
 UninstallDisplayName=Zircon {#Versao}
 ShowLanguageDialog=auto
+#if Arq == "x64"
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
+#endif
 
 [Languages]
 Name: "pt"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"

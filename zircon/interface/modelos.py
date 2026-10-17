@@ -1,8 +1,8 @@
 """Modelo de tabela do Qt para DataFrames, com cor de fundo por grupo."""
 import numpy as np
 import pandas as pd
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
-from PySide6.QtGui import QColor
+from .qt import QAbstractTableModel, QModelIndex, Qt
+from .qt import QColor
 
 NOMES = {
     "amostra": "Amostra", "analise": "Análise", "r75": "207Pb/235U", "s75": "± 1σ", "r68": "206Pb/238U",
