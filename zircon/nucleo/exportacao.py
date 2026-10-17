@@ -55,7 +55,7 @@ def _estilo_publicacao():
 
 def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pdf")):
     """Salva concórdia, média ponderada e distribuição nos formatos pedidos."""
-    from ..interface import graficos  # só matplotlib; não abre janela
+    from . import desenho as graficos
     from . import estatistica
     _estilo_publicacao()
     pasta = Path(pasta)
