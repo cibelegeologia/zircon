@@ -9,7 +9,7 @@ from scipy.stats import gaussian_kde
 
 import matplotlib
 
-from ..idiomas import N_, num
+from ..idiomas import N_, num, tr
 from ..idiomas import figura as F
 from . import idades
 from . import grupos
@@ -40,7 +40,40 @@ def _elipse(ax, x, y, sx, sy, rho, cor, n_sigma=2, hachura=""):
     val, vec = np.linalg.eigh(cov)
     ang = np.degrees(np.arctan2(vec[1, 1], vec[0, 1]))
     w, h = 2 * n_sigma * np.sqrt(np.maximum(val[::-1], 0))
-    ax.add_patch(Ellipse((x, y), w, h, angle=ang, facecolor=cor + "80", edgecolor=cor, lw=0.8, hatch=hachura or None))
+    return ax.add_patch(Ellipse((x, y), w, h, angle=ang, facecolor=cor + "80", edgecolor=cor, lw=0.8,
+                                hatch=hachura or None))
+
+
+def info_grao(r):
+    """Resumo de um grão para a legenda que aparece com o mouse em cima."""
+    def v(c):
+        x = r.get(c)
+        return x if x is not None and x == x else None  # descarta NaN
+    linhas = [f"{tr('Amostra')}: {r.get('amostra', '')}", f"{tr('Análise')}: {r.get('analise', '')}"]
+    for t, s_, nome in (("melhor", "s_melhor", N_("Melhor idade")), ("t68", "s_t68", "206Pb/238U"),
+                        ("t75", "s_t75", "207Pb/235U"), ("t76", "s_t76", "207Pb/206Pb")):
+        if v(t) is not None:
+            erro = f" ± {num(2 * v(s_), 1)}" if v(s_) is not None else ""
+            linhas.append(f"{tr(nome)}: {num(v(t), 1)}{erro} Ma (2σ)")
+    for c, nome in (("r75", "207Pb/235U"), ("r68", "206Pb/238U"), ("r64", "206Pb/204Pb"), ("r74", "207Pb/204Pb"),
+                    ("r24", "232Th/204Pb"), ("r84", "208Pb/204Pb")):
+        if v(c) is not None and v("melhor") is None:
+            erro = f" ± {v('s' + c[1:]) * 2:.4g}" if v("s" + c[1:]) is not None else ""
+            linhas.append(f"{nome}: {v(c):.5g}{erro} (2σ)")
+    if v("discordancia") is not None:
+        linhas.append(f"{tr('Discordância')}: {num(v('discordancia'), 1)} %")
+    if r.get("classe") is not None:
+        linhas.append(f"{tr('Classe')}: {tr(str(r['classe']))}")
+    if r.get("grupo") is not None:
+        linhas.append(f"{tr('Grupo')}: {r['grupo']}")
+    if r.get("valido") is not None:
+        linhas.append(f"{tr('Usado na média')}: {tr('sim') if bool(r['valido']) else tr('não')}")
+    return "\n".join(linhas)
+
+
+def _guarda_info(ax, pares):
+    """Liga cada elipse ou barra ao resumo do grão (usado pela janela ao passar o mouse)."""
+    ax.zircon_info = list(pares)
 
 
 def _legenda(ax, graos, agrupar):
@@ -69,8 +102,9 @@ def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=Non
         curva = idades.tera_wasserburg
         ax.set_xlabel("$^{238}$U/$^{206}$Pb")
         ax.set_ylabel("$^{207}$Pb/$^{206}$Pb")
-    for x, y, sx, sy, r, cor, h in zip(xs, ys, sxs, sys_, rhos, g.cor, _hachuras(g, agrupar)):
-        _elipse(ax, x, y, sx, sy, r, cor, hachura=h)
+    elipses = [_elipse(ax, x, y, sx, sy, r, cor, hachura=h)
+               for x, y, sx, sy, r, cor, h in zip(xs, ys, sxs, sys_, rhos, g.cor, _hachuras(g, agrupar))]
+    _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in g.iterrows())))
     xmin, xmax = np.nanmin(xs - 3 * sxs), np.nanmax(xs + 3 * sxs)
     ymin, ymax = np.nanmin(ys - 3 * sys_), np.nanmax(ys + 3 * sys_)
     tmin = max(1e-3, np.nanmin(g.t68) * 0.7)
@@ -113,8 +147,10 @@ def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
                         width=0.8)
         for barra, h in zip(barras, _hachuras(g, agrupar)):
             barra.set_hatch(h or None)
+        _guarda_info(ax, zip(barras, (info_grao(r) for _, r in g.iterrows())))
     else:
-        ax.scatter(pos, g[coluna], c=list(g.cor))
+        pontos = ax.scatter(pos, g[coluna], c=list(g.cor))
+        _guarda_info(ax, [(pontos, [info_grao(r) for _, r in g.iterrows()])])
     if media is not None:
         m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
         ax.axhspan(m - e, m + e, color="#999999", alpha=0.35, zorder=0)
@@ -172,8 +208,8 @@ def isocrona(graf, graos, iso):
         ax.set_xlabel("$^{206}$Pb/$^{204}$Pb")
         ax.set_ylabel("$^{207}$Pb/$^{204}$Pb")
     rho = graos["rho"].to_numpy(float)
-    for xi, yi, sxi, syi, r, cor in zip(x, y, sx, sy, rho, graos.cor):
-        _elipse(ax, xi, yi, sxi, syi, r, cor)
+    elipses = [_elipse(ax, xi, yi, sxi, syi, r, cor) for xi, yi, sxi, syi, r, cor in zip(x, y, sx, sy, rho, graos.cor)]
+    _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in graos.iterrows())))
     xx = np.linspace(min(0, np.nanmin(x)), np.nanmax(x + 3 * sx) * 1.05, 10)
     ax.plot(xx, a + b * xx, "--", color="#D55E00", lw=1)
     ax.set_title(F("Isócrona: {idade} ± {erro} Ma (2σ), MSWD {mswd}, n = {n} (elipses 2σ)").format(

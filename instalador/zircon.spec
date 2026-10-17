@@ -15,6 +15,7 @@ a = Analysis(
         (str(raiz / "instalador" / "zircon.png"), "."),
         # pasta "idiomas" na raiz: no Mac, "zircon/" colidiria com o executável "Zircon"
         (str(raiz / "zircon" / "idiomas" / "*.json"), "idiomas"),
+        (str(raiz / "zircon" / "ajuda" / "*.json"), "ajuda"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb1.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb2.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "DZ_detritico_so_idades.xlsx"), "exemplos"),

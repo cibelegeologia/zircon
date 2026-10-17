@@ -8,7 +8,7 @@ from .qt import QLibraryInfo, QLocale, QSettings, Qt, QTimer, QTranslator, QUrl
 from .qt import QAction, QDesktopServices, QIcon, QKeySequence
 from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
-                               QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget,
+                               QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget, QToolBar, QToolButton, QStyle,
                                QVBoxLayout, QWidget)
 
 from .. import __version__, idiomas
@@ -16,7 +16,9 @@ from ..idiomas import N_, tr
 from ..nucleo import calculo, exportacao, grupos, metodologia
 from ..nucleo.importacao import importar
 from ..nucleo.projeto import EXTENSAO, Projeto
-from . import aparencia, graficos
+from . import ajuda as janela_ajuda, aparencia, graficos
+from .explica import ModoExplicacao
+from .. import ajuda
 from .dialogos import BoasVindas, ConfereImportacao, ExportaPublicacao, Registro, sobre_texto
 from .modelos import ModeloTabela
 
@@ -64,8 +66,11 @@ class Janela(QMainWindow):
         return matplotlib.rc_context(aparencia.rc_tela(self.aparencia))
 
     # ---------- montagem ----------
-    def _acao(self, menu, texto, func, atalho=None):
+    def _acao(self, menu, texto, func, atalho=None, explica=None):
         a = QAction(texto, self)
+        if explica:
+            a.setWhatsThis(tr(explica))
+            a.setStatusTip(tr(explica))
         if atalho:
             a.setShortcut(atalho)
         a.triggered.connect(func)
@@ -74,27 +79,47 @@ class Janela(QMainWindow):
 
     def _menus(self):
         m = self.menuBar().addMenu(tr("&Arquivo"))
-        self._acao(m, tr("&Novo projeto (importar planilha)..."), self.novo, QKeySequence.New)
-        self._acao(m, tr("&Abrir projeto..."), self.abrir, QKeySequence.Open)
+        self._acao(m, tr("&Novo projeto (importar planilha)..."), self.novo, QKeySequence.New,
+                   explica=N_("Começa um projeto novo a partir da planilha do laboratório."))
+        self._acao(m, tr("&Abrir projeto..."), self.abrir, QKeySequence.Open,
+                   explica=N_("Abre um projeto .zircon salvo, com os dados e as escolhas."))
         self.menu_recentes = m.addMenu(tr("Projetos recentes"))
         m.addSeparator()
-        self._acao(m, tr("&Salvar"), self.salvar, QKeySequence.Save)
-        self._acao(m, tr("Salvar &como..."), self.salvar_como, QKeySequence.SaveAs)
+        self._acao(m, tr("&Salvar"), self.salvar, QKeySequence.Save,
+                   explica=N_("Salva o projeto atual no arquivo .zircon."))
+        self._acao(m, tr("Salvar &como..."), self.salvar_como, QKeySequence.SaveAs,
+                   explica=N_("Salva o projeto com outro nome ou em outra pasta."))
         m.addSeparator()
         self._acao(m, tr("Exportar para publicação (figuras, Excel, interativo, metodologia)..."),
-                   self.exportar_publicacao, "Ctrl+E")
-        self._acao(m, tr("Exportar planilha Excel formatada..."), self.exportar_resultados)
-        self._acao(m, tr("Exportar gráfico atual..."), self.exportar_grafico)
-        self._acao(m, tr("Exportar gráficos interativos (HTML)..."), self.exportar_interativo)
-        self._acao(m, tr("Exportar metodologia (Markdown ou texto)..."), self.exportar_metodologia)
+                   self.exportar_publicacao, "Ctrl+E",
+                   explica=N_("Gera de uma vez tudo para o artigo: figuras, planilha, gráficos interativos, "
+                              "dados e metodologia."))
+        self._acao(m, tr("Exportar planilha Excel formatada..."), self.exportar_resultados,
+                   explica=N_("Salva as tabelas de resultados e de idades por grão numa planilha Excel."))
+        self._acao(m, tr("Exportar gráfico atual..."), self.exportar_grafico,
+                   explica=N_("Salva como imagem o gráfico da aba aberta."))
+        self._acao(m, tr("Exportar gráficos interativos (HTML)..."), self.exportar_interativo,
+                   explica=N_("Gráficos que abrem no navegador e mostram os dados de cada grão (material suplementar)."))
+        self._acao(m, tr("Exportar metodologia (Markdown ou texto)..."), self.exportar_metodologia,
+                   explica=N_("Salva o texto de métodos com as citações, pronto para revisar e colar no artigo."))
         m.addSeparator()
-        self._acao(m, tr("Sai&r"), self.close, QKeySequence.Quit)
+        self._acao(m, tr("Sai&r"), self.close, QKeySequence.Quit,
+                   explica=N_("Fecha o Zircon (pergunta antes se há alterações não salvas)."))
         m = self.menuBar().addMenu(tr("&Grupos"))
-        self._acao(m, tr("Colocar linhas selecionadas no grupo..."), self.atribuir_grupo)
-        self._acao(m, tr("Voltar às cores automáticas"), lambda: self._muda_agrupamento("classe"))
+        self._acao(m, tr("Colocar linhas selecionadas no grupo..."), self.atribuir_grupo,
+                   explica=N_("Põe as linhas selecionadas na tabela num grupo seu, com cor própria."))
+        self._acao(m, tr("Voltar às cores automáticas"), lambda: self._muda_agrupamento("classe"),
+                   explica=N_("Volta a pintar os grãos por concordante, discordante ou rejeitado."))
         m = self.menuBar().addMenu(tr("Aj&uda"))
-        self._acao(m, tr("Registrar o Zircon..."), lambda: Registro(self).exec())
-        self._acao(m, tr("Sobre o Zircon"), lambda: QMessageBox.about(self, tr("Sobre"), sobre_texto()))
+        self._acao(m, tr("Guia do Zircon (o que é cada recurso e como usar)"), lambda: self.guia("inicio"),
+                   QKeySequence.HelpContents)
+        self._acao(m, tr("Primeiros passos"), lambda: self.guia("inicio"),
+                   explica=N_("Mostra o caminho básico: importar, conferir, calcular e exportar."))
+        m.addSeparator()
+        self._acao(m, tr("Registrar o Zircon..."), lambda: Registro(self).exec(),
+                   explica=N_("Registro voluntário: você vê o texto e decide se envia."))
+        self._acao(m, tr("Sobre o Zircon"), lambda: QMessageBox.about(self, tr("Sobre"), sobre_texto()),
+                   explica=N_("Versão, licença e onde achar o código e as referências."))
         self._menu_acessibilidade()
         # o nome do menu também em inglês, para quem escolheu por engano um idioma que não lê
         titulo = tr("&Idioma") + ("" if idiomas.atual() == "en" else " (Language)")
@@ -104,6 +129,43 @@ class Janela(QMainWindow):
             a.setCheckable(True)
             a.setChecked(cod == idiomas.atual())
         self._atualiza_recentes()
+        self._barra()
+
+    def _barra(self):
+        """Barra com os botões mais usados e o "?" do modo explicação."""
+        if getattr(self, "barra", None) is not None:
+            if getattr(self, "modo_explicacao", None) is not None:
+                self.modo_explicacao.ativar(False)
+            self.removeToolBar(self.barra)
+            self.barra.deleteLater()
+        self.barra = QToolBar(tr("Barra principal"))
+        self.barra.setObjectName("barra")
+        self.barra.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        estilo = self.style()
+        for icone, texto, func, explica in (
+                (QStyle.SP_FileIcon, N_("Novo"), self.novo, N_("Começa um projeto novo a partir da planilha do laboratório.")),
+                (QStyle.SP_DialogOpenButton, N_("Abrir"), self.abrir, N_("Abre um projeto .zircon salvo, com os dados e as escolhas.")),
+                (QStyle.SP_DialogSaveButton, N_("Salvar"), self.salvar, N_("Salva o projeto atual no arquivo .zircon.")),
+                (QStyle.SP_BrowserReload, N_("Calcular"), self.calcular, N_("Faz todos os cálculos com as opções escolhidas no painel.")),
+                (QStyle.SP_DriveFDIcon, N_("Exportar"), self.exportar_publicacao,
+                 N_("Gera de uma vez tudo para o artigo: figuras, planilha, gráficos interativos, "
+                    "dados e metodologia.")),
+                (QStyle.SP_DialogHelpButton, N_("Guia"), lambda: self.guia("inicio"),
+                 N_("Abre o Guia do Zircon: para que serve cada recurso, onde ler mais e como usar."))):
+            a = self.barra.addAction(estilo.standardIcon(icone), tr(texto))
+            a.triggered.connect(lambda _=False, f=func: f())
+            a.setToolTip(tr(explica))
+            a.setWhatsThis(tr(explica))
+        self.barra.addSeparator()
+        self.b_explica = QToolButton()
+        self.b_explica.setText("?  " + tr("O que é isto?"))
+        self.b_explica.setCheckable(True)
+        self.b_explica.setToolTip(tr("Liga o modo explicação: passe o mouse sobre qualquer coisa para ver o que é; "
+                                     "clique para fixar a legenda. Esc desliga."))
+        self.b_explica.setStyleSheet("font-weight: bold;")
+        self.barra.addWidget(self.b_explica)
+        self.modo_explicacao = ModoExplicacao(self.b_explica)
+        self.addToolBar(self.barra)
 
     def _menu_acessibilidade(self):
         m = self.menuBar().addMenu(tr("A&cessibilidade"))
@@ -119,8 +181,10 @@ class Janela(QMainWindow):
             return sub
 
         grupo_de_opcoes(N_("Tamanho da letra"), aparencia.TAMANHOS, "tamanho")
-        self._acao(m, tr("Aumentar a letra"), lambda: self._passo_letra(1), QKeySequence.ZoomIn)
-        self._acao(m, tr("Diminuir a letra"), lambda: self._passo_letra(-1), QKeySequence.ZoomOut)
+        self._acao(m, tr("Aumentar a letra"), lambda: self._passo_letra(1), QKeySequence.ZoomIn,
+                   explica=N_("Deixa os textos maiores (também Ctrl +)."))
+        self._acao(m, tr("Diminuir a letra"), lambda: self._passo_letra(-1), QKeySequence.ZoomOut,
+                   explica=N_("Deixa os textos menores (também Ctrl -)."))
         m.addSeparator()
         grupo_de_opcoes(N_("Tema e contraste"), aparencia.TEMAS, "tema")
         sub = grupo_de_opcoes(N_("Cores dos gráficos (daltonismo)"), aparencia.PALETAS, "paleta")
@@ -235,17 +299,121 @@ class Janela(QMainWindow):
         self.setCentralWidget(divisor)
         for g in (self.graf_conc, self.graf_media, self.graf_dens):
             g.limpar()
+        self._explica_widgets()
+
+    def _explica_widgets(self):
+        """Legendas curtas do modo explicação ("?") para opções, abas e tabelas."""
+        for w, texto in (
+                (self.c_media, N_("Escolhe qual idade de cada grão entra na média ponderada.")),
+                (self.c_corte, N_("Acima desta idade, a melhor idade do grão passa a ser a 207Pb/206Pb, "
+                                  "mais precisa em grãos antigos.")),
+                (self.c_diagrama, N_("Escolhe o diagrama concórdia: Wetherill (207Pb/235U x 206Pb/238U) ou "
+                                     "Tera-Wasserburg (238U/206Pb x 207Pb/206Pb).")),
+                (self.c_pbc, N_("Como descontar o chumbo comum (não radiogênico) quando a planilha tem 204Pb.")),
+                (self.c_disc, N_("Grãos mais discordantes que este valor ficam fora das idades da amostra.")),
+                (self.c_usar_disc, N_("Marque para usar também os grãos discordantes na média.")),
+                (self.c_outliers, N_("Retira da média os grãos que fogem muito dos outros (critério de Chauvenet).")),
+                (self.c_ef, N_("Estima a dispersão real entre os grãos, além do erro de medida.")),
+                (self.c_agrupar, N_("Como pintar os grãos nos gráficos e na tabela.")),
+                (self.c_minpop, N_("Populações com menos grãos que isto são juntadas à vizinha.")),
+                (self.r_comuns, N_("Cores comuns dos gráficos.")),
+                (self.r_acessiveis, N_("Cores que pessoas com daltonismo distinguem.")),
+                (self.c_paleta, N_("Qual paleta acessível usar; cada uma tem a sua referência.")),
+                (self.c_padroes, N_("Acrescenta listras e pontos aos grupos, para separá-los sem depender da cor.")),
+                (self.b_calcular, N_("Faz todos os cálculos com as opções escolhidas no painel.")),
+                (self.tabela, N_("Uma linha por análise, com as idades calculadas. A cor da linha é a do grupo; "
+                                 "selecione linhas para pô-las num grupo (menu Grupos).")),
+                (self.tabela_res, N_("Idades da amostra: média ponderada, concórdia e discórdia, com MSWD, p e "
+                                     "a referência de cada método.")),
+                (self.avisos, N_("Avisos sobre os dados e os resultados, para ajudar a interpretar.")),
+                (self.metodologia, N_("Texto de métodos com as citações, para revisar e colar no artigo.")),
+                (self.log, N_("Como a planilha foi lida: colunas reconhecidas, separadores e erros convertidos."))):
+            w.setWhatsThis(tr(texto))
+        abas = (N_("Tabela com os dados importados e as idades de cada grão."),
+                N_("Diagrama concórdia (ou isócrona) com a elipse de erro 2σ de cada grão. Passe o mouse "
+                   "sobre uma elipse para ver o grão."),
+                N_("Idade de cada grão com barra de erro 2σ e a faixa da média ponderada."),
+                N_("Histograma e curva de densidade (KDE) das idades; mostra as populações."),
+                N_("Idades da amostra e avisos."),
+                N_("Texto de metodologia para o artigo, no idioma escolhido e em inglês."),
+                N_("Registro de como a planilha foi lida."))
+        for i, texto in enumerate(abas):
+            self.abas.setTabWhatsThis(i, tr(texto))
+            self.abas.setTabToolTip(i, tr(texto))
+        self._nomes_para_leitor_de_tela()
+
+    def _nomes_para_leitor_de_tela(self):
+        """Nome e descrição de cada campo para NVDA, JAWS, Narrador, VoiceOver e Orca.
+
+        O Qt passa esses textos ao leitor de tela do sistema. Os campos do painel
+        ficam dentro de caixas (com o "?" e a referência), então o rótulo da linha
+        não chega sozinho ao campo; aqui ele é copiado.
+        """
+        for form in self.findChildren(QFormLayout):
+            for linha in range(form.rowCount()):
+                rotulo = form.itemAt(linha, QFormLayout.LabelRole)
+                campo = form.itemAt(linha, QFormLayout.FieldRole)
+                if rotulo is None or campo is None or rotulo.widget() is None or campo.widget() is None:
+                    continue
+                nome = rotulo.widget().text().replace("&", "")
+                alvos = [campo.widget()] + campo.widget().findChildren(QWidget)
+                for w in alvos:
+                    if isinstance(w, (QComboBox, QDoubleSpinBox)):
+                        w.setAccessibleName(nome)
+                    elif isinstance(w, QToolButton) and w.text() == "?":
+                        w.setAccessibleName(tr("Ajuda sobre: {opcao}").format(opcao=nome))
+        for w in self.findChildren(QWidget):
+            descricao = " ".join(t for t in (w.whatsThis(), w.toolTip()) if t)
+            if descricao and not w.accessibleDescription():
+                w.setAccessibleDescription(descricao)
+        for w, nome in ((self.tabela, N_("Tabela de dados")), (self.tabela_res, N_("Tabela de resultados")),
+                        (self.avisos, N_("Avisos")), (self.metodologia, N_("Metodologia")), (self.log, N_("Registro"))):
+            w.setAccessibleName(tr(nome))
+        for g, nome in ((self.graf_conc, N_("Concórdia ou isócrona")), (self.graf_media, N_("Média ponderada")),
+                        (self.graf_dens, N_("Distribuição de idades"))):
+            g.canvas.setAccessibleName(tr("Gráfico: {nome}").format(nome=tr(nome)))
+            g.canvas.setFocusPolicy(Qt.StrongFocus)  # o leitor de tela chega ao gráfico com Tab
+
+    def _descreve_graficos(self):
+        """Resumo em texto dos gráficos, lido pelo leitor de tela (quem não vê a imagem ouve o resultado)."""
+        g = self.resultado.graos
+        partes = [tr("{n} análises.").format(n=len(g))]
+        if "classe" in g:
+            contagem = g["classe"].value_counts()
+            partes.append(", ".join(f"{contagem[c]} {tr(c)}" for c in ("concordante", "discordante", "rejeitado")
+                                    if c in contagem) + ".")
+        for r in self.resultado.conjunto:
+            partes.append(f"{tr(r['Cálculo'])}: {idiomas.num(r['Idade (Ma)'])} ± {idiomas.num(r['± 2σ (Ma)'])} "
+                          f"Ma (2σ), MSWD {idiomas.num(r['MSWD'])}, n = {r['n']}.")
+        resumo = " ".join(partes) + " " + tr("Os valores de cada grão estão na aba de dados.")
+        for graf in (self.graf_conc, self.graf_media, self.graf_dens):
+            graf.canvas.setAccessibleDescription(resumo)
 
     def _com_ref(self, widget, chave):
         caixa = QWidget()
         l = QVBoxLayout(caixa)
         l.setContentsMargins(0, 0, 0, 0)
-        l.addWidget(widget)
+        linha = QHBoxLayout()
+        linha.addWidget(widget, 1)
+        linha.addWidget(self._botao_ajuda(ajuda.TOPICO_DA_OPCAO.get(chave, "inicio")))
+        l.addLayout(linha)
         r = QLabel(f"<small><i>{tr('Ref.:')} {tr(REF[chave])}</i></small>")
         r.setWordWrap(True)
         l.addWidget(r)
         widget.setToolTip(tr(REF[chave]))
         return caixa
+
+    def _botao_ajuda(self, topico):
+        """Botão "?" que abre o guia na explicação desta opção."""
+        b = QToolButton()
+        b.setText("?")
+        b.setToolTip(tr("O que é isto? Abre a explicação no Guia do Zircon"))
+        b.setAccessibleName(tr("Ajuda sobre esta opção"))
+        b.clicked.connect(lambda: self.guia(topico))
+        return b
+
+    def guia(self, topico="inicio"):
+        janela_ajuda.mostrar(self, topico, arquivo_referencias())
 
     def _painel_opcoes(self):
         op = calculo.OPCOES_PADRAO
@@ -526,6 +694,7 @@ class Janela(QMainWindow):
             return
         with self._estilo_graficos():
             self._desenha_graficos()
+        self._descreve_graficos()
 
     def _desenha_graficos(self):
         g, op = self.resultado.graos, self.opcoes()
