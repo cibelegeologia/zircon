@@ -2,6 +2,17 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.8.0 (17/10/2026)
+
+Mudanças pedidas depois do primeiro teste no Pop!_OS.
+
+- Nada é calculado sozinho. Depois de importar a planilha, o Zircon mostra os dados e espera você escolher as opções e clicar em Calcular (ou F5). Se mudar uma opção, cor ou grupo depois do cálculo, o botão avisa "Calcular (as opções mudaram)" e os gráficos só mudam quando você clicar. Projetos salvos abrem com o último cálculo.
+- As abas viraram janelas: cada uma pode ser solta, arrastada, posta lado a lado com outra, fechada e reaberta pelo menu Exibir. Solta, vira uma janela comum, com minimizar, maximizar e fechar. O Zircon lembra a arrumação; "Exibir > Voltar à arrumação inicial" desfaz tudo.
+- Tela cheia com a tecla do sistema (F11 no Windows e no Linux; Ctrl+Cmd+F no Mac) ou por "Exibir > Tela cheia".
+- Seleção ligada: o grão selecionado na tabela ou clicado num gráfico fica destacado na tabela e em todos os gráficos, sem trocar a janela que está à frente. Ctrl ou Shift juntam vários grãos.
+- O menu Ajuda passou a ser o último da barra, como nos outros programas.
+- Novo tópico no guia: "Janelas, seleção e tela cheia".
+
 ## 0.7.0 (17/10/2026)
 
 - Ajuda > Verificar atualizações: pergunta ao GitHub se há versão nova e, se houver, indica o arquivo certo para o seu sistema e abre a página de download. É a única função do Zircon que usa a internet, e só quando você clica nela; não envia nenhum dado seu e não baixa nem instala nada sozinho.

@@ -4,7 +4,7 @@ Passando sobre botões, menus, abas, opções e grãos dos gráficos aparece uma
 legenda curta. Clicando num item a legenda fica parada; o próximo clique com
 o botão esquerdo a fecha. Esc ou o próprio "?" desligam o modo.
 """
-from .qt import QApplication, QCursor, QEvent, QFrame, QLabel, QMenu, QMenuBar, QObject, Qt, QTabBar, QToolButton
+from .qt import QApplication, QCursor, QDockWidget, QEvent, QFrame, QLabel, QMenu, QMenuBar, QObject, Qt, QTabBar, QToolButton
 from .qt import QPalette, QTimer, QToolTip, QVBoxLayout
 
 from ..idiomas import tr
@@ -46,6 +46,11 @@ def texto_em(pos):
             i = w.tabAt(w.mapFromGlobal(pos))
             if i >= 0 and w.tabWhatsThis(i):
                 return w.tabWhatsThis(i)
+            if i >= 0:  # abas de janelas encaixadas: a explicação está na própria janela
+                janela = w.window()
+                for doca in janela.findChildren(QDockWidget):
+                    if doca.windowTitle() == w.tabText(i) and doca.whatsThis():
+                        return doca.whatsThis()
         if isinstance(w, (QMenu, QMenuBar)):
             a = w.actionAt(w.mapFromGlobal(pos))
             if a is not None:

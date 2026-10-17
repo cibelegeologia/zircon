@@ -71,9 +71,14 @@ def info_grao(r):
     return "\n".join(linhas)
 
 
-def _guarda_info(ax, pares):
-    """Liga cada elipse ou barra ao resumo do grão (usado pela janela ao passar o mouse)."""
+def _guarda_info(ax, pares, ids):
+    """Liga cada elipse ou barra ao resumo do grão e à linha dele na tabela.
+
+    O resumo aparece ao passar o mouse; a linha (índice do grão) serve para
+    selecionar o mesmo grão na tabela e nos outros gráficos.
+    """
     ax.zircon_info = list(pares)
+    ax.zircon_ids = list(ids)
 
 
 def _legenda(ax, graos, agrupar):
@@ -104,7 +109,7 @@ def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=Non
         ax.set_ylabel("$^{207}$Pb/$^{206}$Pb")
     elipses = [_elipse(ax, x, y, sx, sy, r, cor, hachura=h)
                for x, y, sx, sy, r, cor, h in zip(xs, ys, sxs, sys_, rhos, g.cor, _hachuras(g, agrupar))]
-    _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in g.iterrows())))
+    _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in g.iterrows())), g.index)
     xmin, xmax = np.nanmin(xs - 3 * sxs), np.nanmax(xs + 3 * sxs)
     ymin, ymax = np.nanmin(ys - 3 * sys_), np.nanmax(ys + 3 * sys_)
     tmin = max(1e-3, np.nanmin(g.t68) * 0.7)
@@ -147,10 +152,10 @@ def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
                         width=0.8)
         for barra, h in zip(barras, _hachuras(g, agrupar)):
             barra.set_hatch(h or None)
-        _guarda_info(ax, zip(barras, (info_grao(r) for _, r in g.iterrows())))
+        _guarda_info(ax, zip(barras, (info_grao(r) for _, r in g.iterrows())), g.index)
     else:
         pontos = ax.scatter(pos, g[coluna], c=list(g.cor))
-        _guarda_info(ax, [(pontos, [info_grao(r) for _, r in g.iterrows()])])
+        _guarda_info(ax, [(pontos, [info_grao(r) for _, r in g.iterrows()])], [list(g.index)])
     if media is not None:
         m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
         ax.axhspan(m - e, m + e, color="#999999", alpha=0.35, zorder=0)
@@ -186,6 +191,7 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
     grade = np.linspace(t.min() - 0.05 * np.ptp(t), t.max() + 0.05 * np.ptp(t), 1000)
     ax2.plot(grade, gaussian_kde(t)(grade), color=_tinta())
     ax2.set_yticks([])
+    ax.zircon_idades = dict(zip(g.index, t))  # para marcar no eixo os grãos selecionados
     ax.set_xlabel(F("idade (Ma)"))
     ax.set_ylabel(F("número de grãos"))
     ax.set_title(F("Histograma e densidade (KDE), n = {n}").format(n=len(t)), fontsize="medium")
@@ -209,7 +215,7 @@ def isocrona(graf, graos, iso):
         ax.set_ylabel("$^{207}$Pb/$^{204}$Pb")
     rho = graos["rho"].to_numpy(float)
     elipses = [_elipse(ax, xi, yi, sxi, syi, r, cor) for xi, yi, sxi, syi, r, cor in zip(x, y, sx, sy, rho, graos.cor)]
-    _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in graos.iterrows())))
+    _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in graos.iterrows())), graos.index)
     xx = np.linspace(min(0, np.nanmin(x)), np.nanmax(x + 3 * sx) * 1.05, 10)
     ax.plot(xx, a + b * xx, "--", color="#D55E00", lw=1)
     ax.set_title(F("Isócrona: {idade} ± {erro} Ma (2σ), MSWD {mswd}, n = {n} (elipses 2σ)").format(

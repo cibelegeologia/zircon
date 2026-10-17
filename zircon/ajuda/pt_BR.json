@@ -19,6 +19,20 @@
    ]
   },
   {
+   "id": "janelas",
+   "titulo": "Janelas, seleção e tela cheia",
+   "serve": "Este recurso serve para arrumar a tela do seu jeito, por exemplo para ver o diagrama concórdia ao lado da tabela, e para achar o mesmo grão em todas as janelas; use-o quando precisar comparar resultados.",
+   "explicacao": "Tabela, gráficos, resultados, metodologia e registro são janelas que começam empilhadas como abas. Cada uma pode ser solta da janela principal, arrastada e encaixada em outro lugar, posta lado a lado com outra ou fechada. Solta, ela vira uma janela comum do sistema, com os botões de minimizar, maximizar e fechar. O Zircon lembra a arrumação da próxima vez que abrir. Ao selecionar um grão na tabela ou clicar nele num gráfico, ele fica destacado na tabela e em todos os gráficos (borda grossa nas elipses e nas barras, linha pontilhada no histograma), sem trocar a janela que está à frente. Os cálculos só são refeitos quando você clica em Calcular: se mudar uma opção, o botão avisa que as opções mudaram.",
+   "referencias": [],
+   "como_usar": [
+    "Para soltar uma janela, arraste a aba ou a barra de título dela para fora, ou clique duas vezes na barra de título.",
+    "Para pôr duas lado a lado, arraste uma janela até a borda da outra; uma área azul mostra onde ela vai encaixar.",
+    "Para reabrir uma janela fechada, use o menu 'Exibir'. 'Voltar à arrumação inicial' desfaz todas as mudanças.",
+    "Clique numa linha da tabela ou num grão do gráfico para destacá-lo em todas as janelas; com Ctrl ou Shift, junte vários. Clique num espaço vazio do gráfico para limpar a seleção.",
+    "Para usar a tela inteira, aperte F11 (no Mac, Ctrl+Cmd+F) ou use 'Exibir > Tela cheia'. A mesma tecla volta ao normal."
+   ]
+  },
+  {
    "id": "importar",
    "titulo": "Importar a planilha do laboratório",
    "serve": "Este recurso serve para trazer para o Zircon a planilha de resultados entregue pelo laboratório; use-o sempre que começar um projeto novo com dados de uma amostra.",

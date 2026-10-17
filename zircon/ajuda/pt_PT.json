@@ -19,6 +19,20 @@
    ]
   },
   {
+   "id": "janelas",
+   "titulo": "Janelas, seleção e ecrã inteiro",
+   "serve": "Este recurso serve para organizar o ecrã à sua maneira, por exemplo para ver o diagrama concórdia ao lado da tabela, e para encontrar o mesmo grão em todas as janelas; use-o quando precisar de comparar resultados.",
+   "explicacao": "A tabela, os gráficos, os resultados, a metodologia e o registo são janelas que começam empilhadas como separadores. Cada uma pode ser solta da janela principal, arrastada e encaixada noutro sítio, posta lado a lado com outra ou fechada. Solta, passa a ser uma janela normal do sistema, com os botões de minimizar, maximizar e fechar. O Zircon lembra-se da disposição da próxima vez que for aberto. Ao selecionar um grão na tabela ou clicar nele num gráfico, ele fica destacado na tabela e em todos os gráficos (contorno grosso nas elipses e nas barras, linha pontilhada no histograma), sem mudar a janela que está à frente. Os cálculos só são refeitos quando clica em Calcular: se alterar uma opção, o botão avisa que as opções foram alteradas.",
+   "referencias": [],
+   "como_usar": [
+    "Para soltar uma janela, arraste o separador ou a barra de título para fora, ou faça duplo clique na barra de título.",
+    "Para pôr duas lado a lado, arraste uma janela até à margem da outra; uma área azul mostra onde ela vai encaixar.",
+    "Para reabrir uma janela fechada, use o menu 'Ver'. 'Repor a disposição inicial' desfaz todas as alterações.",
+    "Clique numa linha da tabela ou num grão do gráfico para o destacar em todas as janelas; com Ctrl ou Shift, junte vários. Clique num espaço vazio do gráfico para limpar a seleção.",
+    "Para usar o ecrã inteiro, prima F11 (no Mac, Ctrl+Cmd+F) ou use 'Ver > Ecrã inteiro'. A mesma tecla repõe a vista normal."
+   ]
+  },
+  {
    "id": "importar",
    "titulo": "Importar a folha de cálculo do laboratório",
    "serve": "Este recurso serve para trazer para o Zircon a folha de cálculo de resultados fornecida pelo laboratório; use-o sempre que começar um projeto novo com dados de uma amostra.",

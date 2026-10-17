@@ -19,6 +19,20 @@
    ]
   },
   {
+   "id": "janelas",
+   "titulo": "Fenster, Auswahl und Vollbild",
+   "serve": "Diese Funktion dient dazu, den Bildschirm nach Ihren Wünschen anzuordnen, etwa um das Konkordiadiagramm neben der Tabelle zu sehen, und dasselbe Korn in allen Fenstern wiederzufinden; verwenden Sie sie, wenn Sie Ergebnisse vergleichen müssen.",
+   "explicacao": "Tabelle, Diagramme, Ergebnisse, Methodik und Protokoll sind Fenster, die zu Beginn als Reiter übereinanderliegen. Jedes kann aus dem Hauptfenster gelöst, verschoben und an anderer Stelle angedockt, neben ein anderes gestellt oder geschlossen werden. Gelöst wird es zu einem normalen Systemfenster mit den Schaltflächen zum Minimieren, Maximieren und Schließen. Zircon merkt sich die Anordnung für den nächsten Start. Wenn Sie ein Korn in der Tabelle auswählen oder in einem Diagramm darauf klicken, wird es in der Tabelle und in allen Diagrammen hervorgehoben (dicker Rand bei Ellipsen und Balken, gepunktete Linie im Histogramm), ohne dass sich das Fenster im Vordergrund ändert. Die Berechnungen werden erst neu ausgeführt, wenn Sie auf Berechnen klicken: Wenn Sie eine Option ändern, weist die Schaltfläche darauf hin, dass sich die Optionen geändert haben.",
+   "referencias": [],
+   "como_usar": [
+    "Um ein Fenster zu lösen, ziehen Sie seinen Reiter oder seine Titelleiste nach außen oder doppelklicken Sie auf die Titelleiste.",
+    "Um zwei Fenster nebeneinanderzustellen, ziehen Sie eines an den Rand des anderen; ein blauer Bereich zeigt, wo es angedockt wird.",
+    "Um ein geschlossenes Fenster wieder zu öffnen, verwenden Sie das Menü 'Ansicht'. 'Ursprüngliche Anordnung wiederherstellen' macht alle Änderungen rückgängig.",
+    "Klicken Sie auf eine Tabellenzeile oder ein Korn im Diagramm, um es in allen Fenstern hervorzuheben; mit Strg oder Umschalt wählen Sie mehrere aus. Klicken Sie auf eine leere Stelle im Diagramm, um die Auswahl aufzuheben.",
+    "Um den ganzen Bildschirm zu nutzen, drücken Sie F11 (auf dem Mac Ctrl+Cmd+F) oder verwenden Sie 'Ansicht > Vollbild'. Dieselbe Taste kehrt zur normalen Ansicht zurück."
+   ]
+  },
+  {
    "id": "importar",
    "titulo": "Labortabelle importieren",
    "serve": "Diese Funktion dient dazu, die vom Labor gelieferte Ergebnistabelle in Zircon zu laden; verwenden Sie sie immer, wenn Sie ein neues Projekt mit den Daten einer Probe beginnen.",

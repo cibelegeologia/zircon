@@ -19,6 +19,20 @@
    ]
   },
   {
+   "id": "janelas",
+   "titulo": "Ventanas, selección y pantalla completa",
+   "serve": "Este recurso sirve para organizar la pantalla a su manera, por ejemplo para ver el diagrama de concordia junto a la tabla, y para encontrar el mismo grano en todas las ventanas; úselo cuando necesite comparar resultados.",
+   "explicacao": "La tabla, los gráficos, los resultados, la metodología y el registro son ventanas que empiezan apiladas como pestañas. Cada una puede separarse de la ventana principal, arrastrarse y acoplarse en otro lugar, colocarse junto a otra o cerrarse. Separada, se convierte en una ventana normal del sistema, con los botones de minimizar, maximizar y cerrar. Zircon recuerda la disposición la próxima vez que se abre. Al seleccionar un grano en la tabla o hacer clic en él en un gráfico, queda resaltado en la tabla y en todos los gráficos (borde grueso en las elipses y en las barras, línea punteada en el histograma), sin cambiar la ventana que está al frente. Los cálculos solo se rehacen cuando hace clic en Calcular: si cambia una opción, el botón avisa de que las opciones cambiaron.",
+   "referencias": [],
+   "como_usar": [
+    "Para separar una ventana, arrastre su pestaña o su barra de título hacia fuera, o haga doble clic en la barra de título.",
+    "Para poner dos ventanas una junto a otra, arrastre una hasta el borde de la otra; un área azul muestra dónde se acoplará.",
+    "Para volver a abrir una ventana cerrada, use el menú 'Ver'. 'Restablecer la disposición inicial' deshace todos los cambios.",
+    "Haga clic en una fila de la tabla o en un grano del gráfico para resaltarlo en todas las ventanas; con Ctrl o Shift, seleccione varios. Haga clic en un espacio vacío del gráfico para borrar la selección.",
+    "Para usar toda la pantalla, pulse F11 (en Mac, Ctrl+Cmd+F) o use 'Ver > Pantalla completa'. La misma tecla vuelve a la vista normal."
+   ]
+  },
+  {
    "id": "importar",
    "titulo": "Importar la hoja de cálculo del laboratorio",
    "serve": "Este recurso sirve para traer a Zircon la hoja de cálculo de resultados entregada por el laboratorio; úselo siempre que empiece un proyecto nuevo con datos de una muestra.",

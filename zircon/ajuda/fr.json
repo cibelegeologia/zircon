@@ -19,6 +19,20 @@
    ]
   },
   {
+   "id": "janelas",
+   "titulo": "Fenêtres, sélection et plein écran",
+   "serve": "Cette fonction sert à organiser l'écran à votre façon, par exemple pour voir le diagramme concordia à côté du tableau, et à retrouver le même grain dans toutes les fenêtres ; utilisez-la lorsque vous devez comparer des résultats.",
+   "explicacao": "Le tableau, les graphiques, les résultats, la méthodologie et le journal sont des fenêtres qui s'ouvrent empilées sous forme d'onglets. Chacune peut être détachée de la fenêtre principale, déplacée et ancrée ailleurs, placée à côté d'une autre ou fermée. Détachée, elle devient une fenêtre ordinaire du système, avec les boutons réduire, agrandir et fermer. Zircon mémorise la disposition pour la prochaine ouverture. Lorsque vous sélectionnez un grain dans le tableau ou cliquez dessus dans un graphique, il est mis en évidence dans le tableau et dans tous les graphiques (contour épais sur les ellipses et les barres, ligne pointillée dans l'histogramme), sans changer la fenêtre au premier plan. Les calculs ne sont refaits que lorsque vous cliquez sur Calculer : si vous modifiez une option, le bouton signale que les options ont changé.",
+   "referencias": [],
+   "como_usar": [
+    "Pour détacher une fenêtre, faites glisser son onglet ou sa barre de titre vers l'extérieur, ou double-cliquez sur sa barre de titre.",
+    "Pour placer deux fenêtres côte à côte, faites glisser l'une jusqu'au bord de l'autre ; une zone bleue indique où elle va s'ancrer.",
+    "Pour rouvrir une fenêtre fermée, utilisez le menu 'Affichage'. 'Rétablir la disposition initiale' annule toutes les modifications.",
+    "Cliquez sur une ligne du tableau ou sur un grain du graphique pour le mettre en évidence dans toutes les fenêtres ; avec Ctrl ou Maj, ajoutez-en plusieurs. Cliquez sur une zone vide du graphique pour effacer la sélection.",
+    "Pour utiliser tout l'écran, appuyez sur F11 (sur Mac, Ctrl+Cmd+F) ou utilisez 'Affichage > Plein écran'. La même touche rétablit l'affichage normal."
+   ]
+  },
+  {
    "id": "importar",
    "titulo": "Importer le tableur du laboratoire",
    "serve": "Cette fonction sert à charger dans Zircon le tableur de résultats fourni par le laboratoire ; utilisez-la chaque fois que vous commencez un nouveau projet avec les données d'un échantillon.",

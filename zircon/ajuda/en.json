@@ -19,6 +19,20 @@
    ]
   },
   {
+   "id": "janelas",
+   "titulo": "Windows, selection and full screen",
+   "serve": "This feature is used to arrange the screen your way, for example to see the concordia diagram next to the table, and to find the same grain in every window; use it when you need to compare results.",
+   "explicacao": "The table, charts, results, methodology and log are windows that start out stacked as tabs. Each one can be undocked from the main window, dragged and docked somewhere else, placed side by side with another, or closed. Once undocked, it becomes an ordinary system window, with minimise, maximise and close buttons. Zircon remembers the layout the next time it opens. When you select a grain in the table or click it in a chart, it is highlighted in the table and in every chart (thick outline on ellipses and bars, dotted line in the histogram), without changing which window is in front. Calculations are only redone when you click Calculate: if you change an option, the button warns that the options have changed.",
+   "referencias": [],
+   "como_usar": [
+    "To undock a window, drag its tab or title bar out, or double-click its title bar.",
+    "To place two windows side by side, drag one to the edge of the other; a blue area shows where it will dock.",
+    "To reopen a closed window, use the 'View' menu. 'Restore default layout' undoes all changes.",
+    "Click a row in the table or a grain in a chart to highlight it in every window; hold Ctrl or Shift to add more. Click an empty area of the chart to clear the selection.",
+    "To use the whole screen, press F11 (on Mac, Ctrl+Cmd+F) or use 'View > Full screen'. The same key returns to normal."
+   ]
+  },
+  {
    "id": "importar",
    "titulo": "Importing the laboratory spreadsheet",
    "serve": "This feature is used to bring the results spreadsheet supplied by the laboratory into Zircon; use it whenever you start a new project with data from a sample.",

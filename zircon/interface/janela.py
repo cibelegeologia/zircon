@@ -9,7 +9,7 @@ from .qt import QLibraryInfo, QLocale, QSettings, Qt, QTimer, QTranslator, QUrl
 from .qt import QAction, QDesktopServices, QIcon, QKeySequence
 from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
-                               QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget, QToolBar, QToolButton, QStyle,
+                               QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget, QDockWidget, QToolBar, QToolButton, QStyle,
                                QVBoxLayout, QWidget)
 
 from .. import __version__, atualizacao, idiomas
@@ -55,12 +55,19 @@ class Janela(QMainWindow):
         self.config = QSettings("Zircon", "Zircon")
         self.projeto = None
         self.resultado = None
+        self.op_calculadas = None   # opções usadas no último cálculo (os gráficos seguem estas)
+        self.cores_mudaram = False  # paleta ou padrões trocados depois do último cálculo
+        self.docas = []
         self.alterado = False
         self.resize(1280, 800)
         self.aparencia = aparencia.ler(self.config)
         self._menus()
         with self._estilo_graficos():
             self._layout()
+        self.estado_padrao = self.saveState()
+        estado = self.config.value("arrumacao")
+        if estado is not None:
+            self.restoreState(estado)
         self._atualiza_titulo()
 
     def _estilo_graficos(self):
@@ -111,6 +118,17 @@ class Janela(QMainWindow):
                    explica=N_("Põe as linhas selecionadas na tabela num grupo seu, com cor própria."))
         self._acao(m, tr("Voltar às cores automáticas"), lambda: self._muda_agrupamento("classe"),
                    explica=N_("Volta a pintar os grãos por concordante, discordante ou rejeitado."))
+        self.menu_exibir = self.menuBar().addMenu(tr("E&xibir"))
+        self.menu_exibir.aboutToShow.connect(self._monta_menu_exibir)
+        self._menu_acessibilidade()
+        # o nome do menu também em inglês, para quem escolheu por engano um idioma que não lê
+        titulo = tr("&Idioma") + ("" if idiomas.atual() == "en" else " (Language)")
+        m = self.menuBar().addMenu(titulo)
+        for cod, nome in idiomas.IDIOMAS.items():
+            a = self._acao(m, nome, lambda _=False, c=cod: self._troca_idioma(c))
+            a.setCheckable(True)
+            a.setChecked(cod == idiomas.atual())
+        # a Ajuda fica por último, como é o costume nos programas
         m = self.menuBar().addMenu(tr("Aj&uda"))
         self._acao(m, tr("Guia do Zircon (o que é cada recurso e como usar)"), lambda: self.guia("inicio"),
                    QKeySequence.HelpContents)
@@ -124,14 +142,6 @@ class Janela(QMainWindow):
                    explica=N_("Registro voluntário: você vê o texto e decide se envia."))
         self._acao(m, tr("Sobre o Zircon"), lambda: QMessageBox.about(self, tr("Sobre"), sobre_texto()),
                    explica=N_("Versão, licença e onde achar o código e as referências."))
-        self._menu_acessibilidade()
-        # o nome do menu também em inglês, para quem escolheu por engano um idioma que não lê
-        titulo = tr("&Idioma") + ("" if idiomas.atual() == "en" else " (Language)")
-        m = self.menuBar().addMenu(titulo)
-        for cod, nome in idiomas.IDIOMAS.items():
-            a = self._acao(m, nome, lambda _=False, c=cod: self._troca_idioma(c))
-            a.setCheckable(True)
-            a.setChecked(cod == idiomas.atual())
         self._atualiza_recentes()
         self._barra()
 
@@ -158,6 +168,8 @@ class Janela(QMainWindow):
                  N_("Abre o Guia do Zircon: para que serve cada recurso, onde ler mais e como usar."))):
             a = self.barra.addAction(estilo.standardIcon(icone), tr(texto))
             a.triggered.connect(lambda _=False, f=func: f())
+            if func == self.calcular:
+                a.setShortcut(QKeySequence.Refresh)  # F5 (Ctrl+R no Mac)
             a.setToolTip(tr(explica))
             a.setWhatsThis(tr(explica))
         self.barra.addSeparator()
@@ -261,26 +273,29 @@ class Janela(QMainWindow):
                 self.c_paleta.setCurrentIndex(self.c_paleta.findData(self.aparencia["paleta"]))
                 self.c_paleta.blockSignals(False)
             if self.resultado is not None:
-                alterado = self.alterado
-                self.calcular()
-                self.alterado = alterado
+                self.cores_mudaram = True
+                self._atualiza_pendente()
         else:
             QTimer.singleShot(0, self._remonta)  # depois que o menu que chamou terminar
 
     def _layout(self):
-        divisor = QSplitter()
-        divisor.addWidget(self._painel_opcoes())
-        self.abas = QTabWidget()
+        """Painel de opções e janelas de resultados que podem ser soltas, arrastadas, postas lado a lado e fechadas."""
+        for d in self.docas:
+            self.removeDockWidget(d)
+            d.deleteLater()
+        self.docas = []
+        self.setDockOptions(QMainWindow.AllowTabbedDocks | QMainWindow.AllowNestedDocks | QMainWindow.AnimatedDocks)
+        self.setTabPosition(Qt.AllDockWidgetAreas, QTabWidget.North)
+        self.setCentralWidget(None)
+        painel = self._doca(self._painel_opcoes(), N_("Opções de cálculo"), "doca_opcoes",
+                            N_("Escolha o que calcular e como; depois clique em Calcular."), Qt.LeftDockWidgetArea)
+        painel.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.tabela = QTableView()
         self.tabela.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabela.setSortingEnabled(False)
-        self.abas.addTab(self.tabela, tr("Dados e idades por grão"))
         self.graf_conc = graficos.Grafico()
-        self.abas.addTab(self.graf_conc, tr("Concórdia ou isócrona"))
         self.graf_media = graficos.Grafico()
-        self.abas.addTab(self.graf_media, tr("Média ponderada"))
         self.graf_dens = graficos.Grafico()
-        self.abas.addTab(self.graf_dens, tr("Distribuição de idades"))
         res = QWidget()
         lr = QVBoxLayout(res)
         self.tabela_res = QTableView()
@@ -290,20 +305,105 @@ class Janela(QMainWindow):
         self.avisos.setMaximumHeight(140)
         lr.addWidget(QLabel(tr("Avisos e interpretação")))
         lr.addWidget(self.avisos)
-        self.abas.addTab(res, tr("Resultados"))
         self.metodologia = QPlainTextEdit()
         self.metodologia.setReadOnly(True)
-        self.abas.addTab(self.metodologia, tr("Metodologia (texto para o artigo)"))
         self.log = QPlainTextEdit()
         self.log.setReadOnly(True)
-        self.abas.addTab(self.log, tr("Registro da importação"))
-        divisor.addWidget(self.abas)
-        divisor.setStretchFactor(1, 1)
-        divisor.setSizes([int(470 * aparencia.escala(self.aparencia)), 820])
-        self.setCentralWidget(divisor)
+        janelas = (
+            (self.tabela, N_("Dados e idades por grão"), "doca_dados",
+             N_("Tabela com os dados importados e as idades de cada grão.")),
+            (self.graf_conc, N_("Concórdia ou isócrona"), "doca_concordia",
+             N_("Diagrama concórdia (ou isócrona) com a elipse de erro 2σ de cada grão. Passe o mouse "
+                "sobre uma elipse para ver o grão.")),
+            (self.graf_media, N_("Média ponderada"), "doca_media",
+             N_("Idade de cada grão com barra de erro 2σ e a faixa da média ponderada.")),
+            (self.graf_dens, N_("Distribuição de idades"), "doca_densidade",
+             N_("Histograma e curva de densidade (KDE) das idades; mostra as populações.")),
+            (res, N_("Resultados"), "doca_resultados", N_("Idades da amostra e avisos.")),
+            (self.metodologia, N_("Metodologia (texto para o artigo)"), "doca_metodologia",
+             N_("Texto de metodologia para o artigo, no idioma escolhido e em inglês.")),
+            (self.log, N_("Registro da importação"), "doca_registro", N_("Registro de como a planilha foi lida.")))
+        primeira = None
+        for widget, titulo, nome, explica in janelas:
+            d = self._doca(widget, titulo, nome, explica, Qt.RightDockWidgetArea)
+            if primeira is None:
+                primeira = d
+            else:
+                self.tabifyDockWidget(primeira, d)
+        primeira.raise_()
+        largura = painel.widget().widget().minimumSizeHint().width() + painel.widget().verticalScrollBar().sizeHint().width()
+        painel.widget().setMinimumWidth(largura + 4)  # o painel nunca fica cortado
         for g in (self.graf_conc, self.graf_media, self.graf_dens):
             g.limpar()
+            g.clicou_graos.connect(self._seleciona_pelos_graficos)
         self._explica_widgets()
+
+    def _doca(self, widget, titulo, nome, explica, area):
+        d = QDockWidget(tr(titulo), self)
+        d.setObjectName(nome)  # o nome guarda a arrumação entre uma sessão e outra
+        d.setWidget(widget)
+        d.setWhatsThis(tr(explica))
+        d.setFeatures(QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        d.topLevelChanged.connect(lambda solta, d=d: self._janela_solta(d, solta))
+        self.addDockWidget(area, d)
+        self.docas.append(d)
+        return d
+
+    def _janela_solta(self, doca, solta):
+        """Janela solta vira janela comum do sistema, com minimizar, maximizar e fechar.
+
+        Enquanto a pessoa ainda arrasta a janela, espera ela soltar o botão do mouse:
+        trocar o tipo de janela no meio do arraste interromperia o movimento.
+        """
+        if not solta or not doca.isFloating():
+            return
+        if QApplication.mouseButtons() != Qt.NoButton:
+            QTimer.singleShot(150, lambda: self._janela_solta(doca, True))
+            return
+        if doca.windowFlags() & Qt.WindowMaximizeButtonHint:
+            return
+        geometria = doca.geometry()
+        doca.setWindowFlags(Qt.Window | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint
+                            | Qt.WindowCloseButtonHint)
+        doca.setGeometry(geometria)
+        doca.show()
+
+    def _monta_menu_exibir(self):
+        m = self.menu_exibir
+        m.clear()
+        for d in self.docas:
+            a = d.toggleViewAction()
+            a.setWhatsThis(d.whatsThis())
+            m.addAction(a)
+        m.addSeparator()
+        self._acao(m, tr("Recolocar as janelas soltas na janela principal"), self._recoloca_janelas,
+                   explica=N_("Traz de volta para dentro da janela principal as janelas que você soltou."))
+        self._acao(m, tr("Voltar à arrumação inicial"), self._arrumacao_inicial,
+                   explica=N_("Mostra todas as janelas de novo, nas posições de quando o Zircon foi instalado."))
+        m.addSeparator()
+        a = self._acao(m, tr("Tela cheia"), self._tela_cheia, QKeySequence.FullScreen,
+                       explica=N_("Usa a tela inteira (F11 no Windows e no Linux; Ctrl+Cmd+F no Mac). "
+                                  "A mesma tecla volta ao normal."))
+        a.setCheckable(True)
+        a.setChecked(self.isFullScreen())
+
+    def _recoloca_janelas(self):
+        for d in self.docas:
+            if d.isFloating():
+                d.setFloating(False)
+                d.show()
+
+    def _arrumacao_inicial(self):
+        self._recoloca_janelas()
+        self.restoreState(self.estado_padrao)
+        for d in self.docas:
+            d.show()
+
+    def _tela_cheia(self, *_):
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
 
     def _explica_widgets(self):
         """Legendas curtas do modo explicação ("?") para opções, abas e tabelas."""
@@ -333,17 +433,6 @@ class Janela(QMainWindow):
                 (self.metodologia, N_("Texto de métodos com as citações, para revisar e colar no artigo.")),
                 (self.log, N_("Como a planilha foi lida: colunas reconhecidas, separadores e erros convertidos."))):
             w.setWhatsThis(tr(texto))
-        abas = (N_("Tabela com os dados importados e as idades de cada grão."),
-                N_("Diagrama concórdia (ou isócrona) com a elipse de erro 2σ de cada grão. Passe o mouse "
-                   "sobre uma elipse para ver o grão."),
-                N_("Idade de cada grão com barra de erro 2σ e a faixa da média ponderada."),
-                N_("Histograma e curva de densidade (KDE) das idades; mostra as populações."),
-                N_("Idades da amostra e avisos."),
-                N_("Texto de metodologia para o artigo, no idioma escolhido e em inglês."),
-                N_("Registro de como a planilha foi lida."))
-        for i, texto in enumerate(abas):
-            self.abas.setTabWhatsThis(i, tr(texto))
-            self.abas.setTabToolTip(i, tr(texto))
         self._nomes_para_leitor_de_tela()
 
     def _nomes_para_leitor_de_tela(self):
@@ -470,7 +559,6 @@ class Janela(QMainWindow):
         self.c_diagrama = QComboBox()
         self.c_diagrama.addItem("Wetherill", "wetherill")
         self.c_diagrama.addItem("Tera-Wasserburg", "tw")
-        self.c_diagrama.currentIndexChanged.connect(self._desenha)
         f1.addRow(tr("Diagrama concórdia"), self.c_diagrama)
         self.c_pbc = QComboBox()
         for texto, v in ((tr("Stacey e Kramers (1975)"), "stacey_kramers"), (tr("Composição fixa (Canyon Diablo)"), "fixo"),
@@ -511,11 +599,16 @@ class Janela(QMainWindow):
         self.b_calcular.setStyleSheet("font-weight: bold;")
         self.b_calcular.clicked.connect(self.calcular)
         lay.addWidget(self.b_calcular)
+        for c in (self.c_media, self.c_diagrama, self.c_pbc, self.c_agrupar):
+            c.currentIndexChanged.connect(lambda _=0: self._atualiza_pendente())
+        for c in (self.c_corte, self.c_disc, self.c_minpop):
+            c.valueChanged.connect(lambda _=0: self._atualiza_pendente())
+        for c in (self.c_usar_disc, self.c_outliers, self.c_ef):
+            c.toggled.connect(lambda _=False: self._atualiza_pendente())
         lay.addStretch()
         rolagem = QScrollArea()
         rolagem.setWidget(w)
         rolagem.setWidgetResizable(True)
-        rolagem.setMinimumWidth(int(440 * aparencia.escala(self.aparencia)))
         return rolagem
 
     # ---------- opções ----------
@@ -594,12 +687,24 @@ class Janela(QMainWindow):
         p = self.projeto
         self.log.setPlainText("\n".join(p.log))
         self.alterado = alterado
+        self.resultado = None
+        self.op_calculadas = None
+        self._modelo_tabela(ModeloTabela(p.dados))
+        self.tabela_res.setModel(None)
+        self.avisos.clear()
+        self.metodologia.clear()
+        for g in (self.graf_conc, self.graf_media, self.graf_dens):
+            g.limpar(N_("Escolha as opções no painel e clique em Calcular"))
         if p.tipo == "desconhecido":
             QMessageBox.information(self, tr("Tipo de dado"), tr("Não reconheci razões U-Pb, Pb-Pb, Th-Pb nem idades "
                                        "nesta planilha. Isócronas U-Th ainda não são calculadas nesta versão."))
-            self.tabela.setModel(ModeloTabela(p.dados))
             return
-        self.calcular()
+        if p.opcoes:
+            # projeto salvo já calculado: mostra o que a pessoa fez da última vez
+            self._executa(self.opcoes())
+        else:
+            self.statusBar().showMessage(tr("Dados importados. Escolha as opções no painel e clique em Calcular."))
+        self._atualiza_pendente()
 
     def salvar(self):
         if self.projeto is None:
@@ -687,10 +792,18 @@ class Janela(QMainWindow):
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(destino)))
 
     def exportar_grafico(self):
-        atual = self.abas.currentWidget()
-        if not isinstance(atual, graficos.Grafico):
-            QMessageBox.information(self, tr("Exportar gráfico"), tr("Abra a aba do gráfico que quer exportar."))
+        abertos = [(d.windowTitle(), d.widget()) for d in self.docas
+                   if isinstance(d.widget(), graficos.Grafico) and not d.visibleRegion().isEmpty()]
+        if not abertos:
+            QMessageBox.information(self, tr("Exportar gráfico"), tr("Abra a janela do gráfico que quer exportar."))
             return
+        atual = abertos[0][1]
+        if len(abertos) > 1:
+            nome, ok = QInputDialog.getItem(self, tr("Exportar gráfico"), tr("Qual gráfico?"),
+                                            [t for t, _ in abertos], 0, False)
+            if not ok:
+                return
+            atual = dict(abertos)[nome]
         caminho, _ = QFileDialog.getSaveFileName(self, tr("Exportar gráfico"), "grafico.png",
                                                  tr("PNG (*.png);;SVG (*.svg);;PDF (*.pdf)"))
         if caminho:
@@ -701,7 +814,10 @@ class Janela(QMainWindow):
         if self.projeto is None or self.projeto.dados is None:
             QMessageBox.information(self, tr("Calcular"), tr("Primeiro importe uma planilha (Arquivo > Novo projeto)."))
             return
-        op = self.opcoes()
+        self._executa(self.opcoes())
+
+    def _executa(self, op):
+        """Calcula com as opções op e mostra tudo; só roda pelo botão Calcular ou ao abrir um projeto salvo."""
         manual = self.projeto.grupo_manual if op["agrupar"] == "manual" else None
         if op["agrupar"] == "manual" and manual is None:
             manual = [1] * len(self.projeto.dados)
@@ -714,12 +830,18 @@ class Janela(QMainWindow):
         if self.projeto.opcoes != op:
             self.alterado = self.alterado or bool(self.projeto.opcoes)
         self.projeto.opcoes = op
+        self.op_calculadas = dict(op)
+        self.cores_mudaram = False
         g = self.resultado.graos
         visiveis = [c for c in ("amostra", "analise", "melhor", "s_melhor", "discordancia", "classe", "grupo",
                                 "valido", "t68", "s_t68", "t75", "s_t75", "t76", "s_t76",
                                 "r75", "s75", "r68", "s68", "r64", "s64", "r74", "s74", "r24", "s24",
                                 "r84", "s84", "rho") if c in g]
-        self.tabela.setModel(ModeloTabela(g[visiveis].reset_index(drop=True), list(g.cor)))
+        antes = self.tabela.selectionModel()
+        linhas = sorted({i.row() for i in antes.selectedRows()}) if antes is not None else []
+        self._modelo_tabela(ModeloTabela(g[visiveis].reset_index(drop=True), list(g.cor)))
+        if linhas and len(linhas) < len(g):
+            self._seleciona_pelos_graficos([g.index[i] for i in linhas if i < len(g)], True)
         self.tabela.resizeColumnsToContents()
         res = exportacao.tabela_resultados(self.resultado.conjunto)
         self.tabela_res.setModel(ModeloTabela(res))
@@ -728,6 +850,53 @@ class Janela(QMainWindow):
         self.metodologia.setPlainText(metodologia.gerar(self.projeto, self.resultado, op, arquivo_referencias()))
         self._desenha()
         self._atualiza_titulo()
+        self._atualiza_pendente()
+        self.statusBar().showMessage(tr("Cálculo feito."), 5000)
+
+    def _atualiza_pendente(self):
+        """Avisa no botão Calcular quando as opções mudaram depois do último cálculo."""
+        if not hasattr(self, "b_calcular"):
+            return
+        pendente = self.resultado is not None and (self.cores_mudaram or self.opcoes() != self.op_calculadas)
+        if pendente:
+            self.b_calcular.setText(tr("Calcular (as opções mudaram)"))
+            self.b_calcular.setStyleSheet("font-weight: bold; border: 3px solid palette(highlight);")
+            self.statusBar().showMessage(tr("As opções mudaram. Clique em Calcular para atualizar os resultados."))
+        else:
+            self.b_calcular.setText(tr("Calcular"))
+            self.b_calcular.setStyleSheet("font-weight: bold;")
+
+    # ---------- seleção ligada entre tabela e gráficos ----------
+    def _modelo_tabela(self, modelo):
+        self.tabela.setModel(modelo)
+        self.tabela.selectionModel().selectionChanged.connect(lambda *_: self._selecao_mudou())
+
+    def _selecao_mudou(self):
+        """Grãos selecionados na tabela aparecem destacados em todos os gráficos (sem trocar a janela ativa)."""
+        if self.resultado is None:
+            return
+        linhas = sorted({i.row() for i in self.tabela.selectionModel().selectedRows()})
+        indice = self.resultado.graos.index
+        ids = [indice[i] for i in linhas if i < len(indice)]
+        for g in (self.graf_conc, self.graf_media, self.graf_dens):
+            g.destacar(ids)
+        if linhas:
+            self.statusBar().showMessage(tr("{n} grão(s) selecionado(s).").format(n=len(linhas)), 4000)
+
+    def _seleciona_pelos_graficos(self, ids, somar):
+        if self.resultado is None or self.tabela.model() is None:
+            return
+        from .qt import QItemSelection, QItemSelectionModel
+        sel = self.tabela.selectionModel()
+        indice = self.resultado.graos.index
+        if not somar:
+            sel.clearSelection()
+        for ident in ids:
+            linha = indice.get_loc(ident)
+            modelo = self.tabela.model()
+            faixa = QItemSelection(modelo.index(linha, 0), modelo.index(linha, modelo.columnCount() - 1))
+            sel.select(faixa, QItemSelectionModel.Toggle if somar else QItemSelectionModel.Select)
+            self.tabela.scrollTo(modelo.index(linha, 0))
 
     def _desenha(self):
         if self.resultado is None:
@@ -735,9 +904,10 @@ class Janela(QMainWindow):
         with self._estilo_graficos():
             self._desenha_graficos()
         self._descreve_graficos()
+        self._selecao_mudou()  # mantém destacados os grãos que estavam selecionados
 
     def _desenha_graficos(self):
-        g, op = self.resultado.graos, self.opcoes()
+        g, op = self.resultado.graos, self.op_calculadas
         if self.resultado.isocrona:
             graficos.isocrona(self.graf_conc, g, self.resultado.isocrona)
             self.graf_media.limpar(N_("Isócrona: veja a aba Concórdia ou isócrona"))
@@ -759,7 +929,7 @@ class Janela(QMainWindow):
 
     def _muda_agrupamento(self, v):
         self.c_agrupar.setCurrentIndex(self.c_agrupar.findData(v))
-        self.calcular()
+        self._atualiza_pendente()
 
     def atribuir_grupo(self):
         if self.projeto is None:
@@ -778,6 +948,8 @@ class Janela(QMainWindow):
             self.projeto.grupo_manual[i] = n
         self.alterado = True
         self._muda_agrupamento("manual")
+        self.cores_mudaram = self.resultado is not None
+        self._atualiza_pendente()
 
     def _troca_idioma(self, cod):
         """Muda o idioma e remonta a janela, mantendo o projeto e as opções."""
@@ -791,17 +963,24 @@ class Janela(QMainWindow):
     def _remonta(self):
         """Refaz menus, painéis e gráficos (depois de mudar idioma, letra, tema ou cores)."""
         op = self.opcoes()
+        estado = self.saveState()
         self.menuBar().clear()
         self._menus()
         with self._estilo_graficos():
             self._layout()
-        self._aplica_opcoes(op)
+        self.restoreState(estado)
         if self.projeto is not None:
             self.log.setPlainText("\n".join(self.projeto.log))
             if self.resultado is not None:
-                alterado = self.alterado
-                self.calcular()
-                self.alterado = alterado
+                # redesenha o último cálculo (no idioma ou tema novo) e mantém o que estava no painel
+                alterado, cores = self.alterado, self.cores_mudaram
+                self._aplica_opcoes(self.op_calculadas)
+                self._executa(self.op_calculadas)
+                self.alterado, self.cores_mudaram = alterado, cores
+            else:
+                self._modelo_tabela(ModeloTabela(self.projeto.dados))
+        self._aplica_opcoes(op)
+        self._atualiza_pendente()
         self._atualiza_titulo()
 
     def _atualiza_titulo(self):
@@ -810,6 +989,7 @@ class Janela(QMainWindow):
 
     def closeEvent(self, ev):
         if self._pode_descartar():
+            self.config.setValue("arrumacao", self.saveState())
             ev.accept()
         else:
             ev.ignore()
