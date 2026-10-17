@@ -7,6 +7,7 @@ import numpy as np
 from scipy import stats
 from scipy.optimize import brentq, minimize_scalar
 
+from ..idiomas import N_
 from . import idades
 
 
@@ -85,8 +86,8 @@ def media_ponderada(x, s, efeitos_aleatorios=False, rejeitar_outliers=False):
             valido = novo
     r = _media(x[valido], s[valido], efeitos_aleatorios)
     r.update(n=int(valido.sum()), valido=valido,
-             referencia="Wendt e Carl (1991); Vermeesch (2018a)" if (efeitos_aleatorios or rejeitar_outliers)
-             else "Wendt e Carl (1991)")
+             referencia=N_("Wendt e Carl (1991); Vermeesch (2018a)") if (efeitos_aleatorios or rejeitar_outliers)
+             else N_("Wendt e Carl (1991)"))
     return r
 
 

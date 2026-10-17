@@ -2,6 +2,15 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.4.0 (17/10/2026)
+
+- Escolha do idioma do programa e das exportações: português do Brasil, português de Portugal, espanhol, inglês, francês, alemão, chinês simplificado, hindi e árabe. Fica no menu Idioma e na tela inicial; na primeira abertura vale o idioma do sistema.
+- Em árabe, a janela fica da direita para a esquerda.
+- Planilha Excel, gráficos, HTML interativo, LEIAME dos dados e metodologia saem no idioma escolhido. A metodologia vem também em inglês.
+- Números com vírgula decimal em português, espanhol, francês e alemão.
+- Nos gráficos em imagem, hindi e árabe usam rótulos em inglês.
+- Instalador do Windows em português do Brasil e de Portugal, espanhol, inglês, francês e alemão; o programa abre no idioma escolhido na instalação.
+
 ## 0.3.1 (17/10/2026)
 
 - Linux: o programa fechava ao abrir no Pop!_OS e no Ubuntu 22.04 ou mais novo, por falta de bibliotecas gráficas (X11/xcb). Agora elas vêm dentro do pacote.

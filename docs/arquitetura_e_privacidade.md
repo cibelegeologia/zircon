@@ -38,7 +38,7 @@ Arquivo > Exportar para publicação gera uma pasta com:
 - planilha Excel formatada: resultados, idades por grão com a cor de cada grupo, opções usadas, referências em ABNT e registro da importação.
 - `interativo/`: página HTML autônoma (abre sem internet) com os gráficos interativos, para material suplementar. O antigo visualizador de gráficos interativos da Elsevier está suspenso (a página de visualização de dados da Elsevier diz que os recursos estão indisponíveis e sugere depositar os dados no Mendeley Data).
 - `dados_repositorio/`: CSV com LEIAME para depositar no Mendeley Data, Zenodo ou PANGAEA.
-- `metodologia.md` e `.txt`: texto de métodos em português e inglês, com as citações de cada cálculo, os resultados e as referências em ABNT. Também aparece na aba Metodologia.
+- `metodologia.md` e `.txt`: texto de métodos no idioma escolhido e em inglês, com as citações de cada cálculo, os resultados e as referências em ABNT. Também aparece na aba Metodologia.
 
 ## O que calcula (versão 0.2.0)
 
@@ -50,3 +50,7 @@ Conferido com o IsoplotR 7.1 em `testes/unitarios/`:
 - Isócronas Pb-Pb (inversa, como no IsoplotR) e Th-Pb.
 
 Ainda não: isócronas U-Th com desequilíbrio, correção de Pb comum por 207Pb e 208Pb, módulo 1 e estimadores de idade máxima de deposição.
+
+## Idiomas (0.4.0)
+
+O texto-fonte do programa é o português do Brasil. Cada frase passa pela função `tr()` de `zircon/idiomas/`, que devolve a tradução do arquivo `<idioma>.json`; frase sem tradução aparece em português, então nada some. Os cálculos guardam nomes internos em português e a tradução acontece só na tela e nas exportações, para que um projeto salvo num idioma abra igual em outro. A escolha fica nas preferências do usuário (QSettings); o instalador do Windows grava o idioma da instalação se ainda não houver escolha. As traduções foram feitas por IA e devem ser revisadas por falantes nativos, principalmente as de chinês, hindi e árabe.

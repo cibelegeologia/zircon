@@ -18,12 +18,18 @@ No Windows 7, o sistema precisa das atualizações KB2533623 e KB2999226 (vêm p
 
 Windows, Linux e Mac com Intel usam a montagem compatível (Python 3.8 e Qt 5, as últimas versões que rodam nesses sistemas). Os cálculos são os mesmos e passam pelos mesmos testes.
 
+## Idiomas
+
+O programa e as exportações (planilha Excel, gráficos, HTML interativo, LEIAME e metodologia) saem em português do Brasil, português de Portugal, espanhol, inglês, francês, alemão, chinês simplificado, hindi ou árabe. Na primeira abertura o Zircon usa o idioma do sistema (ou o escolhido no instalador do Windows); para mudar, use o menu Idioma ou a lista na tela inicial. Em árabe a janela fica da direita para a esquerda.
+
+A metodologia sai no idioma escolhido e também em inglês. Nos gráficos em imagem (PNG, TIFF, PDF, SVG), hindi e árabe usam rótulos em inglês, porque a biblioteca de gráficos não monta essas escritas corretamente; o HTML interativo sai no idioma escolhido. As traduções ficam em `zircon/idiomas/`, uma por arquivo JSON, e podem ser corrigidas por qualquer pessoa: `python -m zircon.idiomas.extrair` mostra as frases que faltam.
+
 Para rodar a partir do código: `pip install -r requirements.txt` e `python -m zircon`.
 
 ## Conteúdo
 
 - `CHANGELOG.md`: o que muda de versão para versão.
-- `zircon/`: código do programa (`nucleo/` para os cálculos, `interface/` para as janelas).
+- `zircon/`: código do programa (`nucleo/` para os cálculos, `interface/` para as janelas, `idiomas/` para as traduções).
 - `instalador/`: receita do PyInstaller e do instalador (Inno Setup).
 - `docs/arquitetura_e_privacidade.md`: como o programa é feito, arquivo de projeto, registro e privacidade.
 

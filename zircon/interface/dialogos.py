@@ -7,10 +7,11 @@ from urllib.parse import quote
 
 from .qt import QStandardPaths, Qt, QUrl
 from .qt import QDesktopServices, QGuiApplication
-from .qt import (QCheckBox, QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+from .qt import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit,
                                QPlainTextEdit, QPushButton, QTableView, QVBoxLayout)
 
-from .. import __version__
+from .. import __version__, idiomas
+from ..idiomas import N_, tr
 from .modelos import ModeloTabela
 
 # Endereço do formulário de registro (a criar pela autora). Vazio = só e-mail.
@@ -30,31 +31,46 @@ class BoasVindas(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Bem-vindo ao Zircon")
+        self.setWindowTitle(tr("Bem-vindo ao Zircon"))
         self.escolha = 0
         lay = QVBoxLayout(self)
+        self.idioma = None
+        linha_idioma = QHBoxLayout()
+        linha_idioma.addWidget(QLabel("Idioma / Language / 语言 / भाषा / اللغة:"))
+        self.c_idioma = QComboBox()
+        for cod, nome in idiomas.IDIOMAS.items():
+            self.c_idioma.addItem(nome, cod)
+        self.c_idioma.setCurrentIndex(self.c_idioma.findData(idiomas.atual()))
+        self.c_idioma.currentIndexChanged.connect(self._muda_idioma)
+        linha_idioma.addWidget(self.c_idioma)
+        lay.addLayout(linha_idioma)
         titulo = QLabel(f"<h2>Zircon {__version__}</h2>"
-                        "<p>Idades U-Pb, Th-Pb e Pb-Pb em zircão, com a referência de cada método.</p>"
-                        "<p>Comece importando a planilha do laboratório. Os resultados e as escolhas ficam "
-                        "salvos num arquivo de projeto (.zircon) no seu computador.</p>")
+                        "<p>" + tr("Idades U-Pb, Th-Pb e Pb-Pb em zircão, com a referência de cada método.") + "</p>"
+                        "<p>" + tr("Comece importando a planilha do laboratório. Os resultados e as escolhas ficam "
+                                   "salvos num arquivo de projeto (.zircon) no seu computador.") + "</p>")
         titulo.setWordWrap(True)
         lay.addWidget(titulo)
-        for texto, valor in (("Novo projeto a partir de uma planilha...", self.NOVO),
-                             ("Abrir projeto salvo...", self.ABRIR),
-                             ("Abrir um exemplo para conhecer o programa", self.EXEMPLO)):
+        for texto, valor in ((tr("Novo projeto a partir de uma planilha..."), self.NOVO),
+                             (tr("Abrir projeto salvo..."), self.ABRIR),
+                             (tr("Abrir um exemplo para conhecer o programa"), self.EXEMPLO)):
             b = QPushButton(texto)
             b.setMinimumHeight(36)
             b.clicked.connect(lambda _=False, v=valor: self._escolhe(v))
             lay.addWidget(b)
-        reg = QPushButton("Registrar o Zircon (opcional, você confere antes de enviar)")
+        reg = QPushButton(tr("Registrar o Zircon (opcional, você confere antes de enviar)"))
         reg.setFlat(True)
         reg.clicked.connect(lambda: Registro(self).exec())
         lay.addWidget(reg)
-        self.nao_mostrar = QCheckBox("Não mostrar esta tela ao abrir")
+        self.nao_mostrar = QCheckBox(tr("Não mostrar esta tela ao abrir"))
         lay.addWidget(self.nao_mostrar)
-        fechar = QPushButton("Fechar")
+        fechar = QPushButton(tr("Fechar"))
         fechar.clicked.connect(self.reject)
         lay.addWidget(fechar, alignment=Qt.AlignRight)
+
+    def _muda_idioma(self):
+        # a janela principal troca o idioma e abre esta tela de novo, já traduzida
+        self.idioma = self.c_idioma.currentData()
+        self.reject()
 
     def _escolhe(self, v):
         self.escolha = v
@@ -66,11 +82,11 @@ class ConfereImportacao(QDialog):
 
     def __init__(self, imp, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Conferir importação")
+        self.setWindowTitle(tr("Conferir importação"))
         self.resize(820, 560)
         lay = QVBoxLayout(self)
-        lay.addWidget(QLabel("<b>Confira se as colunas foram reconhecidas corretamente.</b> "
-                             "Erros são convertidos para 1σ absoluto."))
+        lay.addWidget(QLabel("<b>" + tr("Confira se as colunas foram reconhecidas corretamente.") + "</b> "
+                             + tr("Erros são convertidos para 1σ absoluto.")))
         log = QPlainTextEdit("\n".join(imp.log))
         log.setReadOnly(True)
         log.setMaximumHeight(200)
@@ -79,8 +95,8 @@ class ConfereImportacao(QDialog):
         tabela.setModel(ModeloTabela(imp.dados.head(50)))
         lay.addWidget(tabela)
         botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        botoes.button(QDialogButtonBox.Ok).setText("Usar estes dados")
-        botoes.button(QDialogButtonBox.Cancel).setText("Cancelar")
+        botoes.button(QDialogButtonBox.Ok).setText(tr("Usar estes dados"))
+        botoes.button(QDialogButtonBox.Cancel).setText(tr("Cancelar"))
         botoes.accepted.connect(self.accept)
         botoes.rejected.connect(self.reject)
         lay.addWidget(botoes)
@@ -95,30 +111,31 @@ class Registro(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Registrar o Zircon")
+        self.setWindowTitle(tr("Registrar o Zircon"))
         self.arquivo = pasta_config() / "registro.json"
         dados = self.ler()
         lay = QVBoxLayout(self)
-        aviso = QLabel("O registro é voluntário e ajuda a autora a saber onde o programa é usado. "
-                       "<b>O Zircon nunca se conecta à internet sozinho.</b> Nada é enviado até você "
-                       "clicar em um dos botões abaixo, e você vê o texto antes de enviar. "
-                       "Todos os campos são opcionais.")
+        aviso = QLabel(tr("O registro é voluntário e ajuda a autora a saber onde o programa é usado.") + " <b>"
+                       + tr("O Zircon nunca se conecta à internet sozinho.") + "</b> "
+                       + tr("Nada é enviado até você clicar em um dos botões abaixo, e você vê o texto antes de "
+                            "enviar. Todos os campos são opcionais."))
         aviso.setWordWrap(True)
         lay.addWidget(aviso)
         form = QFormLayout()
         self.campos = {}
-        for chave, rotulo in (("nome", "Nome"), ("instituicao", "Instituição"), ("pais", "País"),
-                              ("email", "E-mail (para avisos de nova versão)"), ("uso", "Para que vai usar")):
+        for chave, rotulo in (("nome", N_("Nome")), ("instituicao", N_("Instituição")), ("pais", N_("País")),
+                              ("email", N_("E-mail (para avisos de nova versão)")),
+                              ("uso", N_("Para que vai usar"))):
             c = QLineEdit(dados.get(chave, ""))
-            form.addRow(rotulo, c)
+            form.addRow(tr(rotulo), c)
             self.campos[chave] = c
         lay.addLayout(form)
         self.id_instalacao = dados.get("id") or uuid.uuid4().hex[:12]
-        lay.addWidget(QLabel(f"Código anônimo desta instalação: {self.id_instalacao}"))
+        lay.addWidget(QLabel(tr("Código anônimo desta instalação: {id}").format(id=self.id_instalacao)))
         linha = QHBoxLayout()
-        for texto, func in (("Enviar pelo navegador", self.navegador), ("Enviar por e-mail", self.email),
-                            ("Copiar texto", self.copiar), ("Salvar sem enviar", self.accept)):
-            b = QPushButton(texto)
+        for texto, func in ((N_("Enviar pelo navegador"), self.navegador), (N_("Enviar por e-mail"), self.email),
+                            (N_("Copiar texto"), self.copiar), (N_("Salvar sem enviar"), self.accept)):
+            b = QPushButton(tr(texto))
             b.clicked.connect(func)
             linha.addWidget(b)
         lay.addLayout(linha)
@@ -159,10 +176,10 @@ class Registro(QDialog):
 
 def sobre_texto():
     return (f"<h3>Zircon {__version__}</h3>"
-            "<p>Software livre (CC0) para calcular idades por isótopos de U, Th e Pb em zircão.</p>"
-            "<p>Cálculos conferidos com o IsoplotR 7.1 (Vermeesch 2018).</p>"
-            "<p>Funciona sem internet e não coleta dados.</p>"
-            "<p>Código e referências: github.com/cibelegeologia/zircon</p>")
+            "<p>" + tr("Software livre (CC0) para calcular idades por isótopos de U, Th e Pb em zircão.") + "</p>"
+            "<p>" + tr("Cálculos conferidos com o IsoplotR 7.1 (Vermeesch 2018).") + "</p>"
+            "<p>" + tr("Funciona sem internet e não coleta dados.") + "</p>"
+            "<p>" + tr("Código e referências:") + " github.com/cibelegeologia/zircon</p>")
 
 
 class ExportaPublicacao(QDialog):
@@ -170,35 +187,35 @@ class ExportaPublicacao(QDialog):
 
     def __init__(self, parent=None):
         from ..nucleo.exportacao import LARGURAS_MM
-        from .qt import QComboBox
         super().__init__(parent)
-        self.setWindowTitle("Exportar para publicação")
+        self.setWindowTitle(tr("Exportar para publicação"))
         lay = QVBoxLayout(self)
-        texto = QLabel("Gera uma pasta com: figuras nos formatos escolhidos; planilha Excel formatada com as "
-                       "referências; gráficos interativos em HTML (material suplementar, abrem sem internet); "
-                       "dados em CSV com LEIAME para repositório (Mendeley Data, Zenodo, PANGAEA); e o texto de "
-                       "metodologia com as citações, em português e inglês.")
+        texto = QLabel(tr("Gera uma pasta com: figuras nos formatos escolhidos; planilha Excel formatada com as "
+                          "referências; gráficos interativos em HTML (material suplementar, abrem sem internet); "
+                          "dados em CSV com LEIAME para repositório (Mendeley Data, Zenodo, PANGAEA); e o texto de "
+                          "metodologia com as citações, no idioma escolhido e em inglês."))
         texto.setWordWrap(True)
         lay.addWidget(texto)
         form = QFormLayout()
         self.c_largura = QComboBox()
         for nome, mm in LARGURAS_MM.items():
-            self.c_largura.addItem(nome, mm)
-        form.addRow("Largura das figuras", self.c_largura)
+            self.c_largura.addItem(tr(nome), mm)
+        form.addRow(tr("Largura das figuras"), self.c_largura)
         lay.addLayout(form)
         self.c_fmt = {}
-        for fmt, desc in (("png", "PNG 600 dpi (apresentações, Word)"), ("tif", "TIFF 600 dpi (exigido por várias revistas)"),
-                          ("pdf", "PDF vetorial"), ("svg", "SVG vetorial (editável no Inkscape/Illustrator)"),
-                          ("eps", "EPS (revistas antigas; sem transparência)")):
-            c = QCheckBox(desc)
+        for fmt, desc in (("png", N_("PNG 600 dpi (apresentações, Word)")),
+                          ("tif", N_("TIFF 600 dpi (exigido por várias revistas)")),
+                          ("pdf", N_("PDF vetorial")), ("svg", N_("SVG vetorial (editável no Inkscape/Illustrator)")),
+                          ("eps", N_("EPS (revistas antigas; sem transparência)"))):
+            c = QCheckBox(tr(desc))
             c.setChecked(fmt != "eps")
             lay.addWidget(c)
             self.c_fmt[fmt] = c
-        nota = QLabel("<small>Larguras e resoluções seguem as instruções de figuras da Elsevier.</small>")
+        nota = QLabel("<small>" + tr("Larguras e resoluções seguem as instruções de figuras da Elsevier.") + "</small>")
         lay.addWidget(nota)
         botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        botoes.button(QDialogButtonBox.Ok).setText("Escolher pasta e exportar")
-        botoes.button(QDialogButtonBox.Cancel).setText("Cancelar")
+        botoes.button(QDialogButtonBox.Ok).setText(tr("Escolher pasta e exportar"))
+        botoes.button(QDialogButtonBox.Cancel).setText(tr("Cancelar"))
         botoes.accepted.connect(self.accept)
         botoes.rejected.connect(self.reject)
         lay.addWidget(botoes)

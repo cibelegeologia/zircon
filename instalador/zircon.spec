@@ -13,6 +13,7 @@ a = Analysis(
     datas=[
         (str(raiz / "docs" / "referencias_abnt.md"), "docs"),
         (str(raiz / "instalador" / "zircon.png"), "."),
+        (str(raiz / "zircon" / "idiomas" / "*.json"), "zircon/idiomas"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb1.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb2.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "DZ_detritico_so_idades.xlsx"), "exemplos"),

@@ -3,15 +3,19 @@ import numpy as np
 from scipy.signal import argrelextrema
 from scipy.stats import gaussian_kde
 
+from ..idiomas import N_
+
 # Paleta segura para daltônicos (Okabe e Ito 2008; Wong 2011, Nature Methods 8:441)
 PALETA = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442", "#000000"]
 COR_CLASSE = {"concordante": "#009E73", "discordante": "#E69F00", "rejeitado": "#999999"}
 
 REFERENCIAS = {
-    "classe": "Spencer, Kirkland e Taylor (2016), Geoscience Frontiers 7:581-589 (discordância)",
-    "populacoes": "Vermeesch (2012), Chemical Geology 312-313:190-194 (estimativa de densidade)",
-    "cores": "Wong (2011), Nature Methods 8:441 (paleta para daltônicos)",
+    "classe": N_("Spencer, Kirkland e Taylor (2016), Geoscience Frontiers 7:581-589 (discordância)"),
+    "populacoes": N_("Vermeesch (2012), Chemical Geology 312-313:190-194 (estimativa de densidade)"),
+    "cores": N_("Wong (2011), Nature Methods 8:441 (paleta para daltônicos)"),
 }
+# Nomes das classes, para tradução
+N_("concordante"), N_("discordante"), N_("rejeitado")
 
 
 def classifica(discordancia, valido, limite=10.0):

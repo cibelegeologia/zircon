@@ -2,6 +2,7 @@
 from matplotlib.figure import Figure
 from .qt import FigureCanvasQTAgg, NavigationToolbar2QT, QVBoxLayout, QWidget
 
+from ..idiomas import N_, figura
 from ..nucleo.desenho import concordia, densidade, isocrona, media_ponderada  # noqa: F401 (usados pela janela)
 
 
@@ -14,10 +15,10 @@ class Grafico(QWidget):
         lay.addWidget(NavigationToolbar2QT(self.canvas, self))
         lay.addWidget(self.canvas)
 
-    def limpar(self, texto="Importe uma planilha e clique em Calcular"):
+    def limpar(self, texto=N_("Importe uma planilha e clique em Calcular")):
         self.figura.clear()
         ax = self.figura.add_subplot()
-        ax.text(0.5, 0.5, texto, ha="center", va="center", color="#666666")
+        ax.text(0.5, 0.5, figura(texto), ha="center", va="center", color="#666666")
         ax.set_axis_off()
         self.canvas.draw_idle()
 

@@ -7,8 +7,19 @@ import numpy as np
 from matplotlib.patches import Ellipse
 from scipy.stats import gaussian_kde
 
+import matplotlib
+
+from ..idiomas import N_, num
+from ..idiomas import figura as F
 from . import idades
 from .grupos import COR_CLASSE
+
+# Fontes com chinês para os gráficos; o matplotlib usa a primeira que existir
+# no computador para cada letra (Windows, Mac, Linux).
+matplotlib.rcParams["font.sans-serif"] = ["DejaVu Sans", "Microsoft YaHei", "SimHei", "PingFang SC",
+                                          "Hiragino Sans GB", "Noto Sans CJK SC", "WenQuanYi Micro Hei",
+                                          "Arial Unicode MS"]
+matplotlib.rcParams["axes.unicode_minus"] = False
 
 
 def _elipse(ax, x, y, sx, sy, rho, cor, n_sigma=2):
@@ -22,9 +33,9 @@ def _elipse(ax, x, y, sx, sy, rho, cor, n_sigma=2):
 def _legenda(ax, graos, agrupar):
     from matplotlib.patches import Patch
     if agrupar == "classe":
-        itens = [(c, COR_CLASSE[c]) for c in ("concordante", "discordante", "rejeitado") if (graos.classe == c).any()]
+        itens = [(F(c), COR_CLASSE[c]) for c in ("concordante", "discordante", "rejeitado") if (graos.classe == c).any()]
     else:
-        itens = [(f"Grupo {int(g)}", graos.cor[graos.grupo == g].iloc[0]) for g in sorted(graos.grupo.unique())]
+        itens = [(F("Grupo {n}").format(n=int(g)), graos.cor[graos.grupo == g].iloc[0]) for g in sorted(graos.grupo.unique())]
     ax.legend(handles=[Patch(facecolor=c + "80", edgecolor=c, label=n) for n, c in itens], loc="best", fontsize=8)
 
 
@@ -61,7 +72,7 @@ def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=Non
     dx, dy = xmax - xmin, ymax - ymin
     ax.set_xlim(xmin - 0.1 * dx, xmax + 0.1 * dx)
     ax.set_ylim(ymin - 0.1 * dy, ymax + 0.1 * dy)
-    ax.set_title("Diagrama concórdia (elipses 2σ)", fontsize=10)
+    ax.set_title(F("Diagrama concórdia (elipses 2σ)"), fontsize=10)
     _legenda(ax, g, agrupar)
     graf.canvas.draw_idle()
 
@@ -89,10 +100,10 @@ def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
         m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
         ax.axhspan(m - e, m + e, color="#cccccc", zorder=0)
         ax.axhline(m, color="#333333", lw=1)
-        ax.set_title(f"{media['Cálculo']}: {m:.2f} ± {e:.2f} Ma (2σ), MSWD {media['MSWD']:.2f}, n = {media['n']}",
-                     fontsize=9)
-    ax.set_xlabel("análises em ordem de idade (barras 2σ)")
-    ax.set_ylabel("idade (Ma)")
+        ax.set_title(f"{F(media['Cálculo'])}: {num(m)} ± {num(e)} Ma (2σ), MSWD {num(media['MSWD'])}, "
+                     f"n = {media['n']}", fontsize=9)
+    ax.set_xlabel(F("análises em ordem de idade (barras 2σ)"))
+    ax.set_ylabel(F("idade (Ma)"))
     _legenda(ax, g, agrupar)
     graf.canvas.draw_idle()
 
@@ -103,7 +114,7 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
     g = graos.dropna(subset=[coluna])
     t = g[coluna].to_numpy(float)
     if len(t) < 2:
-        graf.limpar("Poucas idades para a curva de densidade")
+        graf.limpar(N_("Poucas idades para a curva de densidade"))
         return
     bins = np.histogram_bin_edges(t, bins="auto")
     grupos = sorted(g.grupo.unique())
@@ -113,9 +124,9 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
     grade = np.linspace(t.min() - 0.05 * np.ptp(t), t.max() + 0.05 * np.ptp(t), 1000)
     ax2.plot(grade, gaussian_kde(t)(grade), color="#333333", lw=1.2)
     ax2.set_yticks([])
-    ax.set_xlabel("idade (Ma)")
-    ax.set_ylabel("número de grãos")
-    ax.set_title(f"Histograma e densidade (KDE), n = {len(t)}", fontsize=10)
+    ax.set_xlabel(F("idade (Ma)"))
+    ax.set_ylabel(F("número de grãos"))
+    ax.set_title(F("Histograma e densidade (KDE), n = {n}").format(n=len(t)), fontsize=10)
     _legenda(ax, g, agrupar)
     graf.canvas.draw_idle()
 
@@ -139,6 +150,6 @@ def isocrona(graf, graos, iso):
         _elipse(ax, xi, yi, sxi, syi, r, cor)
     xx = np.linspace(min(0, np.nanmin(x)), np.nanmax(x + 3 * sx) * 1.05, 10)
     ax.plot(xx, a + b * xx, "--", color="#D55E00", lw=1)
-    ax.set_title(f"Isócrona: {iso['idade']:.2f} ± {2 * iso['erro']:.2f} Ma (2σ), MSWD {iso['mswd']:.2f}, "
-                 f"n = {iso['n']} (elipses 2σ)", fontsize=9)
+    ax.set_title(F("Isócrona: {idade} ± {erro} Ma (2σ), MSWD {mswd}, n = {n} (elipses 2σ)").format(
+        idade=num(iso["idade"]), erro=num(2 * iso["erro"]), mswd=num(iso["mswd"]), n=iso["n"]), fontsize=9)
     graf.canvas.draw_idle()

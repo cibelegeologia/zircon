@@ -6,6 +6,7 @@ evolução de Stacey e Kramers (1975) na idade do grão.
 """
 import numpy as np
 
+from ..idiomas import N_
 from . import idades
 from .constantes import LAMBDA_232, LAMBDA_235, LAMBDA_238, U238_U235
 
@@ -13,8 +14,8 @@ from .constantes import LAMBDA_232, LAMBDA_235, LAMBDA_238, U238_U235
 CANYON_DIABLO = {"64": 9.307, "74": 10.294, "84": 29.476}
 
 REFERENCIAS = {
-    "fixo": "Williams (1998); composição de Canyon Diablo de Tatsumoto, Knight e Allègre (1973)",
-    "stacey_kramers": "Stacey e Kramers (1975), Earth and Planetary Science Letters 26:207-221",
+    "fixo": N_("Williams (1998); composição de Canyon Diablo de Tatsumoto, Knight e Allègre (1973)"),
+    "stacey_kramers": N_("Stacey e Kramers (1975), Earth and Planetary Science Letters 26:207-221"),
 }
 
 

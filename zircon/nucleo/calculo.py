@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from ..idiomas import N_, num, tr
 from . import estatistica, grupos, idades, pbcomum
 
 OPCOES_PADRAO = {
@@ -78,12 +79,12 @@ def _isocrona(dados, tipo):
     g = dados[["amostra", "analise"]].copy()
     if tipo == "pb-pb":
         r = estatistica.isocrona_pbpb(dados.r64, dados.s64, dados.r74, dados.s74, dados.rho)
-        nome = "Isócrona Pb-Pb"
+        nome = N_("Isócrona Pb-Pb")
         for c in ("r64", "s64", "r74", "s74", "rho"):
             g[c] = dados[c]
     else:
         r = estatistica.isocrona_thpb(dados.r24, dados.s24, dados.r84, dados.s84, dados.rho)
-        nome = "Isócrona Th-Pb"
+        nome = N_("Isócrona Th-Pb")
         for c in ("r24", "s24", "r84", "s84", "rho"):
             g[c] = dados[c]
     res = Resultado(g, [_linha(nome, r, "idade")])
@@ -94,7 +95,7 @@ def _isocrona(dados, tipo):
     g["grupo"] = 1
     g["cor"] = grupos.COR_CLASSE["concordante"]
     if r["p"] < 0.05:
-        res.avisos.append("Isócrona com p < 0,05: os pontos espalham mais do que os erros explicam")
+        res.avisos.append(tr("Isócrona com p < 0,05: os pontos espalham mais do que os erros explicam"))
     return res
 
 
@@ -105,8 +106,9 @@ def calcular(dados, tipo, opcoes=None, grupo_manual=None):
     g = idades_por_grao(dados, tipo, op)
     res = Resultado(g)
     if tipo == "wetherill-204":
-        nomes = {"nenhuma": "sem correção", "fixo": "composição fixa", "stacey_kramers": "Stacey e Kramers (1975)"}
-        res.avisos.append(f"Pb comum corrigido pelo 204Pb: {nomes[op['pb_comum']]}")
+        nomes = {"nenhuma": N_("sem correção"), "fixo": N_("composição fixa"),
+                 "stacey_kramers": N_("Stacey e Kramers (1975)")}
+        res.avisos.append(tr("Pb comum corrigido pelo 204Pb: {modelo}").format(modelo=tr(nomes[op["pb_comum"]])))
         tipo = "wetherill"
     disc_ok = np.abs(g["discordancia"].fillna(0)) <= op["limite_discordancia"]
     usar = disc_ok | op["usar_discordantes"]
@@ -117,38 +119,40 @@ def calcular(dados, tipo, opcoes=None, grupo_manual=None):
         x = g[coluna].where(usar).to_numpy(float)
         s = g.get("s_" + coluna, pd.Series(np.nan, index=g.index)).to_numpy(float)
         if not np.isfinite(x).any():
-            res.avisos.append(f"Nenhum grão passou no limite de discordância de {op['limite_discordancia']:g} %: "
-                              "média ponderada não calculada. Aumente o limite, marque 'Incluir discordantes' "
-                              "ou use a discórdia.")
+            res.avisos.append(tr("Nenhum grão passou no limite de discordância de {limite} %: média ponderada não "
+                                 "calculada. Aumente o limite, marque 'Incluir discordantes' ou use a discórdia."
+                                 ).format(limite=num(op["limite_discordancia"], 1)))
         elif np.isfinite(s).any():
             r = estatistica.media_ponderada(x, s, op["efeitos_aleatorios"], op["rejeitar_outliers"])
             valido = r["valido"] | ~np.isfinite(x)
-            nome = {"t68": "206Pb/238U", "t76": "207Pb/206Pb", "melhor": "melhor idade"}[coluna]
-            res.conjunto.append(_linha(f"Média ponderada ({nome})", r))
+            nome = {"t68": N_("Média ponderada (206Pb/238U)"), "t76": N_("Média ponderada (207Pb/206Pb)"),
+                    "melhor": N_("Média ponderada (melhor idade)")}[coluna]
+            res.conjunto.append(_linha(nome, r))
             if r["dispersao"]:
-                res.avisos.append(f"Dispersão geológica além do erro analítico: {r['dispersao']:.3g} Ma")
+                res.avisos.append(tr("Dispersão geológica além do erro analítico: {d} Ma").format(
+                    d=num(r["dispersao"], 3 if r["dispersao"] < 1 else 2)))
         else:
-            res.avisos.append("Sem erros por grão: média ponderada não calculada")
+            res.avisos.append(tr("Sem erros por grão: média ponderada não calculada"))
 
     if tipo in ("wetherill", "tera-wasserburg"):
         sel = usar.to_numpy() & valido
         if sel.sum() >= 2:
             c = estatistica.idade_concordia(g.r75[sel], g.s75[sel], g.r68[sel], g.s68[sel], g.rho[sel])
-            res.conjunto.append(_linha("Idade concórdia", c, "idade"))
+            res.conjunto.append(_linha(N_("Idade concórdia"), c, "idade"))
             if c["p"] < 0.05:
-                res.avisos.append("Idade concórdia com p < 0,05: os grãos não são concordantes e equivalentes; "
-                                  "prefira a discórdia ou a média ponderada")
+                res.avisos.append(tr("Idade concórdia com p < 0,05: os grãos não são concordantes e equivalentes; "
+                                     "prefira a discórdia ou a média ponderada"))
         if len(g) >= 3:
             d = estatistica.discordia(g.r75, g.s75, g.r68, g.s68, g.rho)
             if "superior" in d:
-                res.conjunto.append(_linha("Discórdia: intercepto superior", d, "superior", "erro_superior"))
+                res.conjunto.append(_linha(N_("Discórdia: intercepto superior"), d, "superior", "erro_superior"))
             if "inferior" in d:
-                res.conjunto.append(_linha("Discórdia: intercepto inferior", d, "inferior", "erro_inferior"))
+                res.conjunto.append(_linha(N_("Discórdia: intercepto inferior"), d, "inferior", "erro_inferior"))
 
     g["valido"] = valido
     g["classe"] = grupos.classifica(g["discordancia"].fillna(0), valido, op["limite_discordancia"])
     if op["agrupar"] == "populacoes":
-        g["grupo"], _ = grupos.populacoes(g["melhor"], minimo=op["minimo_por_populacao"])
+        g["grupo"], _cortes = grupos.populacoes(g["melhor"], minimo=op["minimo_por_populacao"])
     elif op["agrupar"] == "manual" and grupo_manual is not None:
         g["grupo"] = grupo_manual
     else:

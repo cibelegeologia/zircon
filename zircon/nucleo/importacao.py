@@ -14,6 +14,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from ..idiomas import N_, tr
+
 # Nome interno -> padrões reconhecidos no cabeçalho (sem acento, minúsculo)
 COLUNAS = {
     "amostra": [r"^amostra", r"^sample"],
@@ -67,7 +69,7 @@ def _le_texto(caminho, log):
             break
         except UnicodeDecodeError:
             continue
-    log.append(f"Codificação: {cod}")
+    log.append(tr("Codificação: {cod}").format(cod=cod))
     linhas = [l for l in texto.splitlines()]
     amostra = "\n".join(l for l in linhas if l.strip())[:20000]
     contagens = {sep: sum(l.count(sep) for l in amostra.splitlines()) for sep in ("\t", ";", ",")}
@@ -77,7 +79,8 @@ def _le_texto(caminho, log):
         sep = ";"
     else:
         sep = ","
-    log.append("Separador de colunas: " + {"\t": "tabulação", ";": "ponto e vírgula", ",": "vírgula"}[sep])
+    nome_sep = {"\t": N_("tabulação"), ";": N_("ponto e vírgula"), ",": N_("vírgula")}[sep]
+    log.append(tr("Separador de colunas: {sep}").format(sep=tr(nome_sep)))
     tabela = list(csv.reader(io.StringIO(texto), delimiter=sep))
     largura = max(len(l) for l in tabela)
     tabela = [l + [""] * (largura - len(l)) for l in tabela]
@@ -88,7 +91,7 @@ def _le_planilha(caminho, log):
     ext = Path(caminho).suffix.lower()
     motor = {".ods": "odf", ".xls": "xlrd"}.get(ext, "openpyxl")
     df = pd.read_excel(caminho, header=None, dtype=object, engine=motor)
-    log.append(f"Planilha lida da primeira aba ({ext})")
+    log.append(tr("Planilha lida da primeira aba ({ext})").format(ext=ext))
     return df
 
 
@@ -146,11 +149,11 @@ def _acha_cabecalho(df, decimal, log):
     acima = cab - 1
     if acima >= 0 and preenchidas[acima] >= 2 and numericas[acima] == 0:
         topo = [str(v).strip() if str(v).strip() not in ("nan", "None") else "" for v in df.iloc[acima]]
-        log.append(f"Cabeçalho em duas linhas (linhas {acima + 1} e {cab + 1})")
+        log.append(tr("Cabeçalho em duas linhas (linhas {a} e {b})").format(a=acima + 1, b=cab + 1))
         acima -= 1
     if acima >= 0:
-        log.append(f"Ignoradas {acima + 1} linha(s) de título no topo")
-    log.append(f"Dados a partir da linha {inicio + 1}")
+        log.append(tr("Ignoradas {n} linha(s) de título no topo").format(n=acima + 1))
+    log.append(tr("Dados a partir da linha {n}").format(n=inicio + 1))
     return nomes, inicio
 
 
@@ -195,8 +198,8 @@ def _mapeia(nomes, log):
         extra = ""
         if chave in escala:
             f, rel = escala[chave]
-            extra = f" ({'2' if f == 2 else '1'}σ, {'%' if rel else 'absoluto'})"
-        log.append(f"Coluna '{nomes[i]}' → {chave}{extra}")
+            extra = f" ({'2' if f == 2 else '1'}σ, {'%' if rel else tr('absoluto')})"
+        log.append(tr("Coluna '{nome}' → {chave}").format(nome=nomes[i], chave=chave) + extra)
     return mapa, escala, so_idades
 
 
@@ -209,7 +212,7 @@ def importar(caminho):
     else:
         bruto, sep = _le_planilha(caminho, log), None
     decimal = _detecta_decimal(bruto, sep or ";")
-    log.append("Separador decimal: " + ("vírgula" if decimal == "," else "ponto"))
+    log.append(tr("Separador decimal: {sep}").format(sep=tr("vírgula") if decimal == "," else tr("ponto")))
     nomes, inicio = _acha_cabecalho(bruto, decimal, log)
     corpo = bruto.iloc[inicio:].reset_index(drop=True)
     corpo = corpo[corpo.apply(lambda l: any(str(v).strip() not in ("", "nan", "None") for v in l), axis=1)]
@@ -236,7 +239,7 @@ def importar(caminho):
         dados["analise"] = [str(i + 1) for i in range(len(dados))]
     if "amostra" not in dados:
         dados["amostra"] = Path(caminho).stem
-        log.append("Sem coluna de amostra: usado o nome do arquivo")
+        log.append(tr("Sem coluna de amostra: usado o nome do arquivo"))
 
     if so_idades:
         tipo = "idades"
@@ -252,10 +255,10 @@ def importar(caminho):
         tipo = "tera-wasserburg"
     else:
         tipo = "desconhecido"
-        log.append("Atenção: não reconheci razões U-Pb nem idades; confira o mapeamento")
+        log.append(tr("Atenção: não reconheci razões U-Pb nem idades; confira o mapeamento"))
     if tipo != "idades" and tipo != "desconhecido" and "rho" not in dados:
         dados["rho"] = 0.0
-        log.append("Atenção: sem coluna de correlação (rho); usado rho = 0")
-    log.append(f"Tipo de dado: {tipo}; {len(dados)} análises")
+        log.append(tr("Atenção: sem coluna de correlação (rho); usado rho = 0"))
+    log.append(tr("Tipo de dado: {tipo}; {n} análises").format(tipo=tipo, n=len(dados)))
     return Importacao(dados.reset_index(drop=True), tipo, {k: nomes[i] for k, i in mapa.items()}, log,
                       original.reset_index(drop=True))
