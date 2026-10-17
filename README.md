@@ -24,6 +24,10 @@ O programa e as exportações (planilha Excel, gráficos, HTML interativo, LEIAM
 
 A metodologia sai no idioma escolhido e também em inglês. Nos gráficos em imagem (PNG, TIFF, PDF, SVG), hindi e árabe usam rótulos em inglês, porque a biblioteca de gráficos não monta essas escritas corretamente; o HTML interativo sai no idioma escolhido. As traduções ficam em `zircon/idiomas/`, uma por arquivo JSON, e podem ser corrigidas por qualquer pessoa: `python -m zircon.idiomas.extrair` mostra as frases que faltam.
 
+## Acessibilidade
+
+Tudo é opcional. No menu Acessibilidade há tamanho da letra (até o dobro; atalhos Ctrl + e Ctrl -) e temas claro, escuro e de alto contraste. No painel de opções, "Cores nos gráficos" alterna entre cores comuns e cores acessíveis para daltonismo (Okabe-Ito, Tol, cividis ou tons de cinza), e pode acrescentar padrões (listras e pontos) para separar os grupos sem depender da cor. As figuras exportadas seguem essas escolhas de cor.
+
 Para rodar a partir do código: `pip install -r requirements.txt` e `python -m zircon`.
 
 ## Conteúdo

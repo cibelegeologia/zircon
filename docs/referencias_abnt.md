@@ -66,6 +66,8 @@ McLEAN, N. M.; BOWRING, J. F.; BOWRING, S. A. An algorithm for U-Pb isotope dilu
 
 McLEAN, N. M. et al. Evaluating uncertainties in the calibration of isotopic reference materials and multi-element isotopic tracers (EARTHTIME Tracer Calibration Part II). **Geochimica et Cosmochimica Acta**, v. 164, p. 481-501, 2015. DOI: https://doi.org/10.1016/j.gca.2015.02.040.
 
+NUÑEZ, J. R.; ANDERTON, C. R.; RENSLOW, R. S. Optimizing colormaps with consideration for color vision deficiency to enable accurate interpretation of scientific data. **PLOS ONE**, v. 13, n. 7, e0199239, 2018. DOI: https://doi.org/10.1371/journal.pone.0199239.
+
 OKABE, M.; ITO, K. **Color universal design (CUD)**: how to make figures and presentations that are friendly to colorblind people. 2008. Disponível em: https://jfly.uni-koeln.de/color/. Acesso em: 17 out. 2026.
 
 PARRISH, R. R.; NOBLE, S. R. Zircon U-Th-Pb geochronology by isotope dilution–thermal ionization mass spectrometry (ID-TIMS). **Reviews in Mineralogy and Geochemistry**, v. 53, p. 183-214, 2003. DOI: https://doi.org/10.2113/0530183.
@@ -109,6 +111,8 @@ SUNDELL, K. E.; SAYLOR, J. E. Unmixing detrital geochronology age distributions.
 TATSUMOTO, M.; KNIGHT, R. J.; ALLÈGRE, C. J. Time differences in the formation of meteorites as determined from the ratio of lead-207 to lead-206. **Science**, v. 180, p. 1279-1283, 1973. DOI: https://doi.org/10.1126/science.180.4092.1279.
 
 TERA, F.; WASSERBURG, G. J. U-Th-Pb systematics in three Apollo 14 basalts and the problem of initial Pb in lunar rocks. **Earth and Planetary Science Letters**, v. 14, p. 281-304, 1972. DOI: https://doi.org/10.1016/0012-821X(72)90128-8.
+
+TOL, P. **Colour schemes**. Utrecht: SRON Netherlands Institute for Space Research, 2021. (Technical Note SRON/EPS/TN/09-002, issue 3.2). Disponível em: https://personal.sron.nl/~pault/data/colourschemes.pdf. Acesso em: 17 out. 2026.
 
 VERMEESCH, P. How many grains are needed for a provenance study? **Earth and Planetary Science Letters**, v. 224, p. 441-451, 2004.
 

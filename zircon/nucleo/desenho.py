@@ -12,31 +12,47 @@ import matplotlib
 from ..idiomas import N_, num
 from ..idiomas import figura as F
 from . import idades
+from . import grupos
 from .grupos import COR_CLASSE
 
 # Fontes com chinês para os gráficos; o matplotlib usa a primeira que existir
 # no computador para cada letra (Windows, Mac, Linux).
-matplotlib.rcParams["font.sans-serif"] = ["DejaVu Sans", "Microsoft YaHei", "SimHei", "PingFang SC",
-                                          "Hiragino Sans GB", "Noto Sans CJK SC", "WenQuanYi Micro Hei",
-                                          "Arial Unicode MS"]
+FONTES = ["DejaVu Sans", "Microsoft YaHei", "SimHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+          "WenQuanYi Micro Hei", "Arial Unicode MS"]
+matplotlib.rcParams["font.sans-serif"] = FONTES
 matplotlib.rcParams["axes.unicode_minus"] = False
 
 
-def _elipse(ax, x, y, sx, sy, rho, cor, n_sigma=2):
+def _tinta():
+    """Cor das linhas de referência: a do texto do tema (preta no fundo branco)."""
+    return matplotlib.rcParams["text.color"]
+
+
+def _hachuras(graos, agrupar):
+    """Padrão de cada grão, conforme a classe ou o grupo ("" se os padrões estão desligados)."""
+    if agrupar == "classe":
+        return [grupos.hachura(classe=c) for c in graos.classe]
+    return [grupos.hachura(grupo=int(n)) for n in graos.grupo]
+
+
+def _elipse(ax, x, y, sx, sy, rho, cor, n_sigma=2, hachura=""):
     cov = np.array([[sx**2, rho * sx * sy], [rho * sx * sy, sy**2]])
     val, vec = np.linalg.eigh(cov)
     ang = np.degrees(np.arctan2(vec[1, 1], vec[0, 1]))
     w, h = 2 * n_sigma * np.sqrt(np.maximum(val[::-1], 0))
-    ax.add_patch(Ellipse((x, y), w, h, angle=ang, facecolor=cor + "80", edgecolor=cor, lw=0.8))
+    ax.add_patch(Ellipse((x, y), w, h, angle=ang, facecolor=cor + "80", edgecolor=cor, lw=0.8, hatch=hachura or None))
 
 
 def _legenda(ax, graos, agrupar):
     from matplotlib.patches import Patch
     if agrupar == "classe":
-        itens = [(F(c), COR_CLASSE[c]) for c in ("concordante", "discordante", "rejeitado") if (graos.classe == c).any()]
+        itens = [(F(c), COR_CLASSE[c], grupos.hachura(classe=c)) for c in ("concordante", "discordante", "rejeitado")
+                 if (graos.classe == c).any()]
     else:
-        itens = [(F("Grupo {n}").format(n=int(g)), graos.cor[graos.grupo == g].iloc[0]) for g in sorted(graos.grupo.unique())]
-    ax.legend(handles=[Patch(facecolor=c + "80", edgecolor=c, label=n) for n, c in itens], loc="best", fontsize=8)
+        itens = [(F("Grupo {n}").format(n=int(g)), graos.cor[graos.grupo == g].iloc[0], grupos.hachura(grupo=int(g)))
+                 for g in sorted(graos.grupo.unique())]
+    ax.legend(handles=[Patch(facecolor=c + "80", edgecolor=c, hatch=h or None, label=n) for n, c, h in itens],
+              loc="best", fontsize="small")
 
 
 def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=None):
@@ -53,26 +69,26 @@ def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=Non
         curva = idades.tera_wasserburg
         ax.set_xlabel("$^{238}$U/$^{206}$Pb")
         ax.set_ylabel("$^{207}$Pb/$^{206}$Pb")
-    for x, y, sx, sy, r, cor in zip(xs, ys, sxs, sys_, rhos, g.cor):
-        _elipse(ax, x, y, sx, sy, r, cor)
+    for x, y, sx, sy, r, cor, h in zip(xs, ys, sxs, sys_, rhos, g.cor, _hachuras(g, agrupar)):
+        _elipse(ax, x, y, sx, sy, r, cor, hachura=h)
     xmin, xmax = np.nanmin(xs - 3 * sxs), np.nanmax(xs + 3 * sxs)
     ymin, ymax = np.nanmin(ys - 3 * sys_), np.nanmax(ys + 3 * sys_)
     tmin = max(1e-3, np.nanmin(g.t68) * 0.7)
     tmax = max(np.nanmax(g.t76) * 1.3, np.nanmax(g.t68) * 1.3)
     t = np.linspace(tmin, tmax, 800)
     cx, cy = curva(t)
-    ax.plot(cx, cy, color="#444444", lw=1)
+    ax.plot(cx, cy, color=_tinta(), lw=matplotlib.rcParams["lines.linewidth"] * 0.7)
     for tm in _marcas(tmin, tmax):
         mx, my = curva(tm)
-        ax.plot(mx, my, "o", color="#444444", ms=3)
-        ax.annotate(f"{tm:g}", (mx, my), fontsize=7, xytext=(3, -8), textcoords="offset points")
+        ax.plot(mx, my, "o", color=_tinta(), ms=3)
+        ax.annotate(f"{tm:g}", (mx, my), fontsize="small", xytext=(3, -8), textcoords="offset points")
     if discordia and diagrama == "wetherill" and "superior" in discordia:
         xx = np.linspace(xmin, xmax, 10)
         ax.plot(xx, discordia["a"] + discordia["b"] * xx, "--", color="#D55E00", lw=1)
     dx, dy = xmax - xmin, ymax - ymin
     ax.set_xlim(xmin - 0.1 * dx, xmax + 0.1 * dx)
     ax.set_ylim(ymin - 0.1 * dy, ymax + 0.1 * dy)
-    ax.set_title(F("Diagrama concórdia (elipses 2σ)"), fontsize=10)
+    ax.set_title(F("Diagrama concórdia (elipses 2σ)"), fontsize="medium")
     _legenda(ax, g, agrupar)
     graf.canvas.draw_idle()
 
@@ -93,15 +109,18 @@ def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
     s = g.get("s_" + coluna)
     pos = np.arange(1, len(g) + 1)
     if s is not None and s.notna().any():
-        ax.bar(pos, 4 * s, bottom=g[coluna] - 2 * s, color=[c + "B0" for c in g.cor], edgecolor=g.cor, width=0.8)
+        barras = ax.bar(pos, 4 * s, bottom=g[coluna] - 2 * s, color=[c + "B0" for c in g.cor], edgecolor=g.cor,
+                        width=0.8)
+        for barra, h in zip(barras, _hachuras(g, agrupar)):
+            barra.set_hatch(h or None)
     else:
         ax.scatter(pos, g[coluna], c=list(g.cor))
     if media is not None:
         m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
-        ax.axhspan(m - e, m + e, color="#cccccc", zorder=0)
-        ax.axhline(m, color="#333333", lw=1)
+        ax.axhspan(m - e, m + e, color="#999999", alpha=0.35, zorder=0)
+        ax.axhline(m, color=_tinta(), lw=matplotlib.rcParams["lines.linewidth"] * 0.7)
         ax.set_title(f"{F(media['Cálculo'])}: {num(m)} ± {num(e)} Ma (2σ), MSWD {num(media['MSWD'])}, "
-                     f"n = {media['n']}", fontsize=9)
+                     f"n = {media['n']}", fontsize="medium")
     ax.set_xlabel(F("análises em ordem de idade (barras 2σ)"))
     ax.set_ylabel(F("idade (Ma)"))
     _legenda(ax, g, agrupar)
@@ -117,16 +136,23 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
         graf.limpar(N_("Poucas idades para a curva de densidade"))
         return
     bins = np.histogram_bin_edges(t, bins="auto")
-    grupos = sorted(g.grupo.unique())
-    ax.hist([g[coluna][g.grupo == k] for k in grupos], bins=bins, stacked=True,
-            color=[g.cor[g.grupo == k].iloc[0] for k in grupos], alpha=0.6, edgecolor="white")
+    ks = sorted(g.grupo.unique())
+    _, _, conjuntos = ax.hist([g[coluna][g.grupo == k] for k in ks], bins=bins, stacked=True,
+                              color=[g.cor[g.grupo == k].iloc[0] for k in ks], alpha=0.6, edgecolor="white")
+    if grupos.usar_padroes():
+        for k, barras in zip(ks, conjuntos if len(ks) > 1 else [conjuntos]):
+            sub = g[g.grupo == k]
+            h = grupos.hachura(classe=sub.classe.iloc[0]) if agrupar == "classe" else grupos.hachura(grupo=int(k))
+            for barra in barras:
+                barra.set_hatch(h or None)
+                barra.set_edgecolor(_tinta())
     ax2 = ax.twinx()
     grade = np.linspace(t.min() - 0.05 * np.ptp(t), t.max() + 0.05 * np.ptp(t), 1000)
-    ax2.plot(grade, gaussian_kde(t)(grade), color="#333333", lw=1.2)
+    ax2.plot(grade, gaussian_kde(t)(grade), color=_tinta())
     ax2.set_yticks([])
     ax.set_xlabel(F("idade (Ma)"))
     ax.set_ylabel(F("número de grãos"))
-    ax.set_title(F("Histograma e densidade (KDE), n = {n}").format(n=len(t)), fontsize=10)
+    ax.set_title(F("Histograma e densidade (KDE), n = {n}").format(n=len(t)), fontsize="medium")
     _legenda(ax, g, agrupar)
     graf.canvas.draw_idle()
 
@@ -151,5 +177,5 @@ def isocrona(graf, graos, iso):
     xx = np.linspace(min(0, np.nanmin(x)), np.nanmax(x + 3 * sx) * 1.05, 10)
     ax.plot(xx, a + b * xx, "--", color="#D55E00", lw=1)
     ax.set_title(F("Isócrona: {idade} ± {erro} Ma (2σ), MSWD {mswd}, n = {n} (elipses 2σ)").format(
-        idade=num(iso["idade"]), erro=num(2 * iso["erro"]), mswd=num(iso["mswd"]), n=iso["n"]), fontsize=9)
+        idade=num(iso["idade"]), erro=num(2 * iso["erro"]), mswd=num(iso["mswd"]), n=iso["n"]), fontsize="medium")
     graf.canvas.draw_idle()

@@ -2,6 +2,16 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.5.0 (17/10/2026)
+
+Acessibilidade. Tudo é opcional e fica guardado no computador de cada usuário.
+
+- Menu Acessibilidade: tamanho da letra (normal, grande, muito grande, enorme; também com Ctrl + e Ctrl -) e tema (como o sistema, claro, escuro, alto contraste com fundo preto ou branco).
+- No painel "Cores nos gráficos", uma escolha entre cores comuns e cores acessíveis. As acessíveis podem ser Okabe-Ito, Tol, cividis ou tons de cinza, cada uma com a sua referência.
+- Opção de padrões além das cores (listras e pontos nas elipses, barras e histogramas; formatos diferentes nos pontos do HTML), para separar grupos sem depender da cor.
+- As figuras exportadas seguem as cores e os padrões escolhidos e ficam sempre com fundo branco.
+- O padrão agora são as cores comuns; quem usava a versão anterior vê as cores de antes escolhendo "Cores acessíveis > Okabe-Ito".
+
 ## 0.4.0 (17/10/2026)
 
 - Escolha do idioma do programa e das exportações: português do Brasil, português de Portugal, espanhol, inglês, francês, alemão, chinês simplificado, hindi e árabe. Fica no menu Idioma e na tela inicial; na primeira abertura vale o idioma do sistema.

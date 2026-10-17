@@ -5,14 +5,66 @@ from scipy.stats import gaussian_kde
 
 from ..idiomas import N_
 
-# Paleta segura para daltônicos (Okabe e Ito 2008; Wong 2011, Nature Methods 8:441)
-PALETA = ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442", "#000000"]
-COR_CLASSE = {"concordante": "#009E73", "discordante": "#E69F00", "rejeitado": "#999999"}
+# Paletas para quem tem daltonismo. A escolhida fica em PALETA e COR_CLASSE,
+# que são alterados no lugar para quem já os importou ver a troca.
+PALETAS = {
+    # cores comuns do matplotlib (tab10); verde e vermelho podem se confundir no daltonismo
+    "comum": {"grupos": ["#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD", "#8C564B", "#E377C2", "#7F7F7F"],
+              "classes": {"concordante": "#2CA02C", "discordante": "#D62728", "rejeitado": "#7F7F7F"}},
+    # Okabe e Ito (2008); Wong (2011), Nature Methods 8:441
+    "okabe_ito": {"grupos": ["#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#D55E00", "#F0E442",
+                             "#000000"],
+                  "classes": {"concordante": "#009E73", "discordante": "#E69F00", "rejeitado": "#999999"}},
+    # Tol (2021), esquema "bright": cores mais vivas, também seguras
+    "tol": {"grupos": ["#4477AA", "#EE6677", "#228833", "#CCBB44", "#66CCEE", "#AA3377", "#BBBBBB", "#000000"],
+            "classes": {"concordante": "#4477AA", "discordante": "#EE6677", "rejeitado": "#BBBBBB"}},
+    # cividis (Nuñez, Anderton e Renslow 2018): do azul ao amarelo, igual para todos os tipos de visão
+    "cividis": {"grupos": ["#00224E", "#FEE838", "#575C6D", "#C3B369", "#2C3E6C", "#8A8779", "#E2CC50",
+                           "#00336F"],
+                "classes": {"concordante": "#00336F", "discordante": "#D9C55B", "rejeitado": "#8A8779"}},
+    # tons de cinza, para impressão em preto e branco (use com os padrões)
+    "cinza": {"grupos": ["#000000", "#9E9E9E", "#525252", "#D0D0D0", "#2B2B2B", "#757575", "#BDBDBD",
+                         "#404040"],
+              "classes": {"concordante": "#2B2B2B", "discordante": "#9E9E9E", "rejeitado": "#D0D0D0"}},
+}
+PALETA = list(PALETAS["comum"]["grupos"])
+COR_CLASSE = dict(PALETAS["comum"]["classes"])
+
+# Padrões (hachuras) além da cor, para separar grupos sem depender dela
+HACHURA_CLASSE = {"concordante": "", "discordante": "////", "rejeitado": "xxxx"}
+HACHURAS = ["", "////", "....", "\\\\\\\\", "xxxx", "oo", "++++", "----"]
+_estado = {"padroes": False}
+
+
+def definir_paleta(nome, padroes=None):
+    """Escolhe a paleta das cores e liga ou desliga os padrões além da cor."""
+    p = PALETAS.get(nome, PALETAS["comum"])
+    PALETA[:] = p["grupos"]
+    COR_CLASSE.clear()
+    COR_CLASSE.update(p["classes"])
+    if padroes is not None:
+        _estado["padroes"] = bool(padroes)
+
+
+def usar_padroes():
+    return _estado["padroes"]
+
+
+def hachura(classe=None, grupo=None):
+    """Padrão de preenchimento de uma classe ou grupo ("" = liso)."""
+    if not _estado["padroes"]:
+        return ""
+    if classe is not None:
+        return HACHURA_CLASSE.get(classe, "")
+    return HACHURAS[(int(grupo) - 1) % len(HACHURAS)] if grupo and grupo > 0 else ""
 
 REFERENCIAS = {
     "classe": N_("Spencer, Kirkland e Taylor (2016), Geoscience Frontiers 7:581-589 (discordância)"),
     "populacoes": N_("Vermeesch (2012), Chemical Geology 312-313:190-194 (estimativa de densidade)"),
     "cores": N_("Wong (2011), Nature Methods 8:441 (paleta para daltônicos)"),
+    "okabe_ito": N_("Okabe e Ito (2008); Wong (2011), Nature Methods 8:441"),
+    "tol": N_("Tol (2021), SRON/EPS/TN/09-002"),
+    "cividis": N_("Nuñez, Anderton e Renslow (2018), PLOS ONE 13:e0199239"),
 }
 # Nomes das classes, para tradução
 N_("concordante"), N_("discordante"), N_("rejeitado")

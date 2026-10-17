@@ -2,12 +2,13 @@
 import sys
 from pathlib import Path
 
+import matplotlib
 import pandas as pd
 from .qt import QLibraryInfo, QLocale, QSettings, Qt, QTimer, QTranslator, QUrl
 from .qt import QAction, QDesktopServices, QIcon, QKeySequence
 from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
-                               QPlainTextEdit, QPushButton, QScrollArea, QSplitter, QTableView, QTabWidget,
+                               QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget,
                                QVBoxLayout, QWidget)
 
 from .. import __version__, idiomas
@@ -15,7 +16,7 @@ from ..idiomas import N_, tr
 from ..nucleo import calculo, exportacao, grupos, metodologia
 from ..nucleo.importacao import importar
 from ..nucleo.projeto import EXTENSAO, Projeto
-from . import graficos
+from . import aparencia, graficos
 from .dialogos import BoasVindas, ConfereImportacao, ExportaPublicacao, Registro, sobre_texto
 from .modelos import ModeloTabela
 
@@ -53,9 +54,14 @@ class Janela(QMainWindow):
         self.resultado = None
         self.alterado = False
         self.resize(1280, 800)
+        self.aparencia = aparencia.ler(self.config)
         self._menus()
-        self._layout()
+        with self._estilo_graficos():
+            self._layout()
         self._atualiza_titulo()
+
+    def _estilo_graficos(self):
+        return matplotlib.rc_context(aparencia.rc_tela(self.aparencia))
 
     # ---------- montagem ----------
     def _acao(self, menu, texto, func, atalho=None):
@@ -89,6 +95,7 @@ class Janela(QMainWindow):
         m = self.menuBar().addMenu(tr("Aj&uda"))
         self._acao(m, tr("Registrar o Zircon..."), lambda: Registro(self).exec())
         self._acao(m, tr("Sobre o Zircon"), lambda: QMessageBox.about(self, tr("Sobre"), sobre_texto()))
+        self._menu_acessibilidade()
         # o nome do menu também em inglês, para quem escolheu por engano um idioma que não lê
         titulo = tr("&Idioma") + ("" if idiomas.atual() == "en" else " (Language)")
         m = self.menuBar().addMenu(titulo)
@@ -97,6 +104,100 @@ class Janela(QMainWindow):
             a.setCheckable(True)
             a.setChecked(cod == idiomas.atual())
         self._atualiza_recentes()
+
+    def _menu_acessibilidade(self):
+        m = self.menuBar().addMenu(tr("A&cessibilidade"))
+        a = self.aparencia
+
+        def grupo_de_opcoes(titulo, opcoes, chave):
+            sub = m.addMenu(tr(titulo))
+            for valor, rotulo in opcoes.items():
+                texto = rotulo[0] if isinstance(rotulo, tuple) else rotulo
+                acao = self._acao(sub, tr(texto), lambda _=False, v=valor: self._muda_aparencia(chave, v))
+                acao.setCheckable(True)
+                acao.setChecked(a[chave] == valor)
+            return sub
+
+        grupo_de_opcoes(N_("Tamanho da letra"), aparencia.TAMANHOS, "tamanho")
+        self._acao(m, tr("Aumentar a letra"), lambda: self._passo_letra(1), QKeySequence.ZoomIn)
+        self._acao(m, tr("Diminuir a letra"), lambda: self._passo_letra(-1), QKeySequence.ZoomOut)
+        m.addSeparator()
+        grupo_de_opcoes(N_("Tema e contraste"), aparencia.TEMAS, "tema")
+        sub = grupo_de_opcoes(N_("Cores dos gráficos (daltonismo)"), aparencia.PALETAS, "paleta")
+        sub.setToolTipsVisible(True)
+        for acao, chave in zip(sub.actions(), aparencia.PALETAS):
+            acao.setToolTip(tr(grupos.REFERENCIAS.get(chave, "")))
+        padroes = self._acao(m, tr("Padrões além das cores (listras e pontos nos grupos)"),
+                             lambda v: self._muda_aparencia("padroes", bool(v)))
+        padroes.setCheckable(True)
+        padroes.setChecked(a["padroes"])
+
+    def _opcoes_de_cor(self, form):
+        """Escolha rápida entre cores comuns e acessíveis, e padrões além da cor."""
+        a = self.aparencia
+        linha = QWidget()
+        lh = QVBoxLayout(linha)
+        lh.setContentsMargins(0, 0, 0, 0)
+        self.r_comuns = QRadioButton(tr("Cores comuns"))
+        self.r_acessiveis = QRadioButton(tr("Cores acessíveis (daltonismo)"))
+        acessivel = a["paleta"] in aparencia.ACESSIVEIS
+        (self.r_acessiveis if acessivel else self.r_comuns).setChecked(True)
+        lh.addWidget(self.r_comuns)
+        lh.addWidget(self.r_acessiveis)
+        form.addRow(linha)
+        self.c_paleta = QComboBox()
+        for chave in aparencia.ACESSIVEIS:
+            self.c_paleta.addItem(tr(aparencia.PALETAS[chave]), chave)
+            self.c_paleta.setItemData(self.c_paleta.count() - 1, tr(grupos.REFERENCIAS.get(chave, "")),
+                                      Qt.ToolTipRole)
+        self.c_paleta.setCurrentIndex(max(0, self.c_paleta.findData(a["paleta"] if acessivel
+                                                                    else a.get("ultima_acessivel", "okabe_ito"))))
+        self.c_paleta.setEnabled(acessivel)
+        form.addRow(tr("Paleta acessível"), self.c_paleta)
+        self.c_padroes = QCheckBox(tr("Padrões além das cores (listras e pontos nos grupos)"))
+        self.c_padroes.setChecked(a["padroes"])
+        form.addRow(self.c_padroes)
+
+        def escolhe_paleta():
+            self._muda_aparencia("paleta", self.c_paleta.currentData() if self.r_acessiveis.isChecked() else "comum")
+        self.r_acessiveis.toggled.connect(lambda _=False: escolhe_paleta())
+        self.c_paleta.currentIndexChanged.connect(lambda _=0: escolhe_paleta())
+        self.c_padroes.toggled.connect(lambda v: self._muda_aparencia("padroes", bool(v)))
+
+    def _passo_letra(self, passo):
+        ordem = list(aparencia.TAMANHOS)
+        i = min(max(ordem.index(self.aparencia["tamanho"]) + passo, 0), len(ordem) - 1)
+        self._muda_aparencia("tamanho", ordem[i])
+
+    def _muda_aparencia(self, chave, valor):
+        if self.aparencia[chave] == valor:
+            return
+        self.aparencia[chave] = valor
+        self.config.setValue(chave, valor)
+        if chave == "paleta" and valor in aparencia.ACESSIVEIS:
+            self.aparencia["ultima_acessivel"] = valor
+        aparencia.aplicar(QApplication.instance(), self.aparencia)
+        if chave in ("paleta", "padroes"):
+            # só as cores mudam: atualiza menus e painel e redesenha, sem refazer a janela
+            self.menuBar().clear()
+            self._menus()
+            for w, v in ((self.r_acessiveis, self.aparencia["paleta"] in aparencia.ACESSIVEIS),
+                         (self.r_comuns, self.aparencia["paleta"] not in aparencia.ACESSIVEIS),
+                         (self.c_padroes, self.aparencia["padroes"])):
+                w.blockSignals(True)
+                w.setChecked(v)
+                w.blockSignals(False)
+            self.c_paleta.setEnabled(self.r_acessiveis.isChecked())
+            if self.aparencia["paleta"] in aparencia.ACESSIVEIS:
+                self.c_paleta.blockSignals(True)
+                self.c_paleta.setCurrentIndex(self.c_paleta.findData(self.aparencia["paleta"]))
+                self.c_paleta.blockSignals(False)
+            if self.resultado is not None:
+                alterado = self.alterado
+                self.calcular()
+                self.alterado = alterado
+        else:
+            QTimer.singleShot(0, self._remonta)  # depois que o menu que chamou terminar
 
     def _layout(self):
         divisor = QSplitter()
@@ -130,7 +231,7 @@ class Janela(QMainWindow):
         self.abas.addTab(self.log, tr("Registro da importação"))
         divisor.addWidget(self.abas)
         divisor.setStretchFactor(1, 1)
-        divisor.setSizes([460, 820])
+        divisor.setSizes([int(470 * aparencia.escala(self.aparencia)), 820])
         self.setCentralWidget(divisor)
         for g in (self.graf_conc, self.graf_media, self.graf_dens):
             g.limpar()
@@ -194,6 +295,7 @@ class Janela(QMainWindow):
         f3.addRow(tr("Colorir por"), self._com_ref(self.c_agrupar, "agrupar"))
         self.c_minpop = QDoubleSpinBox(minimum=1, maximum=100, decimals=0, value=op["minimo_por_populacao"])
         f3.addRow(tr("Mínimo de grãos por população"), self.c_minpop)
+        self._opcoes_de_cor(f3)
         lay.addWidget(g3)
 
         self.b_calcular = QPushButton(tr("Calcular"))
@@ -205,7 +307,7 @@ class Janela(QMainWindow):
         rolagem = QScrollArea()
         rolagem.setWidget(w)
         rolagem.setWidgetResizable(True)
-        rolagem.setMinimumWidth(440)
+        rolagem.setMinimumWidth(int(440 * aparencia.escala(self.aparencia)))
         return rolagem
 
     # ---------- opções ----------
@@ -422,6 +524,10 @@ class Janela(QMainWindow):
     def _desenha(self):
         if self.resultado is None:
             return
+        with self._estilo_graficos():
+            self._desenha_graficos()
+
+    def _desenha_graficos(self):
         g, op = self.resultado.graos, self.opcoes()
         if self.resultado.isocrona:
             graficos.isocrona(self.graf_conc, g, self.resultado.isocrona)
@@ -471,10 +577,15 @@ class Janela(QMainWindow):
         self.config.setValue("idioma", cod)
         aplica_idioma(cod)
         self.setLocale(QLocale())  # os campos herdam da janela, não do padrão novo
+        self._remonta()
+
+    def _remonta(self):
+        """Refaz menus, painéis e gráficos (depois de mudar idioma, letra, tema ou cores)."""
         op = self.opcoes()
         self.menuBar().clear()
         self._menus()
-        self._layout()
+        with self._estilo_graficos():
+            self._layout()
         self._aplica_opcoes(op)
         if self.projeto is not None:
             self.log.setPlainText("\n".join(self.projeto.log))
@@ -543,6 +654,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Zircon")
     app.setOrganizationName("Zircon")
+    aparencia.aplicar(app, aparencia.ler(QSettings("Zircon", "Zircon")))
     escolhido = QSettings("Zircon", "Zircon").value("idioma", "")
     aplica_idioma(escolhido or idiomas.codigo_do_sistema(QLocale.system().name()))
     app.setDesktopFileName("zircon")  # liga a janela ao atalho no Linux (GNOME, COSMIC, KDE)

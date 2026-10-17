@@ -94,11 +94,16 @@ class _Folha:
 
 
 def _estilo_publicacao():
+    """Estilo das figuras de revista; vale só durante a exportação, sem mudar os gráficos da tela."""
     import matplotlib
-    matplotlib.rcParams.update({
-        "font.family": "sans-serif", "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
+    from .desenho import FONTES
+    return matplotlib.rc_context({
+        "font.family": "sans-serif", "font.sans-serif": ["Arial", "Helvetica"] + FONTES,
         "font.size": 8, "axes.titlesize": 8, "axes.labelsize": 8, "legend.fontsize": 7,
-        "xtick.labelsize": 7, "ytick.labelsize": 7, "axes.linewidth": 0.6,
+        "xtick.labelsize": 7, "ytick.labelsize": 7, "axes.linewidth": 0.6, "hatch.linewidth": 0.5,
+        "figure.facecolor": "white", "axes.facecolor": "white", "savefig.facecolor": "white",
+        "text.color": "black", "axes.labelcolor": "black", "axes.edgecolor": "black",
+        "xtick.color": "black", "ytick.color": "black", "legend.facecolor": "white",
         "svg.fonttype": "none", "pdf.fonttype": 42, "ps.fonttype": 42,
     })
 
@@ -107,7 +112,6 @@ def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pd
     """Salva concórdia, média ponderada e distribuição nos formatos pedidos."""
     from . import desenho as graficos
     from . import estatistica
-    _estilo_publicacao()
     pasta = Path(pasta)
     pasta.mkdir(parents=True, exist_ok=True)
     g = resultado.graos
@@ -126,14 +130,15 @@ def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pd
         desenhos.append(("media_ponderada", lambda f: graficos.media_ponderada(f, g, coluna, media, opcoes["agrupar"])))
     if "melhor" in g:
         desenhos.append(("distribuicao_idades", lambda f: graficos.densidade(f, g, "melhor", opcoes["agrupar"])))
-    for nome, desenha in desenhos:
-        folha = _Folha(largura_mm, altura)
-        desenha(folha)
-        for fmt in formatos:
-            arq = pasta / f"{nome}.{fmt}"
-            extra = {"pil_kwargs": {"compression": "tiff_lzw"}} if fmt == "tif" else {}
-            folha.figura.savefig(arq, dpi=FORMATOS_FIGURA.get(fmt) or 300, **extra)
-            feitas.append(arq)
+    with _estilo_publicacao():
+        for nome, desenha in desenhos:
+            folha = _Folha(largura_mm, altura)
+            desenha(folha)
+            for fmt in formatos:
+                arq = pasta / f"{nome}.{fmt}"
+                extra = {"pil_kwargs": {"compression": "tiff_lzw"}} if fmt == "tif" else {}
+                folha.figura.savefig(arq, dpi=FORMATOS_FIGURA.get(fmt) or 300, **extra)
+                feitas.append(arq)
     return feitas
 
 
@@ -203,6 +208,16 @@ def _rgba(cor, alfa):
     return f"rgba({r},{g},{b},{alfa})"
 
 
+def _simbolos(graos, chave):
+    """Formato dos pontos por grupo quando os padrões além da cor estão ligados."""
+    from . import grupos
+    if not grupos.usar_padroes():
+        return "circle"
+    formas = ["circle", "square", "diamond", "triangle-up", "x", "cross", "star", "triangle-down"]
+    ordem = {k: i for i, k in enumerate(sorted(graos[chave].unique(), key=str))}
+    return [formas[ordem[k] % len(formas)] for k in graos[chave]]
+
+
 def _elipse_xy(x, y, sx, sy, rho, n_sigma=2, n=60):
     cov = np.array([[sx**2, rho * sx * sy], [rho * sx * sy, sy**2]])
     val, vec = np.linalg.eigh(cov)
@@ -263,7 +278,7 @@ def interativo(caminho, resultado, opcoes, titulo="Zircon"):
     o = g.dropna(subset=["melhor"]).sort_values("melhor").reset_index(drop=True)
     erro = 2 * o["s_melhor"] if "s_melhor" in o else None
     fig.add_trace(go.Scatter(x=np.arange(1, len(o) + 1), y=o.melhor, mode="markers",
-                             marker=dict(color=list(o.cor), size=7),
+                             marker=dict(color=list(o.cor), size=8, symbol=_simbolos(o, chave)),
                              error_y=dict(type="data", array=erro, visible=erro is not None, color="#888"),
                              hovertext=[dica(r) for _, r in o.iterrows()], hoverinfo="text", showlegend=False),
                   row=linha, col=1)
