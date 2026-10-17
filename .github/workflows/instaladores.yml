@@ -123,3 +123,5 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: pacotes/*
+          # etiqueta com hífen (ex.: v0.6.0-teste) sai como pré-lançamento
+          prerelease: ${{ contains(github.ref_name, '-') }}
