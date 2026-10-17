@@ -1,4 +1,5 @@
 """Janela principal do Zircon."""
+import os
 import sys
 from pathlib import Path
 
@@ -819,7 +820,25 @@ def aplica_idioma(cod):
                 break
 
 
+def _plataforma_linux():
+    """No Linux com Wayland (Pop!_OS 24.04 com COSMIC, Ubuntu e Fedora recentes), abre pelo XWayland.
+
+    O Qt 5 empacotado desenha mal as janelas no Wayland: sem barra de título nem
+    botões de minimizar, maximizar e fechar. Pelo XWayland quem desenha a barra é
+    a própria área de trabalho. Se não houver XWayland, usa o Wayland mesmo.
+    ZIRCON_QT_PLATAFORMA permite escolher outra (ex.: wayland).
+    """
+    if not sys.platform.startswith("linux"):
+        return
+    escolhida = os.environ.get("ZIRCON_QT_PLATAFORMA")
+    if escolhida:
+        os.environ["QT_QPA_PLATFORM"] = escolhida
+    elif os.environ.get("WAYLAND_DISPLAY") or os.environ.get("XDG_SESSION_TYPE") == "wayland":
+        os.environ["QT_QPA_PLATFORM"] = "xcb;wayland" if os.environ.get("DISPLAY") else "wayland"
+
+
 def main():
+    _plataforma_linux()
     app = QApplication(sys.argv)
     app.setApplicationName("Zircon")
     app.setOrganizationName("Zircon")

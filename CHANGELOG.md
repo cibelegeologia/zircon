@@ -2,6 +2,10 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.6.1 (17/10/2026)
+
+- Linux: as janelas voltam a ter barra de título com os botões de minimizar, maximizar e fechar no Pop!_OS 24.04 e em outros sistemas com Wayland. O Zircon agora abre pelo XWayland, e quem desenha a barra é a própria área de trabalho.
+
 ## 0.6.0 (17/10/2026)
 
 Ajuda e leitores de tela.
