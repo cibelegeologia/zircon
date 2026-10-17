@@ -29,3 +29,13 @@ Etapas: boas-vindas, licença (CC0, gratuito), formulário opcional (nome, insti
 ## Cores por grupo
 
 Três modos: concordante, discordante ou rejeitado; populações de idade separadas pelos mínimos da curva de densidade (Vermeesch 2012); ou grupos escolhidos pelo usuário (Grupos > Colocar linhas selecionadas no grupo). Paleta segura para daltônicos (Okabe e Ito 2008; Wong 2011).
+
+## Exportação para publicação
+
+Arquivo > Exportar para publicação gera uma pasta com:
+
+- `figuras/`: concórdia, média ponderada e distribuição de idades em PNG e TIFF (600 dpi), PDF, SVG e, se pedido, EPS, na largura de 1, 1,5 ou 2 colunas (90, 140 ou 190 mm), como pedem as instruções de figuras da Elsevier.
+- planilha Excel formatada: resultados, idades por grão com a cor de cada grupo, opções usadas, referências em ABNT e registro da importação.
+- `interativo/`: página HTML autônoma (abre sem internet) com os gráficos interativos, para material suplementar. O antigo visualizador de gráficos interativos da Elsevier está suspenso (a página de visualização de dados da Elsevier diz que os recursos estão indisponíveis e sugere depositar os dados no Mendeley Data).
+- `dados_repositorio/`: CSV com LEIAME para depositar no Mendeley Data, Zenodo ou PANGAEA.
+- `metodologia.md` e `.txt`: texto de métodos em português e inglês, com as citações de cada cálculo, os resultados e as referências em ABNT. Também aparece na aba Metodologia.

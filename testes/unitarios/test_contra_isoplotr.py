@@ -85,3 +85,19 @@ def test_populacoes_detriticas():
     res = calcular(d, imp.tipo, {"agrupar": "populacoes"})
     assert res.graos.grupo.nunique() >= 2
     assert res.graos.melhor.min() == pytest.approx(128.9)
+
+
+def test_exportacao_para_publicacao(tmp_path):
+    from zircon.nucleo import exportacao
+    from zircon.nucleo.calculo import OPCOES_PADRAO
+    imp = importar(ENTRADA / "UPb1.xlsx")
+    op = {**OPCOES_PADRAO, "diagrama": "wetherill"}
+    res = calcular(imp.dados, imp.tipo, op)
+    p = Projeto(nome="UPb1", tipo=imp.tipo, dados=imp.dados, log=imp.log)
+    abnt = Path(__file__).resolve().parents[2] / "docs" / "referencias_abnt.md"
+    destino = exportacao.pacote(tmp_path / "pub", p, res, op, 90, ("png", "svg"), None, abnt)
+    for nome in ("figuras/concordia.svg", "figuras/media_ponderada.png", "UPb1_tabelas.xlsx",
+                 "interativo/UPb1_graficos_interativos.html", "dados_repositorio/LEIAME.txt", "metodologia.md"):
+        assert (destino / nome).stat().st_size > 0
+    texto = (destino / "metodologia.md").read_text(encoding="utf-8")
+    assert "Ludwig (1998)" in texto and "LUDWIG, K. R. On the treatment" in texto and "## English" in texto

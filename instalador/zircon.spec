@@ -11,12 +11,13 @@ a = Analysis(
     [str(raiz / "iniciar_zircon.py")],
     pathex=[str(raiz)],
     datas=[
+        (str(raiz / "docs" / "referencias_abnt.md"), "docs"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb1.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb2.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "DZ_detritico_so_idades.xlsx"), "exemplos"),
         (str(raiz / "testes" / "modulo2" / "entrada" / "UPb1_estilo_laboratorio_latin1.csv"), "exemplos"),
     ],
-    hiddenimports=["odf", "openpyxl", "xlrd"],
+    hiddenimports=["odf", "openpyxl", "xlrd", "plotly"],
     excludes=["tkinter", "IPython", "pytest"],
 )
 pyz = PYZ(a.pure)

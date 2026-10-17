@@ -3,26 +3,26 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from PySide6.QtCore import QSettings, Qt
-from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtCore import QSettings, Qt, QUrl
+from PySide6.QtGui import QAction, QDesktopServices, QKeySequence
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
                                QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
                                QPlainTextEdit, QPushButton, QScrollArea, QSplitter, QTableView, QTabWidget,
                                QVBoxLayout, QWidget)
 
 from .. import __version__
-from ..nucleo import calculo, grupos
+from ..nucleo import calculo, exportacao, grupos, metodologia
 from ..nucleo.importacao import importar
 from ..nucleo.projeto import EXTENSAO, Projeto
 from . import graficos
-from .dialogos import BoasVindas, ConfereImportacao, Registro, sobre_texto
+from .dialogos import BoasVindas, ConfereImportacao, ExportaPublicacao, Registro, sobre_texto
 from .modelos import ModeloTabela
 
 FILTRO_PLANILHA = "Planilhas (*.xlsx *.xls *.ods *.csv *.txt *.tsv);;Todos os arquivos (*)"
 FILTRO_PROJETO = f"Projeto Zircon (*{EXTENSAO})"
 REF = {
-    "efeitos_aleatorios": "Vermeesch (2018), Geoscience Frontiers 9:1479-1493",
-    "rejeitar_outliers": "Chauvenet generalizado: Vermeesch (2018)",
+    "efeitos_aleatorios": "Vermeesch (2018a), Geoscience Frontiers 9:1479-1493",
+    "rejeitar_outliers": "Chauvenet generalizado: Vermeesch (2018a)",
     "corte_76": "Spencer, Kirkland e Taylor (2016); Gehrels (2014)",
     "limite_discordancia": "Spencer, Kirkland e Taylor (2016), Geoscience Frontiers 7:581-589",
     "media_de": "Wendt e Carl (1991), Chemical Geology 86:275-285",
@@ -36,6 +36,11 @@ def pasta_exemplos():
         if p.exists():
             return p
     return Path.home()
+
+
+def arquivo_referencias():
+    base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[2]))
+    return base / "docs" / "referencias_abnt.md"
 
 
 class Janela(QMainWindow):
@@ -68,8 +73,12 @@ class Janela(QMainWindow):
         self._acao(m, "&Salvar", self.salvar, QKeySequence.Save)
         self._acao(m, "Salvar &como...", self.salvar_como, QKeySequence.SaveAs)
         m.addSeparator()
-        self._acao(m, "Exportar resultados (Excel)...", self.exportar_resultados)
+        self._acao(m, "Exportar para publicação (figuras, Excel, interativo, metodologia)...",
+                   self.exportar_publicacao, "Ctrl+E")
+        self._acao(m, "Exportar planilha Excel formatada...", self.exportar_resultados)
         self._acao(m, "Exportar gráfico atual...", self.exportar_grafico)
+        self._acao(m, "Exportar gráficos interativos (HTML)...", self.exportar_interativo)
+        self._acao(m, "Exportar metodologia (Markdown ou texto)...", self.exportar_metodologia)
         m.addSeparator()
         self._acao(m, "Sai&r", self.close, QKeySequence.Quit)
         m = self.menuBar().addMenu("&Grupos")
@@ -104,6 +113,9 @@ class Janela(QMainWindow):
         lr.addWidget(QLabel("Avisos e interpretação"))
         lr.addWidget(self.avisos)
         self.abas.addTab(res, "Resultados")
+        self.metodologia = QPlainTextEdit()
+        self.metodologia.setReadOnly(True)
+        self.abas.addTab(self.metodologia, "Metodologia (texto para o artigo)")
         self.log = QPlainTextEdit()
         self.log.setReadOnly(True)
         self.abas.addTab(self.log, "Registro da importação")
@@ -298,21 +310,56 @@ class Janela(QMainWindow):
         for r in self.config.value("recentes", []) or []:
             self._acao(self.menu_recentes, r, lambda _=False, c=r: self.abrir(c))
 
-    def exportar_resultados(self):
+    def _referencias(self):
+        cits = [r["Referência"] for r in self.resultado.conjunto] + [REF[k] for k in REF]
+        return exportacao.referencias_abnt(cits, arquivo_referencias())
+
+    def _pede_arquivo(self, titulo, sufixo, filtro):
         if self.resultado is None:
+            QMessageBox.information(self, titulo, "Calcule primeiro (botão Calcular).")
+            return None
+        pasta = Path(self.config.value("pasta", str(Path.home())))
+        caminho, _ = QFileDialog.getSaveFileName(self, titulo, str(pasta / (self.projeto.nome + sufixo)), filtro)
+        return caminho or None
+
+    def exportar_resultados(self):
+        caminho = self._pede_arquivo("Exportar planilha", "_tabelas.xlsx", "Excel (*.xlsx)")
+        if caminho:
+            exportacao.excel(caminho, self.projeto, self.resultado, self.opcoes(), self._referencias())
+            self.statusBar().showMessage(f"Planilha salva em {caminho}", 5000)
+
+    def exportar_interativo(self):
+        caminho = self._pede_arquivo("Exportar gráficos interativos", "_graficos_interativos.html", "HTML (*.html)")
+        if caminho:
+            exportacao.interativo(caminho, self.resultado, self.opcoes(), f"Zircon - {self.projeto.nome}")
+            self.statusBar().showMessage(f"Gráficos interativos salvos em {caminho}", 5000)
+
+    def exportar_metodologia(self):
+        caminho = self._pede_arquivo("Exportar metodologia", "_metodologia.md",
+                                     "Markdown (*.md);;Texto (*.txt)")
+        if caminho:
+            texto = self.metodologia.toPlainText()
+            if caminho.endswith(".txt"):
+                texto = texto.replace("**", "").replace("*", "").replace("# ", "")
+            Path(caminho).write_text(texto, encoding="utf-8")
+            self.statusBar().showMessage(f"Metodologia salva em {caminho}", 5000)
+
+    def exportar_publicacao(self):
+        if self.resultado is None:
+            QMessageBox.information(self, "Exportar", "Calcule primeiro (botão Calcular).")
             return
-        caminho, _ = QFileDialog.getSaveFileName(self, "Exportar resultados", self.projeto.nome + "_resultados.xlsx",
-                                                 "Excel (*.xlsx)")
-        if not caminho:
+        d = ExportaPublicacao(self)
+        if d.exec() != ExportaPublicacao.Accepted:
             return
-        with pd.ExcelWriter(caminho) as w:
-            pd.DataFrame(self.resultado.conjunto).to_excel(w, sheet_name="Resultados", index=False)
-            self.resultado.graos.drop(columns=["cor"]).to_excel(w, sheet_name="Idades por grão", index=False)
-            pd.DataFrame({"Opção": list(self.opcoes()), "Valor": list(self.opcoes().values())}).to_excel(
-                w, sheet_name="Opções usadas", index=False)
-            pd.DataFrame({"Registro": self.projeto.log + self.resultado.avisos}).to_excel(
-                w, sheet_name="Registro", index=False)
-        self.statusBar().showMessage(f"Resultados exportados para {caminho}", 5000)
+        pasta = QFileDialog.getExistingDirectory(self, "Escolha a pasta onde salvar",
+                                                 self.config.value("pasta", str(Path.home())))
+        if not pasta:
+            return
+        destino = Path(pasta) / f"{self.projeto.nome}_publicacao"
+        exportacao.pacote(destino, self.projeto, self.resultado, self.opcoes(), d.largura(), d.formatos(),
+                          self._referencias(), arquivo_referencias())
+        QMessageBox.information(self, "Exportado", f"Arquivos salvos em:\n{destino}")
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(destino)))
 
     def exportar_grafico(self):
         atual = self.abas.currentWidget()
@@ -352,6 +399,7 @@ class Janela(QMainWindow):
         self.tabela_res.setModel(ModeloTabela(res))
         self.tabela_res.resizeColumnsToContents()
         self.avisos.setPlainText("\n".join(self.resultado.avisos) or "Sem avisos.")
+        self.metodologia.setPlainText(metodologia.gerar(self.projeto, self.resultado, op, arquivo_referencias()))
         self._desenha()
         self._atualiza_titulo()
 

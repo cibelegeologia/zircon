@@ -85,7 +85,7 @@ def media_ponderada(x, s, efeitos_aleatorios=False, rejeitar_outliers=False):
             valido = novo
     r = _media(x[valido], s[valido], efeitos_aleatorios)
     r.update(n=int(valido.sum()), valido=valido,
-             referencia="Wendt e Carl (1991); Vermeesch (2018)" if (efeitos_aleatorios or rejeitar_outliers)
+             referencia="Wendt e Carl (1991); Vermeesch (2018a)" if (efeitos_aleatorios or rejeitar_outliers)
              else "Wendt e Carl (1991)")
     return r
 

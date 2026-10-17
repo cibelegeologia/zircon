@@ -163,3 +163,48 @@ def sobre_texto():
             "<p>Cálculos conferidos com o IsoplotR 7.1 (Vermeesch 2018).</p>"
             "<p>Funciona sem internet e não coleta dados.</p>"
             "<p>Código e referências: github.com/cibelegeologia/zircon</p>")
+
+
+class ExportaPublicacao(QDialog):
+    """Escolha da largura das figuras e dos formatos."""
+
+    def __init__(self, parent=None):
+        from ..nucleo.exportacao import LARGURAS_MM
+        from PySide6.QtWidgets import QComboBox
+        super().__init__(parent)
+        self.setWindowTitle("Exportar para publicação")
+        lay = QVBoxLayout(self)
+        texto = QLabel("Gera uma pasta com: figuras nos formatos escolhidos; planilha Excel formatada com as "
+                       "referências; gráficos interativos em HTML (material suplementar, abrem sem internet); "
+                       "dados em CSV com LEIAME para repositório (Mendeley Data, Zenodo, PANGAEA); e o texto de "
+                       "metodologia com as citações, em português e inglês.")
+        texto.setWordWrap(True)
+        lay.addWidget(texto)
+        form = QFormLayout()
+        self.c_largura = QComboBox()
+        for nome, mm in LARGURAS_MM.items():
+            self.c_largura.addItem(nome, mm)
+        form.addRow("Largura das figuras", self.c_largura)
+        lay.addLayout(form)
+        self.c_fmt = {}
+        for fmt, desc in (("png", "PNG 600 dpi (apresentações, Word)"), ("tif", "TIFF 600 dpi (exigido por várias revistas)"),
+                          ("pdf", "PDF vetorial"), ("svg", "SVG vetorial (editável no Inkscape/Illustrator)"),
+                          ("eps", "EPS (revistas antigas; sem transparência)")):
+            c = QCheckBox(desc)
+            c.setChecked(fmt != "eps")
+            lay.addWidget(c)
+            self.c_fmt[fmt] = c
+        nota = QLabel("<small>Larguras e resoluções seguem as instruções de figuras da Elsevier.</small>")
+        lay.addWidget(nota)
+        botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        botoes.button(QDialogButtonBox.Ok).setText("Escolher pasta e exportar")
+        botoes.button(QDialogButtonBox.Cancel).setText("Cancelar")
+        botoes.accepted.connect(self.accept)
+        botoes.rejected.connect(self.reject)
+        lay.addWidget(botoes)
+
+    def largura(self):
+        return self.c_largura.currentData()
+
+    def formatos(self):
+        return tuple(f for f, c in self.c_fmt.items() if c.isChecked())
