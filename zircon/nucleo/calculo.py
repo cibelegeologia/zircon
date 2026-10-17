@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-from . import estatistica, grupos, idades
+from . import estatistica, grupos, idades, pbcomum
 
 OPCOES_PADRAO = {
     "corte_76": 1000.0,          # Ma: acima disso a melhor idade é 207Pb/206Pb
@@ -15,6 +15,7 @@ OPCOES_PADRAO = {
     "usar_discordantes": False,
     "agrupar": "classe",          # "classe", "populacoes" ou "manual"
     "minimo_por_populacao": 3,
+    "pb_comum": "stacey_kramers",  # "nenhuma", "fixo" ou "stacey_kramers" (só com 204Pb)
 }
 
 
@@ -23,6 +24,7 @@ class Resultado:
     graos: pd.DataFrame
     conjunto: list = field(default_factory=list)   # dicionários para a tabela de resultados
     avisos: list = field(default_factory=list)
+    isocrona: dict = None
 
 
 def _linha(nome, r, chave="media", erro="erro", n=None):
@@ -34,6 +36,13 @@ def _linha(nome, r, chave="media", erro="erro", n=None):
 
 def idades_por_grao(dados, tipo, opcoes):
     g = dados[["amostra", "analise"]].copy()
+    if tipo == "wetherill-204":
+        if opcoes["pb_comum"] == "nenhuma":
+            pass
+        else:
+            r75, s75, r68, s68, rho = pbcomum.corrigir_204(dados, opcoes["pb_comum"])
+            dados = dados.assign(r75=r75, s75=s75, r68=r68, s68=s68, rho=rho)
+        tipo = "wetherill"
     if tipo == "tera-wasserburg":
         r75, s75, r68, s68, rho = idades.tw_para_wetherill(dados.r86, dados.s86, dados.r76, dados.s76, dados.rho)
         g["r75"], g["s75"], g["r68"], g["s68"], g["rho"] = r75, s75, r68, s68, rho
@@ -65,10 +74,40 @@ def idades_por_grao(dados, tipo, opcoes):
     return g
 
 
+def _isocrona(dados, tipo):
+    g = dados[["amostra", "analise"]].copy()
+    if tipo == "pb-pb":
+        r = estatistica.isocrona_pbpb(dados.r64, dados.s64, dados.r74, dados.s74, dados.rho)
+        nome = "Isócrona Pb-Pb"
+        for c in ("r64", "s64", "r74", "s74", "rho"):
+            g[c] = dados[c]
+    else:
+        r = estatistica.isocrona_thpb(dados.r24, dados.s24, dados.r84, dados.s84, dados.rho)
+        nome = "Isócrona Th-Pb"
+        for c in ("r24", "s24", "r84", "s84", "rho"):
+            g[c] = dados[c]
+    res = Resultado(g, [_linha(nome, r, "idade")])
+    res.isocrona = {"tipo": tipo, **r}
+    g["discordancia"] = np.nan
+    g["valido"] = True
+    g["classe"] = "concordante"
+    g["grupo"] = 1
+    g["cor"] = grupos.COR_CLASSE["concordante"]
+    if r["p"] < 0.05:
+        res.avisos.append("Isócrona com p < 0,05: os pontos espalham mais do que os erros explicam")
+    return res
+
+
 def calcular(dados, tipo, opcoes=None, grupo_manual=None):
     op = {**OPCOES_PADRAO, **(opcoes or {})}
+    if tipo in ("pb-pb", "th-pb"):
+        return _isocrona(dados, tipo)
     g = idades_por_grao(dados, tipo, op)
     res = Resultado(g)
+    if tipo == "wetherill-204":
+        nomes = {"nenhuma": "sem correção", "fixo": "composição fixa", "stacey_kramers": "Stacey e Kramers (1975)"}
+        res.avisos.append(f"Pb comum corrigido pelo 204Pb: {nomes[op['pb_comum']]}")
+        tipo = "wetherill"
     disc_ok = np.abs(g["discordancia"].fillna(0)) <= op["limite_discordancia"]
     usar = disc_ok | op["usar_discordantes"]
     valido = np.ones(len(g), bool)
@@ -77,7 +116,11 @@ def calcular(dados, tipo, opcoes=None, grupo_manual=None):
     if coluna in g and g[coluna].notna().any():
         x = g[coluna].where(usar).to_numpy(float)
         s = g.get("s_" + coluna, pd.Series(np.nan, index=g.index)).to_numpy(float)
-        if np.isfinite(s).any():
+        if not np.isfinite(x).any():
+            res.avisos.append(f"Nenhum grão passou no limite de discordância de {op['limite_discordancia']:g} %: "
+                              "média ponderada não calculada. Aumente o limite, marque 'Incluir discordantes' "
+                              "ou use a discórdia.")
+        elif np.isfinite(s).any():
             r = estatistica.media_ponderada(x, s, op["efeitos_aleatorios"], op["rejeitar_outliers"])
             valido = r["valido"] | ~np.isfinite(x)
             nome = {"t68": "206Pb/238U", "t76": "207Pb/206Pb", "melhor": "melhor idade"}[coluna]

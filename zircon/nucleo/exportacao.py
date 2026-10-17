@@ -19,6 +19,9 @@ COLUNAS_SAIDA = {
     "r75": ("207Pb/235U", "0.00000"), "s75": ("± 1σ", "0.00000"),
     "r68": ("206Pb/238U", "0.000000"), "s68": ("± 1σ", "0.000000"), "rho": ("rho", "0.00"),
     "r76": ("207Pb/206Pb", "0.00000"), "s76": ("± 1σ", "0.00000"),
+    "r64": ("206Pb/204Pb", "0.000"), "s64": ("± 1σ", "0.000"), "r74": ("207Pb/204Pb", "0.000"),
+    "s74": ("± 1σ", "0.000"), "r24": ("232Th/204Pb", "0.0"), "s24": ("± 1σ", "0.0"),
+    "r84": ("208Pb/204Pb", "0.000"), "s84": ("± 1σ", "0.000"),
     "t68": ("Idade 206Pb/238U (Ma)", "0.0"), "s_t68": ("± 1σ (Ma)", "0.0"),
     "t75": ("Idade 207Pb/235U (Ma)", "0.0"), "s_t75": ("± 1σ (Ma)", "0.0"),
     "t76": ("Idade 207Pb/206Pb (Ma)", "0.0"), "s_t76": ("± 1σ (Ma)", "0.0"),
@@ -64,15 +67,18 @@ def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pd
     altura = largura_mm * 0.8
     feitas = []
     desenhos = []
-    if "r75" in g:
+    if resultado.isocrona:
+        desenhos.append(("isocrona", lambda f: graficos.isocrona(f, g, resultado.isocrona)))
+    elif "r75" in g:
         disc = estatistica.discordia(g.r75, g.s75, g.r68, g.s68, g.rho) if len(g) >= 3 else None
         desenhos.append(("concordia", lambda f: graficos.concordia(f, g, opcoes.get("diagrama", "wetherill"),
                                                                     opcoes["agrupar"], disc)))
     coluna = {"68": "t68", "76": "t76", "melhor": "melhor"}[opcoes["media_de"]]
     media = next((r for r in resultado.conjunto if r["Cálculo"].startswith("Média ponderada")), None)
-    if coluna in g:
+    if coluna in g and not resultado.isocrona:
         desenhos.append(("media_ponderada", lambda f: graficos.media_ponderada(f, g, coluna, media, opcoes["agrupar"])))
-    desenhos.append(("distribuicao_idades", lambda f: graficos.densidade(f, g, "melhor", opcoes["agrupar"])))
+    if "melhor" in g:
+        desenhos.append(("distribuicao_idades", lambda f: graficos.densidade(f, g, "melhor", opcoes["agrupar"])))
     for nome, desenha in desenhos:
         folha = _Folha(largura_mm, altura)
         desenha(folha)
@@ -166,6 +172,8 @@ def interativo(caminho, resultado, opcoes, titulo="Zircon"):
     from . import idades
 
     g = resultado.graos
+    if resultado.isocrona:
+        return _interativo_isocrona(caminho, g, resultado.isocrona, titulo)
     tem_razoes = "r75" in g
     linhas = 3 if tem_razoes else 2
     nomes = (["Concórdia (Wetherill, elipses 2σ)"] if tem_razoes else []) + \
@@ -224,6 +232,27 @@ def interativo(caminho, resultado, opcoes, titulo="Zircon"):
     fig.update_yaxes(title_text="número de grãos", row=linha + 1, col=1)
     fig.write_html(caminho, include_plotlyjs=True, full_html=True,
                    config={"toImageButtonOptions": {"format": "svg"}, "displaylogo": False})
+    return Path(caminho)
+
+
+def _interativo_isocrona(caminho, g, iso, titulo):
+    import plotly.graph_objects as go
+    if iso["tipo"] == "th-pb":
+        cx, cy, nx, ny, a, b = "r24", "r84", "232Th/204Pb", "208Pb/204Pb", iso["a"], iso["b"]
+    else:
+        cx, cy, nx, ny, a, b = "r64", "r74", "206Pb/204Pb", "207Pb/204Pb", iso["b"], iso["a"]
+    fig = go.Figure()
+    for _, r in g.iterrows():
+        ex, ey = _elipse_xy(r[cx], r[cy], r["s" + cx[1:]], r["s" + cy[1:]], r.rho)
+        fig.add_trace(go.Scatter(x=ex, y=ey, fill="toself", mode="lines", line=dict(color=r.cor, width=1),
+                                 fillcolor=r.cor + "80", showlegend=False, hoverinfo="text",
+                                 hovertext=f"<b>{r.analise}</b><br>{nx}: {r[cx]:.4g}<br>{ny}: {r[cy]:.4g}"))
+    xx = np.linspace(min(0, g[cx].min()), g[cx].max() * 1.05, 10)
+    fig.add_trace(go.Scatter(x=xx, y=a + b * xx, mode="lines", line=dict(color="#D55E00", dash="dash"),
+                             name="isócrona"))
+    fig.update_layout(title=f"{titulo}: {iso['idade']:.2f} ± {2 * iso['erro']:.2f} Ma (2σ), MSWD {iso['mswd']:.2f}",
+                      xaxis_title=nx, yaxis_title=ny, template="simple_white", font=dict(family="Arial", size=12))
+    fig.write_html(caminho, include_plotlyjs=True, full_html=True, config={"displaylogo": False})
     return Path(caminho)
 
 

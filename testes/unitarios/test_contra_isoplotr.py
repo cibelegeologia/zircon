@@ -101,3 +101,23 @@ def test_exportacao_para_publicacao(tmp_path):
         assert (destino / nome).stat().st_size > 0
     texto = (destino / "metodologia.md").read_text(encoding="utf-8")
     assert "Ludwig (1998)" in texto and "LUDWIG, K. R. On the treatment" in texto and "## English" in texto
+
+
+@pytest.mark.parametrize("modelo,calculo", [("fixo", "Pb comum padrão"), ("stacey_kramers", "Stacey")])
+def test_pb_comum_204(modelo, calculo):
+    imp = importar(ENTRADA / "UPb4.xlsx")
+    assert imp.tipo == "wetherill-204"
+    op = {"pb_comum": modelo, "media_de": "68", "efeitos_aleatorios": False, "rejeitar_outliers": False,
+          "usar_discordantes": True}
+    media = calcular(imp.dados, imp.tipo, op).conjunto[0]
+    v, s, m = ref("UPb4", "Média ponderada 206Pb/238U após correção de Pb comum", calculo)
+    assert perto(media["Idade (Ma)"], v, 1e-4) and perto(media["± 1σ (Ma)"], s, 1e-3)
+
+
+@pytest.mark.parametrize("arquivo,conjunto,calculo,rel", [("PbPb1.xlsx", "PbPb1", "Isócrona Pb-Pb", 1e-6),
+                                                           ("ThPb1_tab.txt", "ThPb1", "Isócrona Th-Pb", 1e-3)])
+def test_isocronas(arquivo, conjunto, calculo, rel):
+    imp = importar(ENTRADA / arquivo)
+    r = calcular(imp.dados, imp.tipo).conjunto[0]
+    v, s, m = ref(conjunto, calculo, "modelo")
+    assert perto(r["Idade (Ma)"], v, rel) and perto(r["± 1σ (Ma)"], s, 2e-3) and perto(r["MSWD"], m, 2e-3)

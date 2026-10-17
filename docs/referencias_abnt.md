@@ -106,6 +106,8 @@ STEIGER, R. H.; JÄGER, E. Subcommission on geochronology: convention on the use
 
 SUNDELL, K. E.; SAYLOR, J. E. Unmixing detrital geochronology age distributions. **Geochemistry, Geophysics, Geosystems**, v. 18, p. 2872-2886, 2017. DOI: https://doi.org/10.1002/2016GC006774.
 
+TATSUMOTO, M.; KNIGHT, R. J.; ALLÈGRE, C. J. Time differences in the formation of meteorites as determined from the ratio of lead-207 to lead-206. **Science**, v. 180, p. 1279-1283, 1973. DOI: https://doi.org/10.1126/science.180.4092.1279.
+
 TERA, F.; WASSERBURG, G. J. U-Th-Pb systematics in three Apollo 14 basalts and the problem of initial Pb in lunar rocks. **Earth and Planetary Science Letters**, v. 14, p. 281-304, 1972. DOI: https://doi.org/10.1016/0012-821X(72)90128-8.
 
 VERMEESCH, P. How many grains are needed for a provenance study? **Earth and Planetary Science Letters**, v. 224, p. 441-451, 2004.

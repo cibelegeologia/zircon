@@ -22,6 +22,11 @@ COLUNAS = {
     "r68": [r"206\s*pb\s*/\s*238\s*u", r"pb\s*206\s*/\s*u\s*238", r"6\s*/\s*38"],
     "r86": [r"238\s*u\s*/\s*206\s*pb", r"u\s*238\s*/\s*pb\s*206", r"38\s*/\s*6"],
     "r76": [r"207\s*pb\s*/\s*206\s*pb", r"pb\s*207\s*/\s*pb\s*206", r"7\s*/\s*6"],
+    "r48": [r"204\s*pb\s*/\s*238\s*u"],
+    "r64": [r"206\s*pb\s*/\s*204\s*pb"],
+    "r74": [r"207\s*pb\s*/\s*204\s*pb"],
+    "r24": [r"232\s*th\s*/\s*204\s*pb"],
+    "r84": [r"208\s*pb\s*/\s*204\s*pb"],
     "rho": [r"^rho", r"^corr", r"^error\s*corr", r"^erro\s*corr"],
 }
 COLUNAS_IDADE = {
@@ -48,7 +53,7 @@ def _normaliza(texto):
 @dataclass
 class Importacao:
     dados: pd.DataFrame
-    tipo: str                  # "wetherill", "tera-wasserburg" ou "idades"
+    tipo: str  # wetherill, wetherill-204, tera-wasserburg, pb-pb, th-pb, idades ou desconhecido
     mapa: dict                 # nome interno -> coluna original
     log: list = field(default_factory=list)
     original: pd.DataFrame = None
@@ -180,11 +185,12 @@ def _mapeia(nomes, log):
                 if chave not in mapa and _casa(n, padroes):
                     achou = chave
                     break
-        if achou is None and "rho" not in mapa and _casa(n, COLUNAS["rho"]):
-            achou = "rho"
+        if achou is None and _casa(n, COLUNAS["rho"]):
+            sufixo = re.search(r"\b(xz|yz)\b", n)
+            achou = "rho_" + sufixo.group(1) if sufixo else ("rho" if "rho" not in mapa else None)
         if achou:
             mapa[achou] = i
-            ultimo = achou if achou not in ("amostra", "analise", "rho") else None
+            ultimo = achou if achou not in ("amostra", "analise") and not achou.startswith("rho") else None
     for chave, i in mapa.items():
         extra = ""
         if chave in escala:
@@ -234,6 +240,12 @@ def importar(caminho):
 
     if so_idades:
         tipo = "idades"
+    elif {"r75", "r68", "r48"} <= set(dados):
+        tipo = "wetherill-204"
+    elif {"r64", "r74"} <= set(dados):
+        tipo = "pb-pb"
+    elif {"r24", "r84"} <= set(dados):
+        tipo = "th-pb"
     elif {"r75", "r68"} <= set(dados):
         tipo = "wetherill"
     elif {"r86", "r76"} <= set(dados):
@@ -241,7 +253,7 @@ def importar(caminho):
     else:
         tipo = "desconhecido"
         log.append("Atenção: não reconheci razões U-Pb nem idades; confira o mapeamento")
-    if tipo in ("wetherill", "tera-wasserburg") and "rho" not in dados:
+    if tipo != "idades" and tipo != "desconhecido" and "rho" not in dados:
         dados["rho"] = 0.0
         log.append("Atenção: sem coluna de correlação (rho); usado rho = 0")
     log.append(f"Tipo de dado: {tipo}; {len(dados)} análises")

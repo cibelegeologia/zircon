@@ -5,7 +5,7 @@ Erros sempre em 1 sigma absoluto. Tempo em Ma.
 import numpy as np
 from scipy.optimize import brentq
 
-from .constantes import LAMBDA_235, LAMBDA_238, U238_U235
+from .constantes import LAMBDA_232, LAMBDA_235, LAMBDA_238, U238_U235  # noqa: F401 (LAMBDA_232 usada por estatistica)
 
 
 def idade_68(r68, s68=0.0):

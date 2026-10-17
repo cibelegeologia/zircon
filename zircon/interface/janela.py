@@ -27,6 +27,7 @@ REF = {
     "limite_discordancia": "Spencer, Kirkland e Taylor (2016), Geoscience Frontiers 7:581-589",
     "media_de": "Wendt e Carl (1991), Chemical Geology 86:275-285",
     "agrupar": grupos.REFERENCIAS["populacoes"],
+    "pb_comum": "Stacey e Kramers (1975); Williams (1998)",
 }
 
 
@@ -98,7 +99,7 @@ class Janela(QMainWindow):
         self.tabela.setSortingEnabled(False)
         self.abas.addTab(self.tabela, "Dados e idades por grão")
         self.graf_conc = graficos.Grafico()
-        self.abas.addTab(self.graf_conc, "Concórdia")
+        self.abas.addTab(self.graf_conc, "Concórdia ou isócrona")
         self.graf_media = graficos.Grafico()
         self.abas.addTab(self.graf_media, "Média ponderada")
         self.graf_dens = graficos.Grafico()
@@ -154,6 +155,11 @@ class Janela(QMainWindow):
         self.c_diagrama.addItem("Tera-Wasserburg", "tw")
         self.c_diagrama.currentIndexChanged.connect(self._desenha)
         f1.addRow("Diagrama concórdia", self.c_diagrama)
+        self.c_pbc = QComboBox()
+        for texto, v in (("Stacey e Kramers (1975)", "stacey_kramers"), ("Composição fixa (Canyon Diablo)", "fixo"),
+                         ("Não corrigir", "nenhuma")):
+            self.c_pbc.addItem(texto, v)
+        f1.addRow("Pb comum (se houver 204Pb)", self._com_ref(self.c_pbc, "pb_comum"))
         lay.addWidget(g1)
 
         g2 = QGroupBox("Como selecionar os grãos")
@@ -200,7 +206,7 @@ class Janela(QMainWindow):
                 "limite_discordancia": self.c_disc.value(), "usar_discordantes": self.c_usar_disc.isChecked(),
                 "rejeitar_outliers": self.c_outliers.isChecked(), "efeitos_aleatorios": self.c_ef.isChecked(),
                 "agrupar": self.c_agrupar.currentData(), "minimo_por_populacao": int(self.c_minpop.value()),
-                "diagrama": self.c_diagrama.currentData()}
+                "diagrama": self.c_diagrama.currentData(), "pb_comum": self.c_pbc.currentData()}
 
     def _aplica_opcoes(self, op):
         def escolhe(combo, v):
@@ -211,6 +217,7 @@ class Janela(QMainWindow):
         escolhe(self.c_media, o["media_de"])
         escolhe(self.c_agrupar, o["agrupar"])
         escolhe(self.c_diagrama, o.get("diagrama", "wetherill"))
+        escolhe(self.c_pbc, o["pb_comum"])
         self.c_corte.setValue(o["corte_76"])
         self.c_disc.setValue(o["limite_discordancia"])
         self.c_usar_disc.setChecked(o["usar_discordantes"])
@@ -270,8 +277,8 @@ class Janela(QMainWindow):
         self.log.setPlainText("\n".join(p.log))
         self.alterado = alterado
         if p.tipo == "desconhecido":
-            QMessageBox.information(self, "Tipo de dado", "Não reconheci razões U-Pb nem idades nesta planilha. "
-                                    "Pb-Pb, Th-Pb e U-Th ainda não são calculados nesta versão.")
+            QMessageBox.information(self, "Tipo de dado", "Não reconheci razões U-Pb, Pb-Pb, Th-Pb nem idades "
+                                    "nesta planilha. Isócronas U-Th ainda não são calculadas nesta versão.")
             self.tabela.setModel(ModeloTabela(p.dados))
             return
         self.calcular()
@@ -392,7 +399,8 @@ class Janela(QMainWindow):
         g = self.resultado.graos
         visiveis = [c for c in ("amostra", "analise", "melhor", "s_melhor", "discordancia", "classe", "grupo",
                                 "valido", "t68", "s_t68", "t75", "s_t75", "t76", "s_t76",
-                                "r75", "s75", "r68", "s68", "rho") if c in g]
+                                "r75", "s75", "r68", "s68", "r64", "s64", "r74", "s74", "r24", "s24",
+                                "r84", "s84", "rho") if c in g]
         self.tabela.setModel(ModeloTabela(g[visiveis].reset_index(drop=True), list(g.cor)))
         self.tabela.resizeColumnsToContents()
         res = pd.DataFrame(self.resultado.conjunto)
@@ -407,6 +415,11 @@ class Janela(QMainWindow):
         if self.resultado is None:
             return
         g, op = self.resultado.graos, self.opcoes()
+        if self.resultado.isocrona:
+            graficos.isocrona(self.graf_conc, g, self.resultado.isocrona)
+            self.graf_media.limpar("Isócrona: veja a aba Concórdia ou isócrona")
+            self.graf_dens.limpar("Isócrona: sem idades por grão")
+            return
         if "r75" in g:
             from ..nucleo import estatistica
             disc = None

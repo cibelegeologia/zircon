@@ -118,3 +118,27 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
     ax.set_title(f"Histograma e densidade (KDE), n = {len(t)}", fontsize=10)
     _legenda(ax, g, agrupar)
     graf.canvas.draw_idle()
+
+
+def isocrona(graf, graos, iso):
+    """Diagrama de isócrona Th-Pb (232Th/204Pb x 208Pb/204Pb) ou Pb-Pb (206Pb/204Pb x 207Pb/204Pb)."""
+    graf.figura.clear()
+    ax = graf.figura.add_subplot()
+    if iso["tipo"] == "th-pb":
+        x, sx, y, sy = (graos[c].to_numpy(float) for c in ("r24", "s24", "r84", "s84"))
+        a, b = iso["a"], iso["b"]
+        ax.set_xlabel("$^{232}$Th/$^{204}$Pb")
+        ax.set_ylabel("$^{208}$Pb/$^{204}$Pb")
+    else:
+        x, sx, y, sy = (graos[c].to_numpy(float) for c in ("r64", "s64", "r74", "s74"))
+        a, b = iso["b"], iso["a"]  # reta da isócrona inversa vista no diagrama normal
+        ax.set_xlabel("$^{206}$Pb/$^{204}$Pb")
+        ax.set_ylabel("$^{207}$Pb/$^{204}$Pb")
+    rho = graos["rho"].to_numpy(float)
+    for xi, yi, sxi, syi, r, cor in zip(x, y, sx, sy, rho, graos.cor):
+        _elipse(ax, xi, yi, sxi, syi, r, cor)
+    xx = np.linspace(min(0, np.nanmin(x)), np.nanmax(x + 3 * sx) * 1.05, 10)
+    ax.plot(xx, a + b * xx, "--", color="#D55E00", lw=1)
+    ax.set_title(f"Isócrona: {iso['idade']:.2f} ± {2 * iso['erro']:.2f} Ma (2σ), MSWD {iso['mswd']:.2f}, "
+                 f"n = {iso['n']} (elipses 2σ)", fontsize=9)
+    graf.canvas.draw_idle()

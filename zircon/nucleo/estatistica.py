@@ -188,3 +188,30 @@ def discordia(r75, s75, r68, s68, rho):
         resultado.update(superior=raizes[0], erro_superior=erros[0])
     return resultado
 
+
+
+def isocrona_thpb(r24, s24, r84, s84, rho):
+    """Isócrona 232Th/204Pb x 208Pb/204Pb: inclinação = exp(λ232 t) − 1."""
+    fit = york(r24, s24, r84, s84, rho)
+    t = np.log1p(fit["b"]) / idades.LAMBDA_232
+    st = fit["sb"] / ((1 + fit["b"]) * idades.LAMBDA_232)
+    return {"idade": t, "erro": st, "mswd": fit["mswd"], "p": fit["p"], "n": fit["n"],
+            "a": fit["a"], "b": fit["b"], "inicial": fit["a"], "erro_inicial": fit["sa"],
+            "referencia": "York et al. (2004)"}
+
+
+def isocrona_pbpb(r64, s64, r74, s74, rho):
+    """Isócrona Pb-Pb inversa (204Pb/206Pb x 207Pb/206Pb), como no IsoplotR.
+
+    O intercepto em 204Pb/206Pb = 0 é a razão 207Pb/206Pb radiogênica.
+    """
+    X, sX, Y, sY, r = (np.asarray(v, float) for v in (r64, s64, r74, s74, rho))
+    x, y = 1 / X, Y / X
+    sx = sX / X**2
+    rx, ry = sX / X, sY / Y
+    sy = y * np.sqrt(rx**2 + ry**2 - 2 * r * rx * ry)
+    cxy = x * y * (rx**2 - r * rx * ry)
+    fit = york(x, sx, y, sy, cxy / (sx * sy))
+    t, st = idades.idade_76(fit["a"], fit["sa"])
+    return {"idade": float(t[0]), "erro": float(st[0]), "mswd": fit["mswd"], "p": fit["p"], "n": fit["n"],
+            "a": fit["a"], "b": fit["b"], "referencia": "York et al. (2004); Vermeesch (2018a)"}
