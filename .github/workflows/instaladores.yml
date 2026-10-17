@@ -77,8 +77,16 @@ jobs:
         run: sh instalador/linux_bibliotecas.sh
       - name: Abrir o programa numa tela virtual (confere se ele inicia)
         run: |
-          apt-get install -y --no-install-recommends xvfb xauth
-          timeout 40 xvfb-run -a sh -c 'dist/Zircon/Zircon --teste-inicio'
+          # bibliotecas que qualquer área de trabalho Linux já tem; o contêiner de montagem não
+          apt-get install -y --no-install-recommends xvfb xauth libx11-6 libx11-xcb1 libxcb1 libxrender1 \
+            libxi6 libsm6 libice6 libxext6 libegl1 libfreetype6 libxkbcommon0 libxcb-randr0 libxcb-shape0 \
+            libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb-glx0 libxcb-render0 fonts-dejavu-core
+          D=dist/Zircon
+          LD_LIBRARY_PATH=$D:$D/PySide2/Qt/lib ldd $D/PySide2/Qt/plugins/platforms/libqxcb.so | grep "not found" | sed 's/^/::warning::falta /' || true
+          # diagnóstico visível como aviso na página da montagem
+          timeout 60 xvfb-run -a sh -c "$D/Zircon --teste-inicio" > inicio.log 2>&1 || true
+          tail -15 inicio.log | sed 's/^/::warning::/'
+          timeout 60 xvfb-run -a sh -c "$D/Zircon --teste-inicio"
       - run: sh instalador/linux_deb.sh "$(python -c 'import zircon; print(zircon.__version__)')"
       - uses: actions/upload-artifact@v4
         with:
