@@ -1,0 +1,51 @@
+$par
+           t           a0           b0            w 
+256.19959964   0.05125131           NA           NA 
+
+$value
+[1] -174.3535
+
+$counts
+function gradient 
+      10       10 
+
+$convergence
+[1] 0
+
+$message
+[1] "CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH"
+
+$hessian
+           t        a0
+t   96672.59 -37153.24
+a0 -37153.24  26446.99
+
+$cov
+              t           a0 b0 w
+t  1.4757129075 4.147142e-04  0 0
+a0 0.0004147142 2.158649e-07  0 0
+b0 0.0000000000 0.000000e+00  0 0
+w  0.0000000000 0.000000e+00  0 0
+
+$df
+[1] 8
+
+$mswd
+[1] 0.4558181
+
+$p.value
+[1] 0.8875236
+
+$n
+[1] 10
+
+$model
+[1] 1
+
+$format
+[1] 1
+
+$err
+         t           a0 b0 w
+s 1.214789 0.0004646127  0 0
+
