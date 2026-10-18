@@ -290,9 +290,9 @@
   },
   {
    "id": "cores_grupos",
-   "titulo": "Cores por classe, população ou grupos escolhidos",
+   "titulo": "Cores, símbolos e grupos",
    "serve": "Este recurso serve para destacar conjuntos de grãos nos gráficos e tabelas; use-o para separar concordantes de discordantes, ver populações ou marcar grãos que interpreta como de um mesmo evento.",
-   "explicacao": "A opção 'Colorir por' tem três modos. 'Concordante / discordante / rejeitado' colore cada grão pela classe: concordante, discordante (acima da discordância máxima) ou rejeitado como outlier. 'Populações de idade (automático)' usa os grupos da curva de densidade. 'Grupos que eu escolher' usa números de grupo (1 a 8) que atribui às linhas da tabela. As cores aparecem na concórdia, na média ponderada, no histograma e na folha de cálculo Excel exportada. Atribuir um grupo só muda a cor: não muda que grãos entram na média, o que depende das opções de seleção. Os grupos ficam guardados no projeto.",
+   "explicacao": "A opção 'Colorir por' tem três modos. 'Concordante / discordante / rejeitado' colore cada grão pela classe: concordante, discordante (acima da discordância máxima) ou rejeitado como outlier. 'Populações de idade (automático)' usa os grupos da curva de densidade. 'Grupos que eu escolher' usa números de grupo (1 a 8) que atribui às linhas da tabela. As cores aparecem na concórdia, na média ponderada, no histograma e na folha de cálculo Excel exportada. Atribuir um grupo só muda a cor: não muda que grãos entram na média, o que depende das opções de seleção. Os grupos ficam guardados no projeto. Cada conjunto (classe, população ou grupo) também tem um símbolo, desenhado no centro das elipses e das barras, e pode ter um padrão de preenchimento. Em 'Cores e símbolos dos conjuntos...' escolhe a cor, o símbolo (21 opções, como círculo, quadrado, triângulo, losango e estrela) e o padrão de cada conjunto; a escolha vale para o conjunto todo, para que a legenda continue correta. Um grão também pode ser destacado sozinho, e então aparece na legenda com nome próprio. No modo de cores comuns, pode escolher qualquer cor. No modo de cores acessíveis, as cores vêm só da paleta segura escolhida, e o símbolo e o padrão continuam livres: são eles que ajudam quem não distingue cores. O botão 'Auto (cores da paleta)' volta ao padrão. As escolhas ficam guardadas no projeto e só aparecem nos gráficos depois de clicar em 'Calcular'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
@@ -302,7 +302,11 @@
     "No painel à esquerda, em 'Cores nos gráficos', escolha o modo em 'Colorir por'.",
     "Para grupos próprios, no separador 'Dados e idades por grão' selecione as linhas (clique no número da linha; use Ctrl ou Shift para várias).",
     "Use 'Grupos > Colocar linhas selecionadas no grupo...' e indique o número do grupo.",
-    "Para voltar às classes, use 'Grupos > Voltar às cores automáticas'."
+    "Para voltar às classes, use 'Grupos > Voltar às cores automáticas'.",
+    "Para escolher cor, símbolo e padrão, clique em 'Cores e símbolos dos conjuntos...' no painel (ou no menu 'Grupos').",
+    "Em cada linha, escolha a cor, o símbolo e o padrão de preenchimento; 'Auto (cores da paleta)' desfaz as escolhas.",
+    "Para um só grão, faça duplo clique nele na tabela, depois de calcular. Escolha cor, símbolo e padrão e clique em 'Grupo' para alterar o conjunto todo, ou em 'Ponto' para destacar só esse grão (um núcleo, um bordo, uma forma curiosa). O ponto ganha uma linha própria na legenda, com o nome que escrever; 'Tirar o destaque' desfaz.",
+    "Clique em 'Usar estas cores e símbolos' e depois em 'Calcular' para ver as alterações nos gráficos."
    ]
   },
   {

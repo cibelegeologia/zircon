@@ -25,6 +25,8 @@ class Projeto:
     log: list = field(default_factory=list)
     opcoes: dict = field(default_factory=dict)
     grupo_manual: list = None
+    estilos: dict = field(default_factory=dict)  # cor, símbolo e padrão escolhidos para cada conjunto
+    destaques: dict = field(default_factory=dict)  # o mesmo para grãos destacados um a um (linha -> estilo)
     notas: str = ""
     arquivo_original: str = ""
     bytes_original: bytes = b""
@@ -38,7 +40,7 @@ class Projeto:
         meta = {
             "versao_formato": VERSAO_FORMATO, "nome": self.nome, "tipo": self.tipo,
             "mapa": self.mapa, "log": self.log, "opcoes": self.opcoes,
-            "grupo_manual": self.grupo_manual, "notas": self.notas,
+            "grupo_manual": self.grupo_manual, "estilos": self.estilos, "destaques": self.destaques, "notas": self.notas,
             "arquivo_original": self.arquivo_original, "criado": self.criado,
             "salvo": datetime.now().isoformat(timespec="seconds"),
         }
@@ -60,7 +62,9 @@ class Projeto:
             originais = [n for n in z.namelist() if n.startswith("original/")]
             bruto = z.read(originais[0]) if originais else b""
         p = cls(nome=meta["nome"], tipo=meta["tipo"], dados=dados, mapa=meta["mapa"], log=meta["log"],
-                opcoes=meta["opcoes"], grupo_manual=meta.get("grupo_manual"), notas=meta.get("notas", ""),
+                opcoes=meta["opcoes"], grupo_manual=meta.get("grupo_manual"), estilos=meta.get("estilos") or {},
+                destaques=meta.get("destaques") or {},
+                notas=meta.get("notas", ""),
                 arquivo_original=meta.get("arquivo_original", ""), bytes_original=bruto,
                 criado=meta.get("criado", ""))
         p.caminho = str(caminho)

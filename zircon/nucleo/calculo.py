@@ -93,16 +93,20 @@ def _isocrona(dados, tipo):
     g["valido"] = True
     g["classe"] = "concordante"
     g["grupo"] = 1
-    g["cor"] = grupos.COR_CLASSE["concordante"]
     if r["p"] < 0.05:
         res.avisos.append(tr("Isócrona com p < 0,05: os pontos espalham mais do que os erros explicam"))
     return res
 
 
-def calcular(dados, tipo, opcoes=None, grupo_manual=None):
+def calcular(dados, tipo, opcoes=None, grupo_manual=None, estilos=None, so_paleta=False, destaques=None):
+    """estilos: {conjunto: {"cor": "#RRGGBB", "simbolo": código, "hachura": código}} escolhidos pelo
+    pesquisador; destaques: o mesmo por grão ({linha da planilha: {..., "rotulo": nome na legenda}});
+    com so_paleta (modo para daltônicos), cores fora da paleta atual são ignoradas."""
     op = {**OPCOES_PADRAO, **(opcoes or {})}
     if tipo in ("pb-pb", "th-pb"):
-        return _isocrona(dados, tipo)
+        res = _isocrona(dados, tipo)
+        _aplica_estilos(res.graos, "classe", estilos, so_paleta, destaques)
+        return res
     g = idades_por_grao(dados, tipo, op)
     res = Resultado(g)
     if tipo == "wetherill-204":
@@ -157,6 +161,33 @@ def calcular(dados, tipo, opcoes=None, grupo_manual=None):
         g["grupo"] = grupo_manual
     else:
         g["grupo"] = g["classe"].map({"concordante": 1, "discordante": 2, "rejeitado": 3})
-    g["cor"] = [grupos.COR_CLASSE[c] if op["agrupar"] == "classe" else grupos.cor_do_grupo(int(n))
-                for c, n in zip(g["classe"], g["grupo"])]
+    _aplica_estilos(g, op["agrupar"], estilos, so_paleta, destaques)
     return res
+
+
+def _aplica_estilos(g, agrupar, estilos, so_paleta=False, destaques=None):
+    """Cor, símbolo e padrão de cada grão: os da paleta, trocados pelos que o pesquisador escolheu."""
+    chaves = [grupos.chave_conjunto(c, n, agrupar) for c, n in zip(g["classe"], g["grupo"])]
+    estilos = estilos or {}
+    padrao = {k: grupos.estilo_padrao(k) for k in set(chaves)}
+    seguras = {c.upper() for c in grupos.cores_seguras()}
+
+    def cor(k):
+        c = estilos.get(k, {}).get("cor")
+        return c if c and (not so_paleta or c.upper() in seguras) else padrao[k][0]
+    g["cor"] = [cor(k) for k in chaves]
+    g["simbolo"] = [estilos.get(k, {}).get("simbolo") or padrao[k][1] for k in chaves]
+    g["hachura"] = [estilos.get(k, {}).get("hachura", padrao[k][2]) for k in chaves]
+    # grãos destacados um a um (núcleo, borda, forma curiosa): por cima do estilo do conjunto
+    g["destaque"] = ""
+    for linha, e in (destaques or {}).items():
+        i = int(linha)
+        if i not in g.index:
+            continue
+        c = e.get("cor")
+        if c and (not so_paleta or c.upper() in seguras):
+            g.at[i, "cor"] = c
+        for campo in ("simbolo", "hachura"):
+            if campo in e:
+                g.at[i, campo] = e[campo]
+        g.at[i, "destaque"] = e.get("rotulo") or str(g.at[i, "analise"])

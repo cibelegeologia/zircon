@@ -290,9 +290,9 @@
   },
   {
    "id": "cores_grupos",
-   "titulo": "Colours by class, population or chosen groups",
+   "titulo": "Colours, symbols and groups",
    "serve": "This feature is used to highlight sets of grains in the charts and tables; use it to separate concordant from discordant grains, view populations or mark grains you interpret as belonging to the same event.",
-   "explicacao": "The 'Colour by' option has three modes. 'Concordant / discordant / rejected' colours each grain by class: concordant, discordant (above the maximum discordance) or rejected as an outlier. 'Age populations (automatic)' uses the groups from the density curve. 'Groups I choose' uses group numbers (1 to 8) that you assign to the table rows. The colours appear in the concordia, the weighted mean, the histogram and the exported Excel spreadsheet. Assigning a group only changes the colour: it does not change which grains go into the mean, which depends on the selection options. The groups are saved in the project.",
+   "explicacao": "The 'Colour by' option has three modes. 'Concordant / discordant / rejected' colours each grain by class: concordant, discordant (above the maximum discordance) or rejected as an outlier. 'Age populations (automatic)' uses the groups from the density curve. 'Groups I choose' uses group numbers (1 to 8) that you assign to the table rows. The colours appear in the concordia, the weighted mean, the histogram and the exported Excel spreadsheet. Assigning a group only changes the colour: it does not change which grains go into the mean, which depends on the selection options. The groups are saved in the project. Each data set (class, population or group) also has a symbol, drawn at the centre of the ellipses and bars, and can have a fill pattern. In 'Data set colours and symbols...' you choose the colour, the symbol (21 options, such as circle, square, triangle, diamond and star) and the pattern of each data set; the choice applies to the whole data set, so that the legend stays correct. A single grain can also be highlighted on its own, and it then appears in the legend with its own name. In standard colour mode, any colour can be chosen. In accessible colour mode, colours come only from the chosen safe palette, while the symbol and pattern remain free: they are what helps people who cannot tell colours apart. The 'Auto (palette colours)' button restores the defaults. The choices are saved in the project and only appear in the charts after you click 'Calculate'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
@@ -302,7 +302,11 @@
     "In the left-hand panel, under 'Chart colours', choose the mode in 'Colour by'.",
     "For your own groups, select the rows in the 'Data and ages per grain' tab (click the row number; use Ctrl or Shift for several).",
     "Use 'Groups > Put selected rows in group...' and enter the group number.",
-    "To return to the classes, use 'Groups > Revert to automatic colours'."
+    "To return to the classes, use 'Groups > Revert to automatic colours'.",
+    "To choose colour, symbol and pattern, click 'Data set colours and symbols...' in the panel (or in the 'Groups' menu).",
+    "In each row, choose the colour, the symbol and the fill pattern; 'Auto (palette colours)' undoes the choices.",
+    "For a single grain, double-click it in the table after calculating. Choose colour, symbol and pattern and click 'Group' to change the whole data set, or 'Point' to highlight just that grain (a core, a rim, an unusual shape). The point gets its own line in the legend, with the name you type; 'Remove highlight' undoes it.",
+    "Click 'Use these colours and symbols' and then 'Calculate' to see the changes in the charts."
    ]
   },
   {

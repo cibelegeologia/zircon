@@ -290,9 +290,9 @@
   },
   {
    "id": "cores_grupos",
-   "titulo": "Farben nach Klasse, Population oder selbst gewählten Gruppen",
+   "titulo": "Farben, Symbole und Gruppen",
    "serve": "Diese Funktion dient dazu, Gruppen von Körnern in Diagrammen und Tabellen hervorzuheben; verwenden Sie sie, um konkordante von diskordanten Körnern zu trennen, Populationen zu sehen oder Körner zu markieren, die Sie demselben Ereignis zuordnen.",
-   "explicacao": "Die Option 'Einfärben nach' hat drei Modi. 'Konkordant / diskordant / verworfen' färbt jedes Korn nach seiner Klasse: konkordant, diskordant (über der maximalen Diskordanz) oder als Ausreißer verworfen. 'Alterspopulationen (automatisch)' verwendet die Gruppen aus der Dichtekurve. 'Selbst gewählte Gruppen' verwendet Gruppennummern (1 bis 8), die Sie den Zeilen der Tabelle zuweisen. Die Farben erscheinen in der Konkordia, im gewichteten Mittel, im Histogramm und in der exportierten Excel-Tabelle. Das Zuweisen einer Gruppe ändert nur die Farbe: Es ändert nicht, welche Körner in das Mittel eingehen; das hängt von den Auswahloptionen ab. Die Gruppen werden im Projekt gespeichert.",
+   "explicacao": "Die Option 'Einfärben nach' hat drei Modi. 'Konkordant / diskordant / verworfen' färbt jedes Korn nach seiner Klasse: konkordant, diskordant (über der maximalen Diskordanz) oder als Ausreißer verworfen. 'Alterspopulationen (automatisch)' verwendet die Gruppen aus der Dichtekurve. 'Selbst gewählte Gruppen' verwendet Gruppennummern (1 bis 8), die Sie den Zeilen der Tabelle zuweisen. Die Farben erscheinen in der Konkordia, im gewichteten Mittel, im Histogramm und in der exportierten Excel-Tabelle. Das Zuweisen einer Gruppe ändert nur die Farbe: Es ändert nicht, welche Körner in das Mittel eingehen; das hängt von den Auswahloptionen ab. Die Gruppen werden im Projekt gespeichert. Jeder Datensatz (Klasse, Population oder Gruppe) hat außerdem ein Symbol, das in der Mitte der Ellipsen und Balken gezeichnet wird, und kann ein Füllmuster haben. Unter 'Farben und Symbole der Datensätze...' wählen Sie Farbe, Symbol (21 Optionen, etwa Kreis, Quadrat, Dreieck, Raute und Stern) und Muster jedes Datensatzes; die Wahl gilt für den ganzen Datensatz, damit die Legende stimmt. Ein Korn kann auch einzeln hervorgehoben werden und erscheint dann mit eigenem Namen in der Legende. Im Modus mit normalen Farben kann jede Farbe gewählt werden. Im Modus mit barrierefreien Farben stammen die Farben nur aus der gewählten sicheren Palette, Symbol und Muster bleiben frei wählbar: Sie helfen Menschen, die Farben nicht unterscheiden können. Die Schaltfläche 'Auto (Farben der Palette)' stellt die Standardwerte wieder her. Die Auswahl wird im Projekt gespeichert und erscheint erst nach einem Klick auf 'Berechnen' in den Diagrammen.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
@@ -302,7 +302,11 @@
     "Wählen Sie im linken Bedienfeld unter 'Farben in den Diagrammen' den Modus bei 'Einfärben nach'.",
     "Für eigene Gruppen wählen Sie im Reiter 'Daten und Alter je Korn' die Zeilen aus (Klick auf die Zeilennummer; Strg oder Umschalt für mehrere).",
     "Verwenden Sie 'Gruppen > Ausgewählte Zeilen in Gruppe einordnen...' und geben Sie die Gruppennummer an.",
-    "Um zu den Klassen zurückzukehren, verwenden Sie 'Gruppen > Zurück zu automatischen Farben'."
+    "Um zu den Klassen zurückzukehren, verwenden Sie 'Gruppen > Zurück zu automatischen Farben'.",
+    "Um Farbe, Symbol und Muster zu wählen, klicken Sie im Bedienfeld (oder im Menü 'Gruppen') auf 'Farben und Symbole der Datensätze...'.",
+    "Wählen Sie in jeder Zeile Farbe, Symbol und Füllmuster; 'Auto (Farben der Palette)' macht die Auswahl rückgängig.",
+    "Für ein einzelnes Korn doppelklicken Sie nach dem Berechnen in der Tabelle darauf. Wählen Sie Farbe, Symbol und Muster und klicken Sie auf 'Gruppe', um den ganzen Datensatz zu ändern, oder auf 'Punkt', um nur dieses Korn hervorzuheben (einen Kern, einen Rand, eine auffällige Form). Der Punkt erhält eine eigene Zeile in der Legende, mit dem Namen, den Sie eingeben; 'Hervorhebung entfernen' macht dies rückgängig.",
+    "Klicken Sie auf 'Diese Farben und Symbole verwenden' und danach auf 'Berechnen', um die Änderungen in den Diagrammen zu sehen."
    ]
   },
   {

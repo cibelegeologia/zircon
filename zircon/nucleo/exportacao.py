@@ -209,8 +209,10 @@ def _rgba(cor, alfa):
 
 
 def _simbolos(graos, chave):
-    """Formato dos pontos por grupo quando os padrões além da cor estão ligados."""
+    """Formato dos pontos: o símbolo escolhido para o conjunto (ou um por grupo, se os padrões estão ligados)."""
     from . import grupos
+    if "simbolo" in graos:
+        return [grupos.SIMBOLOS.get(s, (None, None))[1] or "circle" for s in graos["simbolo"]]
     if not grupos.usar_padroes():
         return "circle"
     formas = ["circle", "square", "diamond", "triangle-up", "x", "cross", "star", "triangle-down"]

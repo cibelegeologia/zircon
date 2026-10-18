@@ -110,3 +110,55 @@ def populacoes(idades, largura=None, minimo=1):
 def cor_do_grupo(n):
     """Cor da paleta para o grupo n (1, 2, ...); 0 = sem grupo (cinza)."""
     return "#999999" if n <= 0 else PALETA[(n - 1) % len(PALETA)]
+
+
+# Símbolos que o pesquisador pode escolher para cada conjunto (os mais usados em
+# artigos e no Excel): código do matplotlib -> (nome, código do plotly)
+SIMBOLOS = {
+    "nenhum": (N_("Nenhum (só a cor)"), None),
+    "o": (N_("Círculo"), "circle"),
+    "s": (N_("Quadrado"), "square"),
+    "D": (N_("Losango"), "diamond"),
+    "^": (N_("Triângulo para cima"), "triangle-up"),
+    "v": (N_("Triângulo para baixo"), "triangle-down"),
+    "<": (N_("Triângulo para a esquerda"), "triangle-left"),
+    ">": (N_("Triângulo para a direita"), "triangle-right"),
+    "p": (N_("Pentágono"), "pentagon"),
+    "h": (N_("Hexágono"), "hexagon"),
+    "H": (N_("Hexágono deitado"), "hexagon2"),
+    "8": (N_("Octógono"), "octagon"),
+    "*": (N_("Estrela"), "star"),
+    "d": (N_("Losango estreito"), "diamond-tall"),
+    "P": (N_("Cruz cheia"), "cross"),
+    "X": (N_("Xis cheio"), "x"),
+    "+": (N_("Cruz de traços"), "cross-thin"),
+    "x": (N_("Xis de traços"), "x-thin"),
+    "1": (N_("Tripé"), "y-down"),
+    "_": (N_("Traço horizontal"), "line-ew"),
+    "|": (N_("Traço vertical"), "line-ns"),
+}
+SIMBOLOS_DE_TRACO = {"+", "x", "1", "_", "|"}  # sem preenchimento: a cor vai no traço
+SIMBOLO_CLASSE = {"concordante": "o", "discordante": "s", "rejeitado": "x"}
+# padrões de preenchimento que o pesquisador pode escolher: código do matplotlib -> nome
+NOMES_HACHURA = {"": N_("Liso"), "////": N_("Listras inclinadas"), "\\\\\\\\": N_("Listras inclinadas ao contrário"),
+                 "....": N_("Pontos"), "xxxx": N_("Quadriculado inclinado"), "++++": N_("Quadriculado"),
+                 "----": N_("Listras horizontais"), "||||": N_("Listras verticais"), "oo": N_("Círculos")}
+SIMBOLOS_GRUPO = ["o", "s", "^", "D", "v", "p", "*", "h"]
+
+
+def chave_conjunto(classe, grupo, agrupar):
+    """Nome do conjunto de um grão: a classe, ou "g<n>" para grupos e populações."""
+    return str(classe) if agrupar == "classe" else f"g{int(grupo)}"
+
+
+def estilo_padrao(chave):
+    """Cor, símbolo e padrão de um conjunto antes de o pesquisador mudar algo (da paleta escolhida)."""
+    if chave in SIMBOLO_CLASSE:
+        return COR_CLASSE[chave], SIMBOLO_CLASSE[chave], hachura(classe=chave)
+    n = int(chave[1:])
+    return cor_do_grupo(n), SIMBOLOS_GRUPO[(n - 1) % len(SIMBOLOS_GRUPO)] if n > 0 else "o", hachura(grupo=n)
+
+
+def cores_seguras():
+    """Cores da paleta atual: no modo para daltônicos, só estas podem ser escolhidas."""
+    return list(dict.fromkeys(PALETA + list(COR_CLASSE.values())))

@@ -13,7 +13,6 @@ from ..idiomas import N_, num, tr
 from ..idiomas import figura as F
 from . import idades
 from . import grupos
-from .grupos import COR_CLASSE
 
 # Fontes com chinês para os gráficos; o matplotlib usa a primeira que existir
 # no computador para cada letra (Windows, Mac, Linux).
@@ -30,6 +29,8 @@ def _tinta():
 
 def _hachuras(graos, agrupar):
     """Padrão de cada grão, conforme a classe ou o grupo ("" se os padrões estão desligados)."""
+    if "hachura" in graos:
+        return list(graos["hachura"])
     if agrupar == "classe":
         return [grupos.hachura(classe=c) for c in graos.classe]
     return [grupos.hachura(grupo=int(n)) for n in graos.grupo]
@@ -81,16 +82,57 @@ def _guarda_info(ax, pares, ids):
     ax.zircon_ids = list(ids)
 
 
-def _legenda(ax, graos, agrupar):
+def _simbolo(graos):
+    return graos["simbolo"] if "simbolo" in graos else ["nenhum"] * len(graos)
+
+
+def _formato(simbolo, cor):
+    """Argumentos do matplotlib para desenhar o símbolo na cor do conjunto."""
+    if simbolo in grupos.SIMBOLOS_DE_TRACO:
+        return dict(marker=simbolo, color=cor, markeredgewidth=1.5)
+    return dict(marker=simbolo, markerfacecolor=cor, markeredgecolor=_tinta(), markeredgewidth=0.5)
+
+
+def _simbolos(ax, x, y, graos, tamanho=5):
+    """Marca o centro de cada elipse ou barra com o símbolo do conjunto do grão."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    simb, cor = np.asarray(list(_simbolo(graos)), object), np.asarray(list(graos.cor), object)
+    for s_, c in {(a, b) for a, b in zip(simb, cor)}:
+        if s_ in grupos.SIMBOLOS and s_ != "nenhum":
+            sel = (simb == s_) & (cor == c)
+            ax.plot(x[sel], y[sel], linestyle="none", markersize=tamanho, zorder=3, **_formato(s_, c))
+
+
+def _legenda(ax, graos, agrupar, com_destaques=True):
+    from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
+    simb = list(_simbolo(graos))
     if agrupar == "classe":
-        itens = [(F(c), COR_CLASSE[c], grupos.hachura(classe=c)) for c in ("concordante", "discordante", "rejeitado")
-                 if (graos.classe == c).any()]
+        nomes = [(c, F(c), grupos.hachura(classe=c)) for c in ("concordante", "discordante", "rejeitado")]
+        chave = graos.classe
     else:
-        itens = [(F("Grupo {n}").format(n=int(g)), graos.cor[graos.grupo == g].iloc[0], grupos.hachura(grupo=int(g)))
+        nomes = [(g, F("Grupo {n}").format(n=int(g)), grupos.hachura(grupo=int(g)))
                  for g in sorted(graos.grupo.unique())]
-    ax.legend(handles=[Patch(facecolor=c + "80", edgecolor=c, hatch=h or None, label=n) for n, c, h in itens],
-              loc="best", fontsize="small")
+        chave = graos.grupo
+    alcas, rotulos = [], []
+    destaque = graos["destaque"].astype(str).to_numpy() if "destaque" in graos else np.full(len(graos), "")
+    hach = list(graos["hachura"]) if "hachura" in graos else None
+
+    def alca(i, h):
+        c, s_ = graos.cor.iloc[i], simb[i]
+        p = Patch(facecolor=c + "80", edgecolor=c, hatch=(hach[i] if hach is not None else h) or None)
+        if s_ in grupos.SIMBOLOS and s_ != "nenhum":
+            return (p, Line2D([], [], linestyle="none", markersize=6, **_formato(s_, c)))
+        return p
+    for k, nome, h in nomes:
+        sel = np.flatnonzero((chave == k).to_numpy() & (destaque == ""))
+        if len(sel):
+            alcas.append(alca(sel[0], h))
+            rotulos.append(nome)
+    for i in np.flatnonzero(destaque != "") if com_destaques else []:  # cada grão destacado tem a sua linha na legenda
+        alcas.append(alca(i, ""))
+        rotulos.append(destaque[i])
+    ax.legend(alcas, rotulos, loc="best", fontsize="small")
 
 
 def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=None):
@@ -110,6 +152,7 @@ def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=Non
     elipses = [_elipse(ax, x, y, sx, sy, r, cor, hachura=h)
                for x, y, sx, sy, r, cor, h in zip(xs, ys, sxs, sys_, rhos, g.cor, _hachuras(g, agrupar))]
     _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in g.iterrows())), g.index)
+    _simbolos(ax, xs, ys, g)
     xmin, xmax = np.nanmin(xs - 3 * sxs), np.nanmax(xs + 3 * sxs)
     ymin, ymax = np.nanmin(ys - 3 * sys_), np.nanmax(ys + 3 * sys_)
     tmin = max(1e-3, np.nanmin(g.t68) * 0.7)
@@ -153,9 +196,11 @@ def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
         for barra, h in zip(barras, _hachuras(g, agrupar)):
             barra.set_hatch(h or None)
         _guarda_info(ax, zip(barras, (info_grao(r) for _, r in g.iterrows())), g.index)
+        _simbolos(ax, pos, g[coluna], g, tamanho=4)
     else:
-        pontos = ax.scatter(pos, g[coluna], c=list(g.cor))
+        pontos = ax.scatter(pos, g[coluna], c=list(g.cor), s=0 if "simbolo" in g else None)
         _guarda_info(ax, [(pontos, [info_grao(r) for _, r in g.iterrows()])], [list(g.index)])
+        _simbolos(ax, pos, g[coluna], g, tamanho=6)
     if media is not None:
         m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
         ax.axhspan(m - e, m + e, color="#999999", alpha=0.35, zorder=0)
@@ -178,12 +223,14 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
         return
     bins = np.histogram_bin_edges(t, bins="auto")
     ks = sorted(g.grupo.unique())
+    # o histograma é por conjunto: o estilo vem de um grão sem destaque individual
+    comum = g[g["destaque"] == ""] if "destaque" in g else g
+    rep = {k: (comum if (comum.grupo == k).any() else g)[lambda d: d.grupo == k] for k in ks}
     _, _, conjuntos = ax.hist([g[coluna][g.grupo == k] for k in ks], bins=bins, stacked=True,
-                              color=[g.cor[g.grupo == k].iloc[0] for k in ks], alpha=0.6, edgecolor="white")
-    if grupos.usar_padroes():
-        for k, barras in zip(ks, conjuntos if len(ks) > 1 else [conjuntos]):
-            sub = g[g.grupo == k]
-            h = grupos.hachura(classe=sub.classe.iloc[0]) if agrupar == "classe" else grupos.hachura(grupo=int(k))
+                              color=[rep[k].cor.iloc[0] for k in ks], alpha=0.6, edgecolor="white")
+    for k, barras in zip(ks, conjuntos if len(ks) > 1 else [conjuntos]):
+        h = _hachuras(rep[k], agrupar)[0]
+        if h:
             for barra in barras:
                 barra.set_hatch(h or None)
                 barra.set_edgecolor(_tinta())
@@ -195,7 +242,7 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
     ax.set_xlabel(F("idade (Ma)"))
     ax.set_ylabel(F("número de grãos"))
     ax.set_title(F("Histograma e densidade (KDE), n = {n}").format(n=len(t)), fontsize="medium")
-    _legenda(ax, g, agrupar)
+    _legenda(ax, g, agrupar, com_destaques=False)
     graf.canvas.draw_idle()
 
 
@@ -216,6 +263,7 @@ def isocrona(graf, graos, iso):
     rho = graos["rho"].to_numpy(float)
     elipses = [_elipse(ax, xi, yi, sxi, syi, r, cor) for xi, yi, sxi, syi, r, cor in zip(x, y, sx, sy, rho, graos.cor)]
     _guarda_info(ax, zip(elipses, (info_grao(r) for _, r in graos.iterrows())), graos.index)
+    _simbolos(ax, x, y, graos)
     xx = np.linspace(min(0, np.nanmin(x)), np.nanmax(x + 3 * sx) * 1.05, 10)
     ax.plot(xx, a + b * xx, "--", color="#D55E00", lw=1)
     ax.set_title(F("Isócrona: {idade} ± {erro} Ma (2σ), MSWD {mswd}, n = {n} (elipses 2σ)").format(

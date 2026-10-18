@@ -290,9 +290,9 @@
   },
   {
    "id": "cores_grupos",
-   "titulo": "Colores por clase, población o grupos elegidos",
+   "titulo": "Colores, símbolos y grupos",
    "serve": "Este recurso sirve para destacar conjuntos de granos en los gráficos y tablas; úselo para separar concordantes de discordantes, ver poblaciones o marcar granos que interpreta como de un mismo evento.",
-   "explicacao": "La opción 'Colorear por' tiene tres modos. 'Concordante / discordante / rechazado' colorea cada grano según su clase: concordante, discordante (por encima de la discordancia máxima) o rechazado como outlier. 'Poblaciones de edad (automático)' usa los grupos de la curva de densidad. 'Grupos que yo elija' usa números de grupo (1 a 8) que usted asigna a las filas de la tabla. Los colores aparecen en la concordia, la media ponderada, el histograma y la hoja de cálculo Excel exportada. Asignar un grupo solo cambia el color: no cambia qué granos entran en la media, lo que depende de las opciones de selección. Los grupos se guardan en el proyecto.",
+   "explicacao": "La opción 'Colorear por' tiene tres modos. 'Concordante / discordante / rechazado' colorea cada grano según su clase: concordante, discordante (por encima de la discordancia máxima) o rechazado como outlier. 'Poblaciones de edad (automático)' usa los grupos de la curva de densidad. 'Grupos que yo elija' usa números de grupo (1 a 8) que usted asigna a las filas de la tabla. Los colores aparecen en la concordia, la media ponderada, el histograma y la hoja de cálculo Excel exportada. Asignar un grupo solo cambia el color: no cambia qué granos entran en la media, lo que depende de las opciones de selección. Los grupos se guardan en el proyecto. Cada conjunto (clase, población o grupo) también tiene un símbolo, dibujado en el centro de las elipses y de las barras, y puede tener un patrón de relleno. En 'Colores y símbolos de los conjuntos...' usted elige el color, el símbolo (21 opciones, como círculo, cuadrado, triángulo, rombo y estrella) y el patrón de cada conjunto; la elección vale para todo el conjunto, para que la leyenda siga siendo correcta. Un grano también puede destacarse por separado, y entonces aparece en la leyenda con nombre propio. En el modo de colores comunes se puede elegir cualquier color. En el modo de colores accesibles, los colores salen solo de la paleta segura elegida, y el símbolo y el patrón siguen libres: son ellos los que ayudan a quien no distingue colores. El botón 'Auto (colores de la paleta)' vuelve a la configuración predeterminada. Las elecciones se guardan en el proyecto y solo aparecen en los gráficos después de hacer clic en 'Calcular'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
@@ -302,7 +302,11 @@
     "En el panel de la izquierda, en 'Colores en los gráficos', elija el modo en 'Colorear por'.",
     "Para grupos propios, en la pestaña 'Datos y edades por grano' seleccione las filas (haga clic en el número de fila; use Ctrl o Shift para varias).",
     "Use 'Grupos > Poner las filas seleccionadas en el grupo...' e indique el número del grupo.",
-    "Para volver a las clases, use 'Grupos > Volver a los colores automáticos'."
+    "Para volver a las clases, use 'Grupos > Volver a los colores automáticos'.",
+    "Para elegir color, símbolo y patrón, haga clic en 'Colores y símbolos de los conjuntos...' en el panel (o en el menú 'Grupos').",
+    "En cada fila, elija el color, el símbolo y el patrón de relleno; 'Auto (colores de la paleta)' deshace las elecciones.",
+    "Para un solo grano, haga doble clic en él en la tabla, después de calcular. Elija color, símbolo y patrón y haga clic en 'Grupo' para cambiar todo el conjunto, o en 'Punto' para destacar solo ese grano (un núcleo, un borde, una forma curiosa). El punto obtiene su propia línea en la leyenda, con el nombre que usted escriba; 'Quitar el destaque' lo deshace.",
+    "Haga clic en 'Usar estos colores y símbolos' y después en 'Calcular' para ver los cambios en los gráficos."
    ]
   },
   {

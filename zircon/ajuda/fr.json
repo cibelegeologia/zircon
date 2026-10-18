@@ -290,9 +290,9 @@
   },
   {
    "id": "cores_grupos",
-   "titulo": "Couleurs par classe, par population ou par groupes choisis",
+   "titulo": "Couleurs, symboles et groupes",
    "serve": "Cette fonction sert à mettre en évidence des ensembles de grains dans les graphiques et les tableaux ; utilisez-la pour séparer les concordants des discordants, voir les populations ou marquer les grains que vous interprétez comme issus d'un même événement.",
-   "explicacao": "L'option 'Colorer par' propose trois modes. 'Concordant / discordant / rejeté' colore chaque grain selon sa classe : concordant, discordant (au-delà de la discordance maximale) ou rejeté comme valeur aberrante. 'Populations d'âge (automatique)' utilise les groupes issus de la courbe de densité. 'Groupes que je choisis' utilise des numéros de groupe (1 à 8) que vous attribuez aux lignes du tableau. Les couleurs apparaissent dans la concordia, la moyenne pondérée, l'histogramme et le classeur Excel exporté. Attribuer un groupe ne change que la couleur : cela ne modifie pas les grains retenus dans la moyenne, qui dépendent des options de sélection. Les groupes sont enregistrés dans le projet.",
+   "explicacao": "L'option 'Colorer par' propose trois modes. 'Concordant / discordant / rejeté' colore chaque grain selon sa classe : concordant, discordant (au-delà de la discordance maximale) ou rejeté comme valeur aberrante. 'Populations d'âge (automatique)' utilise les groupes issus de la courbe de densité. 'Groupes que je choisis' utilise des numéros de groupe (1 à 8) que vous attribuez aux lignes du tableau. Les couleurs apparaissent dans la concordia, la moyenne pondérée, l'histogramme et le classeur Excel exporté. Attribuer un groupe ne change que la couleur : cela ne modifie pas les grains retenus dans la moyenne, qui dépendent des options de sélection. Les groupes sont enregistrés dans le projet. Chaque ensemble (classe, population ou groupe) possède aussi un symbole, dessiné au centre des ellipses et des barres, et peut avoir un motif de remplissage. Dans 'Couleurs et symboles des ensembles...', vous choisissez la couleur, le symbole (21 options, comme cercle, carré, triangle, losange et étoile) et le motif de chaque ensemble ; le choix s'applique à tout l'ensemble, pour que la légende reste correcte. Un grain peut aussi être mis en évidence seul ; il apparaît alors dans la légende avec son propre nom. En mode couleurs standard, n'importe quelle couleur peut être choisie. En mode couleurs accessibles, les couleurs proviennent uniquement de la palette adaptée choisie, et le symbole et le motif restent libres : ce sont eux qui aident les personnes qui ne distinguent pas les couleurs. Le bouton 'Auto (couleurs de la palette)' rétablit les valeurs par défaut. Les choix sont enregistrés dans le projet et n'apparaissent dans les graphiques qu'après avoir cliqué sur 'Calculer'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
@@ -302,7 +302,11 @@
     "Dans le panneau de gauche, sous 'Couleurs des graphiques', choisissez le mode dans 'Colorer par'.",
     "Pour vos propres groupes, sélectionnez les lignes dans l'onglet 'Données et âges par grain' (cliquez sur le numéro de ligne ; Ctrl ou Maj pour en sélectionner plusieurs).",
     "Utilisez 'Groupes > Placer les lignes sélectionnées dans le groupe...' et indiquez le numéro du groupe.",
-    "Pour revenir aux classes, utilisez 'Groupes > Revenir aux couleurs automatiques'."
+    "Pour revenir aux classes, utilisez 'Groupes > Revenir aux couleurs automatiques'.",
+    "Pour choisir couleur, symbole et motif, cliquez sur 'Couleurs et symboles des ensembles...' dans le panneau (ou dans le menu 'Groupes').",
+    "Sur chaque ligne, choisissez la couleur, le symbole et le motif de remplissage ; 'Auto (couleurs de la palette)' annule les choix.",
+    "Pour un seul grain, double-cliquez dessus dans le tableau, après le calcul. Choisissez couleur, symbole et motif, puis cliquez sur 'Groupe' pour modifier tout l'ensemble, ou sur 'Point' pour mettre en évidence ce seul grain (un cœur, une bordure, une forme curieuse). Le point obtient sa propre ligne dans la légende, avec le nom que vous saisissez ; 'Retirer la mise en évidence' l'annule.",
+    "Cliquez sur 'Utiliser ces couleurs et symboles' puis sur 'Calculer' pour voir les changements dans les graphiques."
    ]
   },
   {

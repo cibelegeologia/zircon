@@ -40,3 +40,15 @@ def test_idades_do_laboratorio_a_direita_nao_viram_razao(tmp_path):
                   "Idade 207Pb/206Pb (Ma)": [610, 620], "2s": [30, 30]}).to_excel(arq, index=False)
     imp = importar(arq)
     assert "r76" not in imp.mapa and "s76" not in imp.mapa
+
+
+def test_cores_e_simbolos_escolhidos(tmp_path):
+    arq = tmp_path / "modelo.xlsx"
+    salvar_modelo(arq)
+    imp = importar(arq)
+    estilos = {"concordante": {"cor": "#123456", "simbolo": "*", "hachura": "...."}}
+    g = calcular(imp.dados, imp.tipo, estilos=estilos).graos
+    assert set(g.cor) == {"#123456"} and set(g.simbolo) == {"*"} and set(g.hachura) == {"...."}
+    # no modo para daltônicos, uma cor fora da paleta segura é trocada pela da paleta; o símbolo fica
+    g = calcular(imp.dados, imp.tipo, estilos=estilos, so_paleta=True).graos
+    assert "#123456" not in set(g.cor) and set(g.simbolo) == {"*"}

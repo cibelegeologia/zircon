@@ -17,6 +17,7 @@ from ..idiomas import N_, tr
 from ..nucleo import calculo, exportacao, grupos, metodologia
 from ..nucleo.importacao import importar
 from ..nucleo.modelo import salvar_modelo
+from .estilos import EstiloDoGrao, EstilosConjuntos
 from ..nucleo.projeto import EXTENSAO, Projeto
 from . import ajuda as janela_ajuda, aparencia, graficos
 from .explica import ModoExplicacao
@@ -120,6 +121,8 @@ class Janela(QMainWindow):
         m = self.menuBar().addMenu(tr("&Grupos"))
         self._acao(m, tr("Colocar linhas selecionadas no grupo..."), self.atribuir_grupo,
                    explica=N_("Põe as linhas selecionadas na tabela num grupo seu, com cor própria."))
+        self._acao(m, tr("Cores e símbolos dos conjuntos..."), self.escolher_estilos,
+                   explica=N_("Escolhe a cor, o símbolo e o padrão de preenchimento de cada conjunto de grãos."))
         self._acao(m, tr("Voltar às cores automáticas"), lambda: self._muda_agrupamento("classe"),
                    explica=N_("Volta a pintar os grãos por concordante, discordante ou rejeitado."))
         self.menu_exibir = self.menuBar().addMenu(tr("E&xibir"))
@@ -297,6 +300,7 @@ class Janela(QMainWindow):
         self.tabela = QTableView()
         self.tabela.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabela.setSortingEnabled(False)
+        self.tabela.doubleClicked.connect(self._estilo_do_grao)
         self.graf_conc = graficos.Grafico()
         self.graf_media = graficos.Grafico()
         self.graf_dens = graficos.Grafico()
@@ -596,6 +600,9 @@ class Janela(QMainWindow):
         self.c_minpop = QDoubleSpinBox(minimum=1, maximum=100, decimals=0, value=op["minimo_por_populacao"])
         f3.addRow(tr("Mínimo de grãos por população"), self.c_minpop)
         self._opcoes_de_cor(f3)
+        self.b_estilos = QPushButton(tr("Cores e símbolos dos conjuntos..."))
+        self.b_estilos.clicked.connect(self.escolher_estilos)
+        f3.addRow(self.b_estilos)
         lay.addWidget(g3)
 
         self.b_calcular = QPushButton(tr("Calcular"))
@@ -845,7 +852,9 @@ class Janela(QMainWindow):
             manual = [1] * len(self.projeto.dados)
             self.projeto.grupo_manual = manual
         try:
-            self.resultado = calculo.calcular(self.projeto.dados, self.projeto.tipo, op, manual)
+            self.resultado = calculo.calcular(self.projeto.dados, self.projeto.tipo, op, manual,
+                                              self.projeto.estilos, self.aparencia["paleta"] in aparencia.ACESSIVEIS,
+                                              self.projeto.destaques)
         except Exception as e:
             QMessageBox.warning(self, tr("Erro no cálculo"), str(e))
             return
@@ -951,6 +960,66 @@ class Janela(QMainWindow):
 
     def _muda_agrupamento(self, v):
         self.c_agrupar.setCurrentIndex(self.c_agrupar.findData(v))
+        self._atualiza_pendente()
+
+    def _estilo_do_grao(self, indice):
+        """Duplo clique num grão: abre as cores e símbolos no conjunto dele (a troca vale para o conjunto todo)."""
+        if self.resultado is None or not indice.isValid() or indice.row() >= len(self.resultado.graos):
+            return
+        g = self.resultado.graos
+        r = g.iloc[indice.row()]
+        linha = str(g.index[indice.row()])
+        agrupar = (self.op_calculadas or {}).get("agrupar", "classe")
+        chave = grupos.chave_conjunto(r.classe, r.grupo, agrupar)
+        nome = tr(chave).capitalize() if agrupar == "classe" else tr("Grupo {n}").format(n=int(r.grupo))
+        atual = {"cor": r.cor, "simbolo": r.simbolo, "hachura": r.hachura,
+                 "rotulo": self.projeto.destaques.get(linha, {}).get("rotulo")}
+        so_paleta = self.aparencia["paleta"] in aparencia.ACESSIVEIS
+        d = EstiloDoGrao(str(r.analise), nome, atual, linha in self.projeto.destaques, so_paleta, self)
+        if d.exec() != EstiloDoGrao.Accepted:
+            return
+        e = d.estilo()
+        if d.escolha == EstiloDoGrao.PONTO:
+            self.projeto.destaques[linha] = e
+        else:
+            self.projeto.destaques.pop(linha, None)
+            if d.escolha == EstiloDoGrao.GRUPO:
+                cor_p, simb_p, hach_p = grupos.estilo_padrao(chave)
+                novo = {k: v for k, v, p in (("cor", e["cor"], cor_p), ("simbolo", e["simbolo"], simb_p),
+                                             ("hachura", e["hachura"], hach_p)) if str(v).upper() != str(p).upper()}
+                if novo:
+                    self.projeto.estilos[chave] = novo
+                else:
+                    self.projeto.estilos.pop(chave, None)
+        self.alterado = True
+        self.cores_mudaram = True
+        self._atualiza_pendente()
+
+    def escolher_estilos(self, destaque=None):
+        """Janela com uma linha por conjunto (destaque: o conjunto a marcar ao abrir)."""
+        if self.projeto is None:
+            QMessageBox.information(self, tr("Cores e símbolos"), tr("Primeiro importe uma planilha (Arquivo > Novo projeto)."))
+            return
+        agrupar = self.c_agrupar.currentData()
+        if agrupar == "classe":
+            conjuntos = [(c, tr(c).capitalize()) for c in ("concordante", "discordante", "rejeitado")]
+        else:
+            if agrupar == "manual":
+                numeros = sorted(set(self.projeto.grupo_manual or [1]))
+            elif self.resultado is not None and (self.op_calculadas or {}).get("agrupar") == "populacoes":
+                numeros = sorted(int(n) for n in self.resultado.graos.grupo.unique() if n > 0)
+            else:
+                QMessageBox.information(self, tr("Cores e símbolos"),
+                                        tr("Clique em Calcular primeiro, para o Zircon encontrar as populações."))
+                return
+            conjuntos = [(f"g{n}", tr("Grupo {n}").format(n=n)) for n in numeros]
+        d = EstilosConjuntos(conjuntos, self.projeto.estilos, self.aparencia["paleta"] in aparencia.ACESSIVEIS, self,
+                             destaque if isinstance(destaque, str) else None)
+        if d.exec() != EstilosConjuntos.Accepted or d.estilos == self.projeto.estilos:
+            return
+        self.projeto.estilos = d.estilos
+        self.alterado = True
+        self.cores_mudaram = self.resultado is not None
         self._atualiza_pendente()
 
     def atribuir_grupo(self):

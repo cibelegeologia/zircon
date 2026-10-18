@@ -2,6 +2,17 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.10.0 (18/10/2026)
+
+Cores e símbolos escolhidos por você.
+
+- Cada conjunto de grãos (concordante, discordante, rejeitado, ou cada grupo e população) tem cor, símbolo e padrão de preenchimento próprios. A janela "Cores e símbolos dos conjuntos..." (no painel e no menu Grupos) mostra uma linha por conjunto. Há 21 símbolos, como círculo, quadrado, triângulos, losango, estrela, cruz e xis, e 9 padrões de preenchimento.
+- O símbolo aparece no centro de cada elipse da concórdia, nas barras da média ponderada, na isócrona, nas legendas e nos gráficos interativos.
+- No modo de cores comuns, qualquer cor pode ser escolhida. No modo de cores acessíveis, só as da paleta segura; o símbolo e o padrão continuam livres, porque não dependem da cor.
+- O botão "Auto (cores da paleta)" volta às cores, símbolos e padrões automáticos.
+- Um duplo clique num grão da tabela (depois de calcular) abre a escolha de cor, símbolo e padrão daquele grão, com dois botões: "Grupo" muda o conjunto todo; "Ponto" destaca só aquele grão (um núcleo, uma borda, uma forma curiosa), que ganha uma linha própria na legenda com o nome que você escrever. "Tirar o destaque" desfaz.
+- As escolhas ficam salvas no projeto e, como as outras opções, só aparecem nos gráficos depois de clicar em Calcular.
+
 ## 0.9.0 (18/10/2026)
 
 Preparar a planilha para o Zircon.
