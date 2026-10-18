@@ -5,7 +5,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 
-from .qt import (QColor, QColorDialog, QComboBox, QDialog, QDialogButtonBox, QFormLayout, QGridLayout, QIcon, QLabel,
+from .qt import (QCheckBox, QColor, QColorDialog, QComboBox, QDialog, QDialogButtonBox, QFormLayout, QGridLayout, QIcon, QLabel,
                  QLineEdit, QPixmap, QPushButton, QSize, QVBoxLayout)
 from ..idiomas import tr
 from ..nucleo import grupos
@@ -108,28 +108,33 @@ class _EscolheCor:
 
 
 class EstilosConjuntos(_EscolheCor, QDialog):
-    """Uma linha por conjunto (classe, grupo ou população) com cor, símbolo e padrão.
+    """Uma linha por conjunto (classe, grupo, população ou amostra): se entra no cálculo, cor, símbolo e padrão.
 
     No modo para daltônicos a cor só pode ser escolhida entre as da paleta segura;
     o símbolo e o padrão são livres nos dois modos, porque não dependem da cor.
     """
 
-    def __init__(self, conjuntos, estilos, so_paleta, parent=None, destaque=None):
+    def __init__(self, conjuntos, estilos, so_paleta, parent=None, destaque=None, desligados=(), fixos=()):
         super().__init__(parent)
-        self.setWindowTitle(tr("Cores e símbolos dos conjuntos"))
+        self.setWindowTitle(tr("Conjuntos: usar no cálculo, cores e símbolos"))
         self.so_paleta = so_paleta
         self.estilos = {k: dict(v) for k, v in (estilos or {}).items()}
+        self.desligados = [k for k, _ in conjuntos if k in set(desligados)]
         lay = QVBoxLayout(self)
         aviso = (tr("Modo para daltônicos: as cores vêm só da paleta segura escolhida. O símbolo e o padrão "
                     "ajudam a separar os conjuntos sem depender da cor.") if so_paleta else
                  tr("Modo de cores comuns: qualquer cor pode ser escolhida. Para quem tem daltonismo, prefira "
                     "o modo de cores acessíveis no painel e diferencie os conjuntos também pelo símbolo."))
-        rotulo = QLabel(aviso)
+        rotulo = QLabel(tr("Desmarque \"No cálculo\" para tirar um conjunto de todas as contas, por exemplo os "
+                           "concordantes, para calcular a concórdia ou a discórdia só com os discordantes. Os grãos "
+                           "dele continuam nos gráficos, em cinza.") + "\n\n" + aviso)
         rotulo.setWordWrap(True)
         lay.addWidget(rotulo)
         grade = QGridLayout()
-        for col, titulo in enumerate((tr("Conjunto"), tr("Cor"), tr("Símbolo"), tr("Padrão de preenchimento"))):
+        for col, titulo in enumerate((tr("No cálculo"), tr("Conjunto"), tr("Cor"), tr("Símbolo"),
+                                      tr("Padrão de preenchimento"))):
             grade.addWidget(QLabel("<b>" + titulo + "</b>"), 0, col)
+        self.usar = {}
         self.linhas = {}
         self.cor_guardada = {}  # cor livre do modo comum, mantida quando o modo para daltônicos a esconde
         for i, (chave, nome) in enumerate(conjuntos, 1):
@@ -138,21 +143,29 @@ class EstilosConjuntos(_EscolheCor, QDialog):
             cor = e.get("cor") or cor_p
             if so_paleta and cor.upper() not in {c.upper() for c in grupos.cores_seguras()}:
                 cor = cor_p
+            usar = QCheckBox()
+            usar.setChecked(chave not in self.desligados)
+            usar.setAccessibleName(tr("Usar {conjunto} no cálculo").format(conjunto=nome))
+            if chave in fixos:
+                usar.setEnabled(False)
+                usar.setToolTip(tr("Os rejeitados são os outliers que o próprio cálculo tirou."))
+            self.usar[chave] = usar
+            grade.addWidget(usar, i, 0)
             rotulo_nome = QLabel(("<b>▶ " + nome + "</b>") if chave == destaque else nome)
-            grade.addWidget(rotulo_nome, i, 0)
+            grade.addWidget(rotulo_nome, i, 1)
             w_cor = self._escolha_cor(chave, nome, cor)
-            grade.addWidget(w_cor, i, 1)
+            grade.addWidget(w_cor, i, 2)
             w_simb = combo_simbolo(e.get("simbolo") or simb_p, nome)
-            grade.addWidget(w_simb, i, 2)
+            grade.addWidget(w_simb, i, 3)
             w_hach = combo_hachura(e.get("hachura", hach_p), nome)
-            grade.addWidget(w_hach, i, 3)
+            grade.addWidget(w_hach, i, 4)
             self.linhas[chave] = (w_cor, w_simb, w_hach, (cor_p, simb_p, hach_p))
             self.cor_guardada[chave] = e.get("cor")
             if chave == destaque:
                 w_cor.setFocus()
         lay.addLayout(grade)
         botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel | QDialogButtonBox.Reset)
-        botoes.button(QDialogButtonBox.Ok).setText(tr("Usar estas cores e símbolos"))
+        botoes.button(QDialogButtonBox.Ok).setText(tr("Usar estas escolhas"))
         botoes.button(QDialogButtonBox.Cancel).setText(tr("Cancelar"))
         botoes.button(QDialogButtonBox.Reset).setText(tr("Auto (cores da paleta)"))
         botoes.button(QDialogButtonBox.Reset).setToolTip(
@@ -190,6 +203,7 @@ class EstilosConjuntos(_EscolheCor, QDialog):
                 self.estilos[chave] = e
             else:
                 self.estilos.pop(chave, None)
+        self.desligados = [k for k, w in self.usar.items() if w.isEnabled() and not w.isChecked()]
         self.accept()
 
 

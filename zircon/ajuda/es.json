@@ -35,25 +35,26 @@
   {
    "id": "importar",
    "titulo": "Importar la hoja de cálculo del laboratorio",
-   "serve": "Este recurso sirve para traer a Zircon la hoja de cálculo de resultados entregada por el laboratorio; úselo siempre que empiece un proyecto nuevo con datos de una muestra.",
-   "explicacao": "Zircon lee archivos .xlsx, .xls, .ods, .csv, .txt y .tsv. En las hojas de cálculo, solo se lee la primera pestaña. En los archivos de texto, detecta la codificación y el separador de columnas (tabulación, punto y coma o coma). El separador decimal (coma o punto) también se detecta. Las filas de título en la parte superior se ignoran, pero el encabezado debe ocupar una sola fila. Una muestra por archivo: si hay varias, todos los granos entran juntos en los cálculos. El formato completo está en el tema 'Preparar la hoja de cálculo (plantilla)'. Las columnas se reconocen por el nombre (por ejemplo 207Pb/235U, 206Pb/238U, rho), y la columna de error debe ir justo después del valor. Si el encabezado del error indica 2s o 2σ, el valor se divide entre 2; si indica %, se convierte en error absoluto. Atención: un error en 2σ sin esa indicación en el encabezado se leerá como 1σ. Celdas como '<LOD', 'bdl' o 'n.d.' se convierten en datos ausentes.",
+   "serve": "Este recurso sirve para traer a Zircon la hoja de cálculo de resultados entregada por el laboratorio; úselo siempre que empiece un proyecto nuevo con datos de una o de varias muestras.",
+   "explicacao": "Zircon lee archivos .xlsx, .xls, .ods, .csv, .txt y .tsv. En las hojas de cálculo, solo se lee la primera pestaña. En los archivos de texto, detecta la codificación y el separador de columnas (tabulación, punto y coma o coma). El separador decimal (coma o punto) también se detecta. Las filas de título en la parte superior se ignoran, pero el encabezado debe ocupar una sola fila. Una hoja de cálculo puede tener varias muestras: la columna Muestra indica a qué muestra pertenece cada análisis. Con varias muestras, Zircon sugiere en el panel separar por muestra, cada una con su color y sus edades. Calcular cada muestra por separado, unir varias en una unidad ('Grupos > Unir muestras en unidades...') o desactivar alguna es decisión suya. Otras hojas de cálculo con el mismo tipo de dato se pueden añadir al proyecto con 'Archivo > Añadir hoja de cálculo al proyecto...'. El formato completo está en el tema 'Preparar la hoja de cálculo (plantilla)'. Las columnas se reconocen por el nombre (por ejemplo 207Pb/235U, 206Pb/238U, rho), y la columna de error debe ir justo después del valor. Si el encabezado del error indica 2s o 2σ, el valor se divide entre 2; si indica %, se convierte en error absoluto. Atención: un error en 2σ sin esa indicación en el encabezado se leerá como 1σ. Celdas como '<LOD', 'bdl' o 'n.d.' se convierten en datos ausentes.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
-    "Si la hoja de cálculo del laboratorio tiene varias pestañas, un encabezado en varias filas o varias muestras, prepárela antes con 'Archivo > Guardar plantilla de hoja de cálculo...' (vea el tema 'Preparar la hoja de cálculo (plantilla)').",
+    "Si la hoja de cálculo del laboratorio tiene varias pestañas o un encabezado en varias filas, prepárela antes con 'Archivo > Guardar plantilla de hoja de cálculo...' (vea el tema 'Preparar la hoja de cálculo (plantilla)').",
     "Elija 'Archivo > Nuevo proyecto (importar hoja de cálculo)...' y seleccione el archivo.",
     "En la ventana 'Revisar importación', lea el registro: separadores, fila de inicio de los datos y la columna asignada a cada razón y error (1σ o 2σ, absoluto o %).",
     "Compruebe en la tabla de vista previa que los números son coherentes; si algo está mal, haga clic en 'Cancelar', corrija el encabezado de la hoja de cálculo e importe de nuevo.",
     "Si todo está bien, haga clic en 'Usar estos datos'.",
+    "Para traer otra hoja de cálculo al mismo proyecto, por ejemplo con otras muestras, use 'Archivo > Añadir hoja de cálculo al proyecto...'. Las hojas de cálculo deben tener el mismo tipo de dato.",
     "Después, la pestaña 'Registro de la importación' conserva esas decisiones para consulta."
    ]
   },
   {
    "id": "preparar_planilha",
    "titulo": "Preparar la hoja de cálculo (plantilla)",
-   "serve": "Este recurso sirve para dejar la hoja de cálculo del laboratorio en el formato que lee Zircon; úselo antes de importar, sobre todo cuando la hoja de cálculo tiene varias pestañas, un encabezado en varias filas, varias muestras o notas al pie.",
-   "explicacao": "Zircon lee una tabla sencilla: solo la primera pestaña, un encabezado de una fila justo encima de los datos, una fila por análisis y una muestra por archivo. Las columnas de la plantilla son Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ y rho. Cada error va justo a la derecha de su valor, y su nombre indica si es 1σ o 2σ y si es relativo (con '%') o absoluto (sin '%'). Para Tera-Wasserburg, las razones son 238U/206Pb y 207Pb/206Pb; si solo tiene edades, las columnas son Age (Ma) y ± 2σ (Ma). Las columnas adicionales, como U, Th, Th/U o las edades del laboratorio, pueden quedarse a la derecha de las razones. Los granos que decidió excluir salen de la tabla; los discordantes pueden quedarse, porque Zircon los separa según el límite que usted elige. Mezclar errores de 1σ y 2σ, o absolutos y relativos, cambia las edades y el MSWD, por eso esta es la comprobación más importante.",
+   "serve": "Este recurso sirve para dejar la hoja de cálculo del laboratorio en el formato que lee Zircon; úselo antes de importar, sobre todo cuando la hoja de cálculo tiene varias pestañas, un encabezado en varias filas o notas al pie.",
+   "explicacao": "Zircon lee una tabla sencilla: solo la primera pestaña, un encabezado de una fila justo encima de los datos, una fila por análisis y la columna Muestra indicando a qué muestra pertenece cada análisis. Puede haber varias muestras en el mismo archivo. Las columnas de la plantilla son Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ y rho. Cada error va justo a la derecha de su valor, y su nombre indica si es 1σ o 2σ y si es relativo (con '%') o absoluto (sin '%'). Para Tera-Wasserburg, las razones son 238U/206Pb y 207Pb/206Pb; si solo tiene edades, las columnas son Age (Ma) y ± 2σ (Ma). Las columnas adicionales, como U, Th, Th/U o las edades del laboratorio, pueden quedarse a la derecha de las razones. Los granos que decidió excluir salen de la tabla; los discordantes pueden quedarse, porque Zircon los separa según el límite que usted elige. Mezclar errores de 1σ y 2σ, o absolutos y relativos, cambia las edades y el MSWD, por eso esta es la comprobación más importante.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
@@ -62,7 +63,7 @@
     "Abra la plantilla en Excel o en LibreOffice Calc y lea la pestaña 'Instrucciones'.",
     "En la pestaña 'Datos', borre las filas de ejemplo y pegue las columnas de su hoja de cálculo en el orden de la plantilla. Use 'Pegado especial > Valores' para traer números y no fórmulas.",
     "Compruebe el error que indica el laboratorio: si es 1σ, cambie el encabezado a '± 1σ'; si está en porcentaje, a '± 2σ (%)' o '± 1σ (%)'.",
-    "Deje fuera de la tabla los títulos, las filas de unidades y las notas al pie. Si el archivo tiene varias muestras, haga un archivo para cada una.",
+    "Deje fuera de la tabla los títulos, las filas de unidades y las notas al pie. Si hay varias muestras, déjelas todas en la misma tabla, con el nombre de cada una en la columna Muestra.",
     "Guarde como .xlsx e importe con 'Archivo > Nuevo proyecto (importar hoja de cálculo)...'. En la ventana 'Revisar importación', compruebe la columna asignada a cada razón y error."
    ]
   },
@@ -120,7 +121,7 @@
    "id": "discordancia",
    "titulo": "Discordancia y selección de los granos",
    "serve": "Este recurso sirve para identificar y separar granos cuyas edades U-Pb no concuerdan entre sí; úselo siempre que calcule una edad de muestra a partir de granos individuales.",
-   "explicacao": "Un grano es concordante cuando las edades 206Pb/238U y 207Pb/206Pb coinciden, es decir, cuando cae sobre la curva concordia. La pérdida de Pb, el Pb común o la mezcla de dominios de distintas edades hacen que el grano sea discordante. Zircon calcula la discordancia como 100 × (1 − t206/238 / t207/206), en %. Los valores positivos indican en general pérdida de Pb; los negativos, discordancia inversa. Los granos con discordancia, en valor absoluto, mayor que la 'Discordancia máxima' (predeterminado 10 %) quedan fuera de la media ponderada y de la edad de concordia, a menos que marque 'Incluir discordantes en la media'. En granos jóvenes la discordancia relativa es poco fiable, porque la edad 207Pb/206Pb tiene un error grande. La regresión de la discordia usa todos los granos.",
+   "explicacao": "Un grano es concordante cuando las edades 206Pb/238U y 207Pb/206Pb coinciden, es decir, cuando cae sobre la curva concordia. La pérdida de Pb, el Pb común o la mezcla de dominios de distintas edades hacen que el grano sea discordante. Zircon calcula la discordancia como 100 × (1 − t206/238 / t207/206), en %. Los valores positivos indican en general pérdida de Pb; los negativos, discordancia inversa. Los granos con discordancia, en valor absoluto, mayor que la 'Discordancia máxima' (predeterminado 10 %) quedan fuera de la media ponderada y de la edad de concordia, a menos que marque 'Incluir discordantes en la media'. En granos jóvenes la discordancia relativa es poco fiable, porque la edad 207Pb/206Pb tiene un error grande. La regresión de la discordia usa todos los granos que están en el cálculo, sin el filtro de discordancia.",
    "referencias": [
     "Spencer et al. (2016)",
     "Gehrels (2014)",
@@ -201,7 +202,7 @@
    "id": "discordia",
    "titulo": "Discordia e interceptos superior e inferior",
    "serve": "Este recurso sirve para obtener edades a partir de granos alineados fuera de la curva concordia; úselo cuando varios granos discordantes forman una recta, como en la pérdida de Pb o la mezcla de dos edades.",
-   "explicacao": "Cuando granos de la misma edad pierden cantidades distintas de Pb en un evento posterior, se alinean en una recta, la discordia, en el diagrama de Wetherill. El intercepto superior con la concordia indica en general la edad de cristalización; el inferior, la edad del evento que causó la pérdida de Pb. Zircon ajusta la recta por regresión de York, que tiene en cuenta los errores de las dos razones y su correlación, y propaga los errores a los interceptos. Usa todos los granos, sin el filtro de discordancia. Un intercepto inferior cercano a cero puede indicar pérdida de Pb reciente, sin significado de evento. Un MSWD alto indica que los puntos no forman una única recta. Se necesitan al menos 3 granos.",
+   "explicacao": "Cuando granos de la misma edad pierden cantidades distintas de Pb en un evento posterior, se alinean en una recta, la discordia, en el diagrama de Wetherill. El intercepto superior con la concordia indica en general la edad de cristalización; el inferior, la edad del evento que causó la pérdida de Pb. Zircon ajusta la recta por regresión de York, que tiene en cuenta los errores de las dos razones y su correlación, y propaga los errores a los interceptos. Usa todos los granos que están en el cálculo, o los de cada conjunto cuando el cálculo es por conjunto, sin el filtro de discordancia. Un intercepto inferior cercano a cero puede indicar pérdida de Pb reciente, sin significado de evento. Un MSWD alto indica que los puntos no forman una única recta. Se necesitan al menos 3 granos.",
    "referencias": [
     "York (1968)",
     "York et al. (2004)",
@@ -213,7 +214,7 @@
     "Importe datos con razones U-Pb y haga clic en 'Calcular'.",
     "En el panel de la izquierda, en 'Qué calcular', deje 'Diagrama de concordia' en 'Wetherill' para ver la recta de la discordia discontinua.",
     "En la pestaña 'Resultados', lea 'Discordia: intercepto superior' y 'Discordia: intercepto inferior', con MSWD y p.",
-    "La discordia usa todos los granos del proyecto. Para ajustarla solo a algunos granos, haga una copia de la hoja de cálculo solo con ellos e importe esa copia como otro proyecto."
+    "Para ajustar la discordia solo a algunos granos, desactive los demás, o elija 'Cada conjunto por separado' en 'Calcular' para obtener una discordia por conjunto. Vea el tema 'Conjuntos en el cálculo'."
    ]
   },
   {
@@ -282,31 +283,54 @@
     "Fedo et al. (2003)"
    ],
    "como_usar": [
-    "En el panel de la izquierda, en 'Colores en los gráficos', elija en 'Colorear por' 'Poblaciones de edad (automático)'.",
+    "En el panel de la izquierda, en 'Conjuntos de granos', elija en 'Separar por' la opción 'Poblaciones de edad (automático)', o 'Poblaciones dentro de cada muestra' si la hoja de cálculo tiene varias muestras o unidades.",
     "Ajuste 'Mínimo de granos por población' (predeterminado 3).",
     "Haga clic en 'Calcular' y abra la pestaña 'Distribución de edades'.",
-    "Vea el número de cada grano en la columna de grupo de la pestaña 'Datos y edades por grano'."
+    "Vea el número de cada grano en la columna de grupo de la pestaña 'Datos y edades por grano'.",
+    "Para obtener la edad de cada población, elija 'Cada conjunto por separado' en 'Calcular'. Vea el tema 'Conjuntos en el cálculo'."
    ]
   },
   {
    "id": "cores_grupos",
    "titulo": "Colores, símbolos y grupos",
    "serve": "Este recurso sirve para destacar conjuntos de granos en los gráficos y tablas; úselo para separar concordantes de discordantes, ver poblaciones o marcar granos que interpreta como de un mismo evento.",
-   "explicacao": "La opción 'Colorear por' tiene tres modos. 'Concordante / discordante / rechazado' colorea cada grano según su clase: concordante, discordante (por encima de la discordancia máxima) o rechazado como outlier. 'Poblaciones de edad (automático)' usa los grupos de la curva de densidad. 'Grupos que yo elija' usa números de grupo (1 a 8) que usted asigna a las filas de la tabla. Los colores aparecen en la concordia, la media ponderada, el histograma y la hoja de cálculo Excel exportada. Asignar un grupo solo cambia el color: no cambia qué granos entran en la media, lo que depende de las opciones de selección. Los grupos se guardan en el proyecto. Cada conjunto (clase, población o grupo) también tiene un símbolo, dibujado en el centro de las elipses y de las barras, y puede tener un patrón de relleno. En 'Colores y símbolos de los conjuntos...' usted elige el color, el símbolo (21 opciones, como círculo, cuadrado, triángulo, rombo y estrella) y el patrón de cada conjunto; la elección vale para todo el conjunto, para que la leyenda siga siendo correcta. Un grano también puede destacarse por separado, y entonces aparece en la leyenda con nombre propio. En el modo de colores comunes se puede elegir cualquier color. En el modo de colores accesibles, los colores salen solo de la paleta segura elegida, y el símbolo y el patrón siguen libres: son ellos los que ayudan a quien no distingue colores. El botón 'Auto (colores de la paleta)' vuelve a la configuración predeterminada. Las elecciones se guardan en el proyecto y solo aparecen en los gráficos después de hacer clic en 'Calcular'.",
+   "explicacao": "La opción 'Separar por' tiene cinco modos. 'Concordante / discordante / rechazado' colorea cada grano según su clase: concordante, discordante (por encima de la discordancia máxima) o rechazado como outlier. 'Poblaciones de edad (automático)' usa los grupos de la curva de densidad. 'Grupos que yo elija' usa números de grupo (1 a 8) que usted asigna a las filas de la tabla. 'Muestras de la hoja de cálculo' separa los granos por la columna Muestra. 'Poblaciones dentro de cada muestra' separa las poblaciones de cada muestra. Los colores aparecen en la concordia, la media ponderada, el histograma y la hoja de cálculo Excel exportada. Con 'Calcular: Todos los granos juntos', los conjuntos solo cambian el color; con 'Cada conjunto por separado', cada conjunto tiene sus propias edades (vea el tema 'Conjuntos en el cálculo'). Los grupos se guardan en el proyecto. Cada conjunto (clase, población o grupo) también tiene un símbolo, dibujado en el centro de las elipses y de las barras, y puede tener un patrón de relleno. En 'Usar en el cálculo, colores y símbolos...' usted elige el color, el símbolo (21 opciones, como círculo, cuadrado, triángulo, rombo y estrella) y el patrón de cada conjunto; la elección vale para todo el conjunto, para que la leyenda siga siendo correcta. Un grano también puede destacarse por separado, y entonces aparece en la leyenda con nombre propio. En el modo de colores comunes se puede elegir cualquier color. En el modo de colores accesibles, los colores salen solo de la paleta segura elegida, y el símbolo y el patrón siguen libres: son ellos los que ayudan a quien no distingue colores. El botón 'Auto (colores de la paleta)' vuelve a la configuración predeterminada. Las elecciones se guardan en el proyecto y solo aparecen en los gráficos después de hacer clic en 'Calcular'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
     "Wong (2011)"
    ],
    "como_usar": [
-    "En el panel de la izquierda, en 'Colores en los gráficos', elija el modo en 'Colorear por'.",
+    "En el panel de la izquierda, en 'Conjuntos de granos', elija el modo en 'Separar por'.",
     "Para grupos propios, en la pestaña 'Datos y edades por grano' seleccione las filas (haga clic en el número de fila; use Ctrl o Shift para varias).",
     "Use 'Grupos > Poner las filas seleccionadas en el grupo...' e indique el número del grupo.",
     "Para volver a las clases, use 'Grupos > Volver a los colores automáticos'.",
-    "Para elegir color, símbolo y patrón, haga clic en 'Colores y símbolos de los conjuntos...' en el panel (o en el menú 'Grupos').",
+    "Para elegir color, símbolo y patrón, haga clic en 'Usar en el cálculo, colores y símbolos...' en el panel (o en el menú 'Grupos').",
     "En cada fila, elija el color, el símbolo y el patrón de relleno; 'Auto (colores de la paleta)' deshace las elecciones.",
     "Para un solo grano, haga doble clic en él en la tabla, después de calcular. Elija color, símbolo y patrón y haga clic en 'Grupo' para cambiar todo el conjunto, o en 'Punto' para destacar solo ese grano (un núcleo, un borde, una forma curiosa). El punto obtiene su propia línea en la leyenda, con el nombre que usted escriba; 'Quitar el destaque' lo deshace.",
-    "Haga clic en 'Usar estos colores y símbolos' y después en 'Calcular' para ver los cambios en los gráficos."
+    "Haga clic en 'Usar estas opciones' y después en 'Calcular' para ver los cambios en los gráficos."
+   ]
+  },
+  {
+   "id": "conjuntos",
+   "titulo": "Conjuntos en el cálculo",
+   "serve": "Este recurso sirve para elegir qué granos entran en los cálculos y para calcular cada conjunto por separado; úselo en rocas sedimentarias (una edad por población), metamórficas (núcleo y borde por separado) y cuando la hoja de cálculo tiene varias muestras o unidades.",
+   "explicacao": "Una media o una concordia solo tiene sentido para granos del mismo evento. En una roca ígnea simple, casi todos los granos son de la cristalización, y calcular todos juntos funciona. En un circón detrítico, cada población viene de una fuente, y la media de la muestra entera no tiene significado geológico. En una roca metamórfica, el núcleo y el borde registran eventos distintos. Por eso Zircon separa los granos en conjuntos (clases, poblaciones, grupos propios o muestras) y le deja decidir dos cosas. La primera es qué conjuntos y granos entran en el cálculo: un conjunto o grano desactivado sale de todos los cálculos y queda en gris en los gráficos, con la entrada 'Fuera del cálculo' en la leyenda. Esto permite, por ejemplo, desactivar los concordantes y calcular la discordia solo con los discordantes. La segunda es si el cálculo es de todos los granos juntos o de cada conjunto por separado. Por separado, cada conjunto tiene su media ponderada, su edad de concordia y su discordia, cada una con MSWD y n, en una columna 'Conjunto' de la tabla de resultados. Cuando los conjuntos son las clases (concordante y discordante), el límite de discordancia no se aplica dentro del conjunto, porque el conjunto ya es su elección; en los otros modos, los discordantes quedan fuera de la media y de la concordia, a menos que marque 'Incluir discordantes en la media'. Los rechazados son los outliers que quita el propio cálculo y no se pueden desactivar. Cuando la hoja de cálculo tiene varias muestras, Zircon las identifica por la columna Muestra y sugiere separar por muestra. Unir muestras en una unidad, separarlas o desactivarlas es decisión suya, y se puede cambiar después de ver el resultado. Todo se guarda en el proyecto y solo cambia después de hacer clic en 'Calcular'.",
+   "referencias": [
+    "Corfu et al. (2003)",
+    "Fedo et al. (2003)",
+    "Gehrels (2014)",
+    "Spencer et al. (2016)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "En el panel de la izquierda, en 'Conjuntos de granos', elija en 'Separar por' cómo formar los conjuntos.",
+    "En 'Calcular', elija 'Todos los granos juntos' o 'Cada conjunto por separado'.",
+    "Haga clic en 'Usar en el cálculo, colores y símbolos...' y desmarque 'En el cálculo' en los conjuntos que deben quedar fuera.",
+    "Para granos sueltos, seleccione las filas en la tabla de datos, haga clic con el botón derecho y elija 'Quitar del cálculo los granos seleccionados' (o 'Devolver al cálculo los granos seleccionados'). Los mismos elementos están en el menú 'Grupos'.",
+    "Haga clic en 'Calcular'. La columna 'En el cálculo' de la tabla muestra qué granos entraron.",
+    "Para unir muestras, por ejemplo varias muestras de la misma capa a lo largo de un perfil, use 'Grupos > Unir muestras en unidades...', seleccione las muestras, haga clic en 'Unir las seleccionadas...' y dé un nombre a la unidad. Con 'Separar por: Muestras de la hoja de cálculo', la unidad pasa a ser un solo conjunto, con un color y una edad; la tabla de datos muestra la muestra y la unidad de cada análisis.",
+    "Para exportar un conjunto por separado, use 'Archivo > Exportar > Solo un conjunto...'."
    ]
   },
   {
@@ -327,18 +351,19 @@
   },
   {
    "id": "exportar",
-   "titulo": "Exportar para publicación",
+   "titulo": "Exportar: todo, un conjunto o una ventana",
    "serve": "Este recurso sirve para generar de una vez los archivos de un artículo o informe; úselo cuando los resultados estén revisados y listos para usarse fuera de Zircon.",
-   "explicacao": "La exportación para publicación crea una carpeta con: figuras de la concordia (o isócrona), la media ponderada y la distribución de edades con un ancho de 1 columna (90 mm), 1,5 columnas (140 mm) o 2 columnas (190 mm), en PNG y TIFF a 600 ppp, PDF, SVG y, si se solicita, EPS, siguiendo las instrucciones de figuras de Elsevier; una hoja de cálculo Excel formateada con resultados, edades por grano coloreadas, opciones usadas, referencias y registro; gráficos interactivos en HTML, que se abren sin internet y sirven como material suplementario; datos en CSV con LEEME para repositorio (Mendeley Data, Zenodo, PANGAEA); y el texto de metodología. Revise cada figura antes de enviarla a la revista, pues los requisitos varían.",
+   "explicacao": "La exportación de todo el proyecto crea una carpeta con: figuras de la concordia (o isócrona), la media ponderada y la distribución de edades con un ancho de 1 columna (90 mm), 1,5 columnas (140 mm) o 2 columnas (190 mm), en PNG y TIFF a 600 ppp, PDF, SVG y, si se solicita, EPS, siguiendo las instrucciones de figuras de Elsevier; una hoja de cálculo Excel formateada con resultados, edades por grano coloreadas, opciones usadas, referencias y registro; gráficos interactivos en HTML, que se abren sin internet y sirven como material suplementario; datos en CSV con LEEME para repositorio (Mendeley Data, Zenodo, PANGAEA); y el texto de metodología. Revise cada figura antes de enviarla a la revista, pues los requisitos varían. Si el cálculo se hizo conjunto por conjunto, la carpeta también trae una concordia y una media de cada conjunto, y usted puede incluir el proyecto .zircon y la hoja de cálculo original del laboratorio. 'Solo un conjunto' genera la misma carpeta, pero solo con los granos y las edades de una muestra, población o grupo. 'Solo esta ventana' guarda lo que hay en una ventana: el gráfico como imagen (PNG o TIFF a 600 ppp, SVG o PDF), la tabla como hoja de cálculo (Excel o CSV) o el texto como archivo.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
     "Haga clic en 'Calcular' antes de exportar.",
-    "Elija 'Archivo > Exportar para publicación (figuras, Excel, interactivo, metodología)...' (Ctrl+E).",
-    "Elija el 'Ancho de las figuras' y marque los formatos.",
+    "Para todo, elija 'Archivo > Exportar > Todo el proyecto...' (Ctrl+E), elija el ancho y los formatos de las figuras y marque si quiere las figuras de cada conjunto y el proyecto con la hoja de cálculo original.",
     "Haga clic en 'Elegir carpeta y exportar' y elija la carpeta; los archivos quedan en una subcarpeta con el nombre del proyecto.",
-    "Para un solo archivo, use los otros elementos del menú 'Archivo' (hoja de cálculo Excel, gráfico actual, HTML interactivo o metodología)."
+    "Para un conjunto, use 'Archivo > Exportar > Solo un conjunto...' y elija la muestra, la población o el grupo. Antes, calcule con 'Cada conjunto por separado'.",
+    "Para una ventana, haga clic con el botón derecho en su título y elija 'Exportar esta ventana...', o use 'Archivo > Exportar > Solo esta ventana...' (Ctrl+Shift+E).",
+    "Los demás elementos del menú 'Archivo > Exportar' guardan un solo archivo (hoja de cálculo Excel, gráfico, HTML interactivo o metodología)."
    ]
   },
   {

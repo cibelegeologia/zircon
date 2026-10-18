@@ -2,6 +2,22 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.11.0 (18/10/2026)
+
+Conjuntos no cálculo e novas formas de exportar.
+
+- Ligar e desligar conjuntos: na janela "Usar no cálculo, cores e símbolos..." (no painel e no menu Grupos), cada conjunto tem a caixa "No cálculo". Um conjunto desligado sai de todas as contas e fica em cinza nos gráficos, com a entrada "Fora do cálculo" na legenda. Assim dá para desligar os concordantes e calcular a concórdia ou a discórdia só com os discordantes, sem mexer na planilha.
+- Ligar e desligar grãos soltos: selecione as linhas na tabela e use o botão direito (ou o menu Grupos) em "Tirar do cálculo os grãos selecionados" ou "Voltar ao cálculo os grãos selecionados". A tabela ganhou a coluna "No cálculo".
+- Calcular cada conjunto separado: a nova opção "Calcular" do painel tem "Todos os grãos juntos" (como antes) e "Cada conjunto separado". Separado, cada conjunto tem a sua média ponderada, idade concórdia e discórdia, com MSWD e n, numa coluna "Conjunto" da tabela de resultados. A concórdia mostra uma discórdia por conjunto, na cor dele, e a média ponderada mostra a faixa de cada conjunto.
+- Novos modos em "Separar por": "Amostras da planilha" (pela coluna Amostra) e "Populações dentro de cada amostra", para planilhas com várias amostras ou unidades.
+- Várias amostras no mesmo projeto: uma planilha pode ter várias amostras (pela coluna Amostra), e "Arquivo > Adicionar planilha ao projeto..." soma outras planilhas do mesmo tipo de dado. Quando há mais de uma amostra, o Zircon avisa e deixa o painel em "Separar por: Amostras da planilha" e "Calcular: Cada conjunto separado"; o cálculo continua esperando o botão Calcular.
+- Juntar amostras: "Grupos > Juntar amostras em unidades..." junta várias amostras numa unidade (por exemplo, amostras da mesma camada ao longo de um perfil), que passa a ter uma cor e uma idade. A tabela de dados mostra a amostra e a unidade de cada análise. Juntar, separar ou desligar continua sendo decisão sua, e pode ser desfeito.
+- O modelo de planilha e o guia não pedem mais uma amostra por arquivo.
+- A discórdia agora respeita a seleção: usa só os grãos no cálculo (antes, usava todos os grãos da planilha).
+- Exportar: o menu Arquivo ganhou o submenu Exportar, com "Tudo do projeto", "Só um conjunto" e "Só esta janela". "Tudo do projeto" (Ctrl+E) também gera uma concórdia e uma média de cada conjunto e pode incluir o projeto .zircon e a planilha original. "Só um conjunto" gera a mesma pasta só com os grãos de uma amostra, população ou grupo. "Só esta janela" (Ctrl+Shift+E, ou botão direito no título da janela) salva o gráfico como imagem, a tabela como Excel ou CSV, ou o texto como arquivo.
+- A metodologia diz quantas análises ficaram fora do cálculo e quais conjuntos foram calculados separadamente.
+- Novo tópico no guia: "Conjuntos no cálculo"; os tópicos de cores e grupos, populações e exportação foram atualizados.
+
 ## 0.10.1 (18/10/2026)
 
 - Linux: a loja de aplicativos (Pop!_Shop e outras) mostrava os acentos da descrição do Zircon como "?". O pacote .deb agora traz a ficha do programa no formato AppStream, em UTF-8, com nome, resumo e descrição em português, inglês e espanhol.

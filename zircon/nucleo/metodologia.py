@@ -9,6 +9,7 @@ from datetime import date
 
 from .. import __version__, idiomas
 from .exportacao import referencias_abnt
+from .grupos import nome_conjunto
 
 CITA_SOFTWARE = "Zircon v{v} (https://github.com/cibelegeologia/zircon)"
 
@@ -23,7 +24,8 @@ def _resultados(conjunto, cod):
     linhas = []
     for r in conjunto:
         p = (f"p < {_fmt(0.001, 3, cod)}" if r["p"] < 0.001 else f"p = {_fmt(r['p'], 3, cod)}")
-        linhas.append(f"- {t(r['Cálculo'])}: {_fmt(r['Idade (Ma)'], 2, cod)} ± {_fmt(r['± 2σ (Ma)'], 2, cod)} Ma (2σ), "
+        conj = f"{nome_conjunto(r['Conjunto'], t)}, " if r.get("Conjunto") else ""
+        linhas.append(f"- {conj}{t(r['Cálculo'])}: {_fmt(r['Idade (Ma)'], 2, cod)} ± {_fmt(r['± 2σ (Ma)'], 2, cod)} Ma (2σ), "
                       f"MSWD = {_fmt(r['MSWD'], 2, cod)}, {p}, n = {r['n']}")
     return "\n".join(linhas)
 
@@ -89,7 +91,15 @@ def _frases(cod, projeto, resultado, op):
         citacoes.append("York et al. (2004)")
         f.append(t("Os interceptos da discórdia foram obtidos por regressão linear com erros correlacionados "
                    "(York et al., 2004) no diagrama de Wetherill."))
-    if op["agrupar"] == "populacoes":
+    g = resultado.graos
+    if "ativo" in g and not g["ativo"].all():
+        f.append(t("{n} de {total} análises foram deixadas fora dos cálculos por escolha do pesquisador.").format(
+            n=int((~g["ativo"].astype(bool)).sum()), total=len(g)))
+    if op.get("calcular_por") == "conjunto":
+        f.append(t("As idades foram calculadas separadamente para cada conjunto de análises ({conjuntos}).").format(
+            conjuntos=", ".join(dict.fromkeys(nome_conjunto(r["Conjunto"], t) for r in resultado.conjunto
+                                              if r.get("Conjunto")))))
+    if op["agrupar"] in ("populacoes", "amostra_populacoes"):
         citacoes.append("Vermeesch (2012)")
         f.append(t("As populações de idade foram separadas pelos mínimos da curva de densidade (KDE) das idades "
                    "(Vermeesch, 2012)."))

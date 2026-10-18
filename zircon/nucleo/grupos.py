@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import argrelextrema
 from scipy.stats import gaussian_kde
 
-from ..idiomas import N_
+from ..idiomas import N_, tr
 
 # Paletas para quem tem daltonismo. A escolhida fica em PALETA e COR_CLASSE,
 # que são alterados no lugar para quem já os importou ver a troca.
@@ -67,7 +67,7 @@ REFERENCIAS = {
     "cividis": N_("Nuñez, Anderton e Renslow (2018), PLOS ONE 13:e0199239"),
 }
 # Nomes das classes, para tradução
-N_("concordante"), N_("discordante"), N_("rejeitado")
+N_("concordante"), N_("discordante"), N_("rejeitado"), N_("Amostra {n}"), N_("{amostra}, população {n}")
 
 
 def classifica(discordancia, valido, limite=10.0):
@@ -146,16 +146,75 @@ NOMES_HACHURA = {"": N_("Liso"), "////": N_("Listras inclinadas"), "\\\\\\\\": N
 SIMBOLOS_GRUPO = ["o", "s", "^", "D", "v", "p", "*", "h"]
 
 
-def chave_conjunto(classe, grupo, agrupar):
-    """Nome do conjunto de um grão: a classe, ou "g<n>" para grupos e populações."""
-    return str(classe) if agrupar == "classe" else f"g{int(grupo)}"
+def chave_conjunto(classe, grupo, agrupar, amostra=None):
+    """Nome interno do conjunto de um grão: a classe, "g<n>" para grupos e populações, ou
+    "a<n>:<amostra>" para a n-ésima amostra da planilha."""
+    if agrupar == "classe":
+        return str(classe)
+    if agrupar in ("amostra", "amostra_populacoes"):
+        return f"a{int(grupo)}:{amostra}"
+    return f"g{int(grupo)}"
+
+
+def chaves_amostras(amostras):
+    """Número (1, 2, ... na ordem em que aparecem) e chave da amostra de cada grão."""
+    import pandas as pd
+    nomes = pd.Series(amostras).fillna("").astype(str).to_numpy()
+    numero = pd.factorize(nomes)[0] + 1
+    return numero, [f"a{n}:{a}" for n, a in zip(numero, nomes)]
+
+
+def populacoes_por_amostra(amostras, idades, minimo=1):
+    """Populações separadas dentro de cada amostra: número sequencial (para a cor) e chave
+    "a<n>:<amostra>|<população>" de cada grão."""
+    import pandas as pd
+    nomes = pd.Series(amostras).fillna("").astype(str).to_numpy()
+    t = np.asarray(idades, float)
+    numero = np.zeros(len(t), int)
+    chaves = [""] * len(t)
+    n = 0
+    for a in pd.unique(nomes):
+        sel = np.flatnonzero(nomes == a)
+        pop, _ = populacoes(t[sel], minimo=minimo)
+        for p_ in sorted(set(pop)):
+            n += 1
+            for i in sel[pop == p_]:
+                numero[i] = n
+                chaves[i] = f"a{n}:{a}|{p_}"
+    return numero, chaves
+
+
+def numero_conjunto(chave):
+    """Número de um grupo, população ou amostra ("g2" -> 2, "a3:ARA" -> 3)."""
+    return int(chave[1:].split(":", 1)[0])
+
+
+def nome_conjunto(chave, traduz=tr):
+    """Nome do conjunto para mostrar: "Concordante", "Grupo 2" ou o nome da amostra (traduz: função de tradução)."""
+    if chave is None:
+        return ""
+    if chave in SIMBOLO_CLASSE:
+        return traduz(chave).capitalize()
+    if chave.startswith("a"):
+        resto = chave.split(":", 1)[1]
+        if "|" in resto:  # população dentro de uma amostra
+            amostra, pop = resto.rsplit("|", 1)
+            return traduz("{amostra}, população {n}").format(amostra=amostra, n=pop)
+        return resto or traduz("Amostra {n}").format(n=numero_conjunto(chave))
+    return traduz("Grupo {n}").format(n=numero_conjunto(chave))
+
+
+def ordem_conjunto(chave):
+    """Ordem dos conjuntos nas tabelas: classes na ordem de SIMBOLO_CLASSE, depois grupos pelo número."""
+    classes = list(SIMBOLO_CLASSE)
+    return (classes.index(chave), 0) if chave in classes else (len(classes), numero_conjunto(chave))
 
 
 def estilo_padrao(chave):
     """Cor, símbolo e padrão de um conjunto antes de o pesquisador mudar algo (da paleta escolhida)."""
     if chave in SIMBOLO_CLASSE:
         return COR_CLASSE[chave], SIMBOLO_CLASSE[chave], hachura(classe=chave)
-    n = int(chave[1:])
+    n = numero_conjunto(chave)
     return cor_do_grupo(n), SIMBOLOS_GRUPO[(n - 1) % len(SIMBOLOS_GRUPO)] if n > 0 else "o", hachura(grupo=n)
 
 

@@ -12,6 +12,7 @@ NOMES = {
     "t75": N_("Idade 7/35 (Ma)"), "s_t75": "± 1σ", "t68": N_("Idade 6/38 (Ma)"), "s_t68": "± 1σ",
     "t76": N_("Idade 7/6 (Ma)"), "s_t76": "± 1σ", "melhor": N_("Melhor idade (Ma)"), "s_melhor": "± 1σ",
     "discordancia": N_("Discordância (%)"), "classe": N_("Classe"), "grupo": N_("Grupo"), "valido": N_("Usado na média"),
+    "ativo": N_("No cálculo"), "unidade": N_("Unidade"),
     "idade": N_("Idade (Ma)"), "s_idade": "± 1σ", "tconc": N_("Idade concórdia (Ma)"), "sconc": "± 1σ",
 }
 

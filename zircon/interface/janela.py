@@ -8,7 +8,7 @@ import pandas as pd
 from .qt import QLibraryInfo, QLocale, QSettings, Qt, QTimer, QTranslator, QUrl
 from .qt import QAction, QDesktopServices, QIcon, QKeySequence
 from .qt import (QAbstractItemView, QApplication, QCheckBox, QComboBox, QDoubleSpinBox, QFileDialog,
-                               QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMessageBox,
+                               QFormLayout, QGroupBox, QHBoxLayout, QInputDialog, QLabel, QMainWindow, QMenu, QMessageBox,
                                QPlainTextEdit, QPushButton, QRadioButton, QScrollArea, QSplitter, QTableView, QTabWidget, QDockWidget, QToolBar, QToolButton, QStyle,
                                QVBoxLayout, QWidget)
 
@@ -22,7 +22,7 @@ from ..nucleo.projeto import EXTENSAO, Projeto
 from . import ajuda as janela_ajuda, aparencia, graficos
 from .explica import ModoExplicacao
 from .. import ajuda
-from .dialogos import BoasVindas, ConfereImportacao, ExportaPublicacao, Registro, sobre_texto
+from .dialogos import BoasVindas, ConfereImportacao, ExportaPublicacao, JuntaAmostras, Registro, sobre_texto
 from .modelos import ModeloTabela
 
 FILTRO_PLANILHA = N_("Planilhas (*.xlsx *.xls *.ods *.csv *.txt *.tsv);;Todos os arquivos (*)")
@@ -35,6 +35,7 @@ REF = {
     "media_de": N_("Wendt e Carl (1991), Chemical Geology 86:275-285"),
     "agrupar": grupos.REFERENCIAS["populacoes"],
     "pb_comum": N_("Stacey e Kramers (1975); Williams (1998)"),
+    "calcular_por": N_("Corfu et al. (2003); Fedo, Sircombe e Rainbird (2003); Gehrels (2014)"),
 }
 
 
@@ -88,9 +89,12 @@ class Janela(QMainWindow):
         return a
 
     def _menus(self):
-        m = self.menuBar().addMenu(tr("&Arquivo"))
+        m = m_arquivo = self.menuBar().addMenu(tr("&Arquivo"))
         self._acao(m, tr("&Novo projeto (importar planilha)..."), self.novo, QKeySequence.New,
                    explica=N_("Começa um projeto novo a partir da planilha do laboratório."))
+        self._acao(m, tr("Adicionar planilha ao projeto..."), self.adicionar_planilha,
+                   explica=N_("Junta ao projeto aberto as análises de outra planilha, por exemplo de outras amostras, "
+                              "para compará-las nos mesmos gráficos."))
         self._acao(m, tr("Salvar modelo de planilha..."), self.salvar_modelo,
                    explica=N_("Grava uma planilha .xlsx no formato que o Zircon lê, com exemplo e instruções, "
                               "para você colar os seus dados."))
@@ -103,10 +107,18 @@ class Janela(QMainWindow):
         self._acao(m, tr("Salvar &como..."), self.salvar_como, QKeySequence.SaveAs,
                    explica=N_("Salva o projeto com outro nome ou em outra pasta."))
         m.addSeparator()
-        self._acao(m, tr("Exportar para publicação (figuras, Excel, interativo, metodologia)..."),
+        m_exp = m.addMenu(tr("&Exportar"))
+        self._acao(m_exp, tr("Tudo do projeto (figuras, Excel, interativo, dados, metodologia)..."),
                    self.exportar_publicacao, "Ctrl+E",
                    explica=N_("Gera de uma vez tudo para o artigo: figuras, planilha, gráficos interativos, "
-                              "dados e metodologia."))
+                              "dados e metodologia. Pode incluir o projeto .zircon e a planilha original."))
+        self._acao(m_exp, tr("Só um conjunto (amostra, população ou grupo)..."), self.exportar_conjunto,
+                   explica=N_("Exporta tudo, mas só com os grãos e as idades de um conjunto que você escolhe."))
+        self._acao(m_exp, tr("Só esta janela..."), self.exportar_janela, "Ctrl+Shift+E",
+                   explica=N_("Exporta o que está na janela escolhida: o gráfico como imagem, a tabela como "
+                              "planilha ou o texto como arquivo."))
+        m_exp.addSeparator()
+        m = m_exp
         self._acao(m, tr("Exportar planilha Excel formatada..."), self.exportar_resultados,
                    explica=N_("Salva as tabelas de resultados e de idades por grão numa planilha Excel."))
         self._acao(m, tr("Exportar gráfico atual..."), self.exportar_grafico,
@@ -115,14 +127,24 @@ class Janela(QMainWindow):
                    explica=N_("Gráficos que abrem no navegador e mostram os dados de cada grão (material suplementar)."))
         self._acao(m, tr("Exportar metodologia (Markdown ou texto)..."), self.exportar_metodologia,
                    explica=N_("Salva o texto de métodos com as citações, pronto para revisar e colar no artigo."))
+        m = m_arquivo
         m.addSeparator()
         self._acao(m, tr("Sai&r"), self.close, QKeySequence.Quit,
                    explica=N_("Fecha o Zircon (pergunta antes se há alterações não salvas)."))
         m = self.menuBar().addMenu(tr("&Grupos"))
         self._acao(m, tr("Colocar linhas selecionadas no grupo..."), self.atribuir_grupo,
                    explica=N_("Põe as linhas selecionadas na tabela num grupo seu, com cor própria."))
-        self._acao(m, tr("Cores e símbolos dos conjuntos..."), self.escolher_estilos,
-                   explica=N_("Escolhe a cor, o símbolo e o padrão de preenchimento de cada conjunto de grãos."))
+        self._acao(m, tr("Conjuntos: usar no cálculo, cores e símbolos..."), self.escolher_estilos,
+                   explica=N_("Liga ou desliga cada conjunto de grãos no cálculo e escolhe a cor, o símbolo e o "
+                              "padrão de preenchimento de cada um."))
+        self._acao(m, tr("Juntar amostras em unidades..."), self.juntar_amostras,
+                   explica=N_("Junta várias amostras numa unidade só (por exemplo, amostras da mesma camada), que "
+                              "passa a ter uma cor e uma idade."))
+        m.addSeparator()
+        self._acao(m, tr("Tirar do cálculo os grãos selecionados"), lambda: self.ligar_graos(False),
+                   explica=N_("Os grãos selecionados na tabela saem de todos os cálculos e aparecem em cinza."))
+        self._acao(m, tr("Voltar ao cálculo os grãos selecionados"), lambda: self.ligar_graos(True),
+                   explica=N_("Os grãos selecionados na tabela voltam aos cálculos."))
         self._acao(m, tr("Voltar às cores automáticas"), lambda: self._muda_agrupamento("classe"),
                    explica=N_("Volta a pintar os grãos por concordante, discordante ou rejeitado."))
         self.menu_exibir = self.menuBar().addMenu(tr("E&xibir"))
@@ -301,6 +323,8 @@ class Janela(QMainWindow):
         self.tabela.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabela.setSortingEnabled(False)
         self.tabela.doubleClicked.connect(self._estilo_do_grao)
+        self.tabela.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tabela.customContextMenuRequested.connect(self._menu_da_tabela)
         self.graf_conc = graficos.Grafico()
         self.graf_media = graficos.Grafico()
         self.graf_dens = graficos.Grafico()
@@ -353,6 +377,8 @@ class Janela(QMainWindow):
         d.setWhatsThis(tr(explica))
         d.setFeatures(QDockWidget.DockWidgetClosable | QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         d.topLevelChanged.connect(lambda solta, d=d: self._janela_solta(d, solta))
+        d.setContextMenuPolicy(Qt.CustomContextMenu)
+        d.customContextMenuRequested.connect(lambda pos, d=d: self._menu_da_doca(d, pos))
         self.addDockWidget(area, d)
         self.docas.append(d)
         return d
@@ -589,18 +615,24 @@ class Janela(QMainWindow):
         f2.addRow(self._com_ref(self.c_ef, "efeitos_aleatorios"))
         lay.addWidget(g2)
 
-        g3 = QGroupBox(tr("Cores nos gráficos"))
+        g3 = QGroupBox(tr("Conjuntos de grãos"))
         f3 = QFormLayout(g3)
         self.c_agrupar = QComboBox()
         for texto, v in ((tr("Concordante / discordante / rejeitado"), "classe"),
                          (tr("Populações de idade (automático)"), "populacoes"),
-                         (tr("Grupos que eu escolher"), "manual")):
+                         (tr("Grupos que eu escolher"), "manual"),
+                         (tr("Amostras da planilha"), "amostra"),
+                         (tr("Populações dentro de cada amostra"), "amostra_populacoes")):
             self.c_agrupar.addItem(texto, v)
-        f3.addRow(tr("Colorir por"), self._com_ref(self.c_agrupar, "agrupar"))
+        f3.addRow(tr("Separar por"), self._com_ref(self.c_agrupar, "agrupar"))
+        self.c_por = QComboBox()
+        self.c_por.addItem(tr("Todos os grãos juntos"), "juntos")
+        self.c_por.addItem(tr("Cada conjunto separado"), "conjunto")
+        f3.addRow(tr("Calcular"), self._com_ref(self.c_por, "calcular_por"))
         self.c_minpop = QDoubleSpinBox(minimum=1, maximum=100, decimals=0, value=op["minimo_por_populacao"])
         f3.addRow(tr("Mínimo de grãos por população"), self.c_minpop)
         self._opcoes_de_cor(f3)
-        self.b_estilos = QPushButton(tr("Cores e símbolos dos conjuntos..."))
+        self.b_estilos = QPushButton(tr("Usar no cálculo, cores e símbolos..."))
         self.b_estilos.clicked.connect(self.escolher_estilos)
         f3.addRow(self.b_estilos)
         lay.addWidget(g3)
@@ -610,7 +642,7 @@ class Janela(QMainWindow):
         self.b_calcular.setStyleSheet("font-weight: bold;")
         self.b_calcular.clicked.connect(self.calcular)
         lay.addWidget(self.b_calcular)
-        for c in (self.c_media, self.c_diagrama, self.c_pbc, self.c_agrupar):
+        for c in (self.c_media, self.c_diagrama, self.c_pbc, self.c_agrupar, self.c_por):
             c.currentIndexChanged.connect(lambda _=0: self._atualiza_pendente())
         for c in (self.c_corte, self.c_disc, self.c_minpop):
             c.valueChanged.connect(lambda _=0: self._atualiza_pendente())
@@ -628,7 +660,8 @@ class Janela(QMainWindow):
                 "limite_discordancia": self.c_disc.value(), "usar_discordantes": self.c_usar_disc.isChecked(),
                 "rejeitar_outliers": self.c_outliers.isChecked(), "efeitos_aleatorios": self.c_ef.isChecked(),
                 "agrupar": self.c_agrupar.currentData(), "minimo_por_populacao": int(self.c_minpop.value()),
-                "diagrama": self.c_diagrama.currentData(), "pb_comum": self.c_pbc.currentData()}
+                "diagrama": self.c_diagrama.currentData(), "pb_comum": self.c_pbc.currentData(),
+                "calcular_por": self.c_por.currentData()}
 
     def _aplica_opcoes(self, op):
         def escolhe(combo, v):
@@ -638,6 +671,7 @@ class Janela(QMainWindow):
         o = {**calculo.OPCOES_PADRAO, **op}
         escolhe(self.c_media, o["media_de"])
         escolhe(self.c_agrupar, o["agrupar"])
+        escolhe(self.c_por, o["calcular_por"])
         escolhe(self.c_diagrama, o.get("diagrama", "wetherill"))
         escolhe(self.c_pbc, o["pb_comum"])
         self.c_corte.setValue(o["corte_76"])
@@ -676,6 +710,81 @@ class Janela(QMainWindow):
         self.projeto = Projeto(nome=Path(caminho).stem, tipo=imp.tipo, dados=imp.dados, mapa=imp.mapa, log=imp.log,
                                arquivo_original=Path(caminho).name, bytes_original=Path(caminho).read_bytes())
         self._carrega_projeto(alterado=True)
+        self._avisa_amostras()
+
+    def _avisa_amostras(self):
+        """Com várias amostras, sugere separar por amostra (só muda o painel; o cálculo espera o botão)."""
+        amostras = self.projeto.dados["amostra"].astype(str).unique()
+        if len(amostras) < 2 or self.projeto.tipo == "desconhecido":
+            return
+        self.c_agrupar.setCurrentIndex(self.c_agrupar.findData("amostra"))
+        self.c_por.setCurrentIndex(self.c_por.findData("conjunto"))
+        lista = ", ".join(amostras[:8]) + (" ..." if len(amostras) > 8 else "")
+        QMessageBox.information(self, tr("Várias amostras"), tr(
+            "O projeto tem {n} amostras ({lista}). Deixei no painel \"Separar por: Amostras da planilha\" e "
+            "\"Calcular: Cada conjunto separado\", para cada amostra ter cor e idades próprias. Você pode mudar "
+            "isso, juntar amostras numa unidade (menu Grupos) ou desligar amostras do cálculo. Clique em Calcular "
+            "quando quiser.").format(n=len(amostras), lista=lista))
+
+    def adicionar_planilha(self, caminho=None):
+        """Acrescenta ao projeto as análises de outra planilha do mesmo tipo de dado."""
+        if self.projeto is None or self.projeto.dados is None:
+            return self.novo(caminho)
+        if not caminho:
+            caminho, _ = QFileDialog.getOpenFileName(self, tr("Adicionar planilha ao projeto"),
+                                                     self.config.value("pasta", str(Path.home())), tr(FILTRO_PLANILHA))
+        if not caminho:
+            return
+        self.config.setValue("pasta", str(Path(caminho).parent))
+        try:
+            imp = importar(caminho)
+        except Exception as e:
+            QMessageBox.warning(self, tr("Não consegui ler o arquivo"), f"{Path(caminho).name}:\n{e}")
+            return
+        if ConfereImportacao(imp, self).exec() != ConfereImportacao.Accepted:
+            return
+        tipo = "wetherill" if imp.tipo == "wetherill-204" else imp.tipo
+        if tipo != ("wetherill" if self.projeto.tipo == "wetherill-204" else self.projeto.tipo):
+            QMessageBox.warning(self, tr("Adicionar planilha ao projeto"), tr(
+                "Esta planilha tem outro tipo de dado ({novo}) que o do projeto ({atual}). Só dá para juntar "
+                "planilhas do mesmo tipo.").format(novo=imp.tipo, atual=self.projeto.tipo))
+            return
+        import pandas as pd
+        p = self.projeto
+        antes = len(p.dados)
+        p.dados = pd.concat([p.dados, imp.dados], ignore_index=True, sort=False)
+        if p.grupo_manual is not None:
+            p.grupo_manual = list(p.grupo_manual) + [1] * len(imp.dados)
+        p.log += [tr("Planilha adicionada: {arquivo} ({n} análises)").format(arquivo=Path(caminho).name,
+                                                                            n=len(imp.dados))] + imp.log
+        p.outros_originais.append([Path(caminho).name, Path(caminho).read_bytes()])
+        self.alterado = True
+        self.log.setPlainText("\n".join(p.log))
+        self._modelo_tabela(ModeloTabela(p.dados))
+        self.resultado = None
+        self.op_calculadas = None
+        for g in (self.graf_conc, self.graf_media, self.graf_dens):
+            g.limpar(N_("Planilha adicionada. Clique em Calcular."))
+        self.statusBar().showMessage(tr("{n} análises adicionadas (agora são {total}). Clique em Calcular.").format(
+            n=len(p.dados) - antes, total=len(p.dados)))
+        self._avisa_amostras()
+        self._atualiza_pendente()
+
+    def juntar_amostras(self):
+        if self.projeto is None or self.projeto.dados is None:
+            QMessageBox.information(self, tr("Juntar amostras"), tr("Primeiro importe uma planilha (Arquivo > Novo projeto)."))
+            return
+        contagem = self.projeto.dados["amostra"].astype(str).value_counts(sort=False)
+        contagem = {a: int(contagem[a]) for a in self.projeto.dados["amostra"].astype(str).unique()}
+        d = JuntaAmostras(contagem, self.projeto.unidades, self)
+        if d.exec() != JuntaAmostras.Accepted or d.unidades() == self.projeto.unidades:
+            return
+        self.projeto.unidades = d.unidades()
+        self.alterado = True
+        self.cores_mudaram = True
+        if self.c_agrupar.currentData() not in ("amostra", "amostra_populacoes"):
+            self.c_agrupar.setCurrentIndex(self.c_agrupar.findData("amostra"))
+        self._atualiza_pendente()
 
     def salvar_modelo(self):
         pasta = Path(self.config.value("pasta", str(Path.home())))
@@ -803,40 +912,133 @@ class Janela(QMainWindow):
             Path(caminho).write_text(texto, encoding="utf-8")
             self.statusBar().showMessage(tr("Metodologia salva em {caminho}").format(caminho=caminho), 5000)
 
-    def exportar_publicacao(self):
-        if self.resultado is None:
+    def exportar_publicacao(self, resultado=None, sufixo="_publicacao", titulo=None):
+        resultado = resultado or self.resultado
+        if resultado is None:
             QMessageBox.information(self, tr("Exportar"), tr("Calcule primeiro (botão Calcular)."))
             return
-        d = ExportaPublicacao(self)
+        d = ExportaPublicacao(self, titulo, com_projeto=resultado is self.resultado)
         if d.exec() != ExportaPublicacao.Accepted:
             return
         pasta = QFileDialog.getExistingDirectory(self, tr("Escolha a pasta onde salvar"),
                                                  self.config.value("pasta", str(Path.home())))
         if not pasta:
             return
-        destino = Path(pasta) / f"{self.projeto.nome}_publicacao"
-        exportacao.pacote(destino, self.projeto, self.resultado, self.opcoes(), d.largura(), d.formatos(),
-                          self._referencias(), arquivo_referencias())
+        destino = Path(pasta) / exportacao.nome_de_arquivo(f"{self.projeto.nome}{sufixo}")
+        exportacao.pacote(destino, self.projeto, resultado, self.opcoes(), d.largura(), d.formatos(),
+                          self._referencias(), arquivo_referencias(),
+                          d.c_por_conjunto.isChecked() and resultado is self.resultado,
+                          d.c_projeto.isChecked() and resultado is self.resultado)
         QMessageBox.information(self, tr("Exportado"), tr("Arquivos salvos em:") + f"\n{destino}")
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(destino)))
 
+    def exportar_conjunto(self):
+        """Pacote completo só com os grãos e as idades de um conjunto (precisa do cálculo por conjunto)."""
+        if self.resultado is None:
+            QMessageBox.information(self, tr("Exportar"), tr("Calcule primeiro (botão Calcular)."))
+            return
+        chaves = exportacao.conjuntos_calculados(self.resultado)
+        if not chaves:
+            QMessageBox.information(self, tr("Exportar um conjunto"), tr(
+                "Para ter idades de cada conjunto, escolha \"Cada conjunto separado\" em \"Calcular\", no painel, "
+                "e clique em Calcular."))
+            return
+        nomes = [grupos.nome_conjunto(k) for k in chaves]
+        nome, ok = QInputDialog.getItem(self, tr("Exportar um conjunto"), tr("Qual conjunto?"), nomes, 0, False)
+        if not ok:
+            return
+        k = chaves[nomes.index(nome)]
+        self.exportar_publicacao(exportacao.so_conjunto(self.resultado, k), "_" + nome,
+                                 tr("Exportar o conjunto {conjunto}").format(conjunto=nome))
+
+    def _menu_da_doca(self, doca, pos):
+        m = QMenu(self)
+        self._acao(m, tr("Exportar esta janela..."), lambda: self.exportar_janela(doca))
+        m.exec(doca.mapToGlobal(pos))
+
+    def _doca_atual(self):
+        """A janela com o foco; senão, pergunta entre as que estão à vista."""
+        foco = QApplication.focusWidget()
+        for d in self.docas:
+            if foco is not None and (foco is d or d.isAncestorOf(foco)) and d.objectName() != "doca_opcoes":
+                return d
+        abertas = [d for d in self.docas if d.isVisible() and not d.visibleRegion().isEmpty()
+                   and d.objectName() != "doca_opcoes"]
+        if len(abertas) == 1:
+            return abertas[0]
+        if not abertas:
+            return None
+        nomes = [d.windowTitle() for d in abertas]
+        nome, ok = QInputDialog.getItem(self, tr("Exportar uma janela"), tr("Qual janela?"), nomes, 0, False)
+        return abertas[nomes.index(nome)] if ok else None
+
+    def exportar_janela(self, doca=None):
+        """Exporta o conteúdo de uma janela: gráfico como imagem, tabela como planilha, texto como arquivo."""
+        if self.projeto is None:
+            QMessageBox.information(self, tr("Exportar"), tr("Primeiro importe uma planilha (Arquivo > Novo projeto)."))
+            return
+        doca = doca if doca is not None and not isinstance(doca, bool) else self._doca_atual()
+        if doca is None:
+            return
+        w, nome = doca.widget(), doca.objectName()
+        base = exportacao.nome_de_arquivo(f"{self.projeto.nome}_{doca.windowTitle()}")
+        pasta = Path(self.config.value("pasta", str(Path.home())))
+        titulo = tr("Exportar: {janela}").format(janela=doca.windowTitle())
+
+        def pede(filtro, sufixo):
+            caminho, _ = QFileDialog.getSaveFileName(self, titulo, str(pasta / (base + sufixo)), filtro)
+            return caminho or None
+        if isinstance(w, graficos.Grafico):
+            caminho = pede(tr("PNG (*.png);;TIFF (*.tif);;SVG (*.svg);;PDF (*.pdf)"), ".png")
+            if caminho:
+                extra = {"pil_kwargs": {"compression": "tiff_lzw"}} if caminho.lower().endswith(".tif") else {}
+                w.figura.savefig(caminho, dpi=600 if caminho.lower().endswith((".png", ".tif")) else 300, **extra)
+        elif nome in ("doca_dados", "doca_resultados", "doca_opcoes"):
+            if self.resultado is None:
+                QMessageBox.information(self, titulo, tr("Calcule primeiro (botão Calcular)."))
+                return
+            if nome == "doca_dados":
+                tabela = exportacao.tabela_graos(self.resultado.graos)[1]
+            elif nome == "doca_resultados":
+                tabela = exportacao.tabela_resultados(self.resultado.conjunto)
+            else:
+                tabela = exportacao.tabela_opcoes(self.opcoes())
+            caminho = pede(tr("Excel (*.xlsx);;CSV (*.csv)"), ".xlsx")
+            if caminho:
+                if caminho.lower().endswith(".csv"):
+                    tabela.to_csv(caminho, index=False)
+                else:
+                    tabela.to_excel(caminho, index=False)
+                if nome == "doca_resultados" and self.resultado.avisos:
+                    Path(caminho).with_name(Path(caminho).stem + "_avisos.txt").write_text(
+                        "\n".join(self.resultado.avisos), encoding="utf-8")
+        elif isinstance(w, QPlainTextEdit):
+            md = nome == "doca_metodologia"
+            caminho = pede(tr("Markdown (*.md);;Texto (*.txt)") if md else tr("Texto (*.txt)"), ".md" if md else ".txt")
+            if caminho:
+                texto = w.toPlainText()
+                if md and caminho.endswith(".txt"):
+                    texto = texto.replace("**", "").replace("*", "").replace("# ", "")
+                Path(caminho).write_text(texto, encoding="utf-8")
+        else:
+            QMessageBox.information(self, titulo, tr("Esta janela não tem o que exportar."))
+            return
+        if caminho:
+            self.statusBar().showMessage(tr("Salvo em {caminho}").format(caminho=caminho), 5000)
+
     def exportar_grafico(self):
-        abertos = [(d.windowTitle(), d.widget()) for d in self.docas
-                   if isinstance(d.widget(), graficos.Grafico) and not d.visibleRegion().isEmpty()]
+        abertos = [d for d in self.docas if isinstance(d.widget(), graficos.Grafico) and not d.visibleRegion().isEmpty()]
         if not abertos:
             QMessageBox.information(self, tr("Exportar gráfico"), tr("Abra a janela do gráfico que quer exportar."))
             return
-        atual = abertos[0][1]
+        atual = abertos[0]
         if len(abertos) > 1:
             nome, ok = QInputDialog.getItem(self, tr("Exportar gráfico"), tr("Qual gráfico?"),
-                                            [t for t, _ in abertos], 0, False)
+                                            [d.windowTitle() for d in abertos], 0, False)
             if not ok:
                 return
-            atual = dict(abertos)[nome]
-        caminho, _ = QFileDialog.getSaveFileName(self, tr("Exportar gráfico"), "grafico.png",
-                                                 tr("PNG (*.png);;SVG (*.svg);;PDF (*.pdf)"))
-        if caminho:
-            atual.figura.savefig(caminho, dpi=300)
+            atual = abertos[[d.windowTitle() for d in abertos].index(nome)]
+        self.exportar_janela(atual)
 
     # ---------- cálculo e grupos ----------
     def calcular(self):
@@ -854,7 +1056,8 @@ class Janela(QMainWindow):
         try:
             self.resultado = calculo.calcular(self.projeto.dados, self.projeto.tipo, op, manual,
                                               self.projeto.estilos, self.aparencia["paleta"] in aparencia.ACESSIVEIS,
-                                              self.projeto.destaques)
+                                              self.projeto.destaques, self.projeto.desligados,
+                                              self.projeto.unidades)
         except Exception as e:
             QMessageBox.warning(self, tr("Erro no cálculo"), str(e))
             return
@@ -864,8 +1067,8 @@ class Janela(QMainWindow):
         self.op_calculadas = dict(op)
         self.cores_mudaram = False
         g = self.resultado.graos
-        visiveis = [c for c in ("amostra", "analise", "melhor", "s_melhor", "discordancia", "classe", "grupo",
-                                "valido", "t68", "s_t68", "t75", "s_t75", "t76", "s_t76",
+        visiveis = [c for c in ("amostra", "unidade", "analise", "melhor", "s_melhor", "discordancia", "classe", "grupo",
+                                "ativo", "valido", "t68", "s_t68", "t75", "s_t75", "t76", "s_t76",
                                 "r75", "s75", "r68", "s68", "r64", "s64", "r74", "s74", "r24", "s24",
                                 "r84", "s84", "rho") if c in g]
         antes = self.tabela.selectionModel()
@@ -945,18 +1148,14 @@ class Janela(QMainWindow):
             self.graf_dens.limpar(N_("Isócrona: sem idades por grão"))
             return
         if "r75" in g:
-            from ..nucleo import estatistica
-            disc = None
-            if len(g) >= 3:
-                disc = estatistica.discordia(g.r75, g.s75, g.r68, g.s68, g.rho)
-            graficos.concordia(self.graf_conc, g, op["diagrama"], op["agrupar"], disc)
+            graficos.concordia(self.graf_conc, g, op["diagrama"], op["agrupar"], self.resultado.discordias)
         else:
             self.graf_conc.limpar(N_("A planilha só tem idades: o diagrama concórdia precisa das razões isotópicas"))
         coluna = {"68": "t68", "76": "t76", "melhor": "melhor"}[op["media_de"]]
-        media = next((r for r in self.resultado.conjunto if r["Cálculo"].startswith("Média ponderada")), None)
         if coluna in g:
-            graficos.media_ponderada(self.graf_media, g, coluna, media, op["agrupar"])
-        graficos.densidade(self.graf_dens, g, "melhor", op["agrupar"])
+            graficos.media_ponderada(self.graf_media, g, coluna, self.resultado.medias(), op["agrupar"])
+        if "melhor" in g:
+            graficos.densidade(self.graf_dens, g, "melhor", op["agrupar"])
 
     def _muda_agrupamento(self, v):
         self.c_agrupar.setCurrentIndex(self.c_agrupar.findData(v))
@@ -969,9 +1168,8 @@ class Janela(QMainWindow):
         g = self.resultado.graos
         r = g.iloc[indice.row()]
         linha = str(g.index[indice.row()])
-        agrupar = (self.op_calculadas or {}).get("agrupar", "classe")
-        chave = grupos.chave_conjunto(r.classe, r.grupo, agrupar)
-        nome = tr(chave).capitalize() if agrupar == "classe" else tr("Grupo {n}").format(n=int(r.grupo))
+        chave = r.conjunto
+        nome = grupos.nome_conjunto(chave)
         atual = {"cor": r.cor, "simbolo": r.simbolo, "hachura": r.hachura,
                  "rotulo": self.projeto.destaques.get(linha, {}).get("rotulo")}
         so_paleta = self.aparencia["paleta"] in aparencia.ACESSIVEIS
@@ -1002,25 +1200,69 @@ class Janela(QMainWindow):
             return
         agrupar = self.c_agrupar.currentData()
         if agrupar == "classe":
-            conjuntos = [(c, tr(c).capitalize()) for c in ("concordante", "discordante", "rejeitado")]
+            chaves = ["concordante", "discordante", "rejeitado"]
+        elif agrupar == "manual":
+            chaves = [f"g{n}" for n in sorted(set(self.projeto.grupo_manual or [1]))]
+        elif agrupar == "amostra":
+            amostras = self.projeto.dados["amostra"].astype(str).map(lambda a: self.projeto.unidades.get(a) or a)
+            chaves = list(dict.fromkeys(grupos.chaves_amostras(amostras)[1]))
+        elif self.resultado is not None and (self.op_calculadas or {}).get("agrupar") == agrupar:
+            chaves = sorted(self.resultado.graos.conjunto.unique(), key=grupos.ordem_conjunto)
         else:
-            if agrupar == "manual":
-                numeros = sorted(set(self.projeto.grupo_manual or [1]))
-            elif self.resultado is not None and (self.op_calculadas or {}).get("agrupar") == "populacoes":
-                numeros = sorted(int(n) for n in self.resultado.graos.grupo.unique() if n > 0)
-            else:
-                QMessageBox.information(self, tr("Cores e símbolos"),
-                                        tr("Clique em Calcular primeiro, para o Zircon encontrar as populações."))
-                return
-            conjuntos = [(f"g{n}", tr("Grupo {n}").format(n=n)) for n in numeros]
+            QMessageBox.information(self, tr("Cores e símbolos"),
+                                    tr("Clique em Calcular primeiro, para o Zircon encontrar as populações."))
+            return
+        conjuntos = [(k, grupos.nome_conjunto(k)) for k in chaves]
+        desligados = self.projeto.desligados.setdefault("conjuntos", [])
+        # "rejeitado" sai do cálculo (outliers): não é um conjunto para ligar ou desligar
         d = EstilosConjuntos(conjuntos, self.projeto.estilos, self.aparencia["paleta"] in aparencia.ACESSIVEIS, self,
-                             destaque if isinstance(destaque, str) else None)
-        if d.exec() != EstilosConjuntos.Accepted or d.estilos == self.projeto.estilos:
+                             destaque if isinstance(destaque, str) else None, desligados, fixos={"rejeitado"})
+        if d.exec() != EstilosConjuntos.Accepted:
+            return
+        fora = sorted(set(desligados) - set(chaves) | set(d.desligados))
+        if d.estilos == self.projeto.estilos and fora == sorted(desligados):
             return
         self.projeto.estilos = d.estilos
+        self.projeto.desligados["conjuntos"] = fora
         self.alterado = True
         self.cores_mudaram = self.resultado is not None
         self._atualiza_pendente()
+
+    def _linhas_selecionadas(self):
+        """Linhas da planilha (índice dos grãos) selecionadas na tabela de dados."""
+        if self.tabela.selectionModel() is None or self.resultado is None:
+            return []
+        indice = self.resultado.graos.index
+        return [str(indice[i.row()]) for i in self.tabela.selectionModel().selectedRows() if i.row() < len(indice)]
+
+    def ligar_graos(self, ligar):
+        """Tira do cálculo (ligar=False) ou devolve a ele os grãos selecionados na tabela."""
+        linhas = self._linhas_selecionadas()
+        if not linhas:
+            QMessageBox.information(self, tr("Grãos no cálculo"), tr("Selecione as linhas na tabela de dados (clique "
+                                    "no número da linha; use Ctrl ou Shift para várias)."))
+            return
+        fora = set(self.projeto.desligados.get("graos", []))
+        fora = fora - set(linhas) if ligar else fora | set(linhas)
+        self.projeto.desligados["graos"] = sorted(fora, key=int)
+        self.alterado = True
+        self.cores_mudaram = True
+        self._atualiza_pendente()
+        self.statusBar().showMessage((tr("{n} grão(s) de volta ao cálculo. Clique em Calcular.") if ligar else
+                                      tr("{n} grão(s) fora do cálculo. Clique em Calcular.")).format(n=len(linhas)))
+
+    def _menu_da_tabela(self, pos):
+        if self.resultado is None:
+            return
+        m = QMenu(self)
+        self._acao(m, tr("Tirar do cálculo os grãos selecionados"), lambda: self.ligar_graos(False))
+        self._acao(m, tr("Voltar ao cálculo os grãos selecionados"), lambda: self.ligar_graos(True))
+        m.addSeparator()
+        self._acao(m, tr("Colocar linhas selecionadas no grupo..."), self.atribuir_grupo)
+        indice = self.tabela.indexAt(pos)
+        if indice.isValid():
+            self._acao(m, tr("Cor e símbolo deste grão..."), lambda: self._estilo_do_grao(indice))
+        m.exec(self.tabela.viewport().mapToGlobal(pos))
 
     def atribuir_grupo(self):
         if self.projeto is None:

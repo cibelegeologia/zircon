@@ -14,10 +14,10 @@ except ImportError:
     from PySide2.QtCore import *  # noqa: F401,F403
     from PySide2.QtGui import *  # noqa: F401,F403
     from PySide2.QtWidgets import *  # noqa: F401,F403
-    from PySide2.QtWidgets import QAction, QApplication, QDialog, QMessageBox  # noqa: F401
+    from PySide2.QtWidgets import QAction, QApplication, QDialog, QMenu, QMessageBox  # noqa: F401
     QT_API = "pyside2"
     # Qt 5 chama exec_(); o resto do código usa exec(), como no Qt 6
-    for _classe in (QApplication, QDialog, QMessageBox):
+    for _classe in (QApplication, QDialog, QMenu, QMessageBox):
         if not hasattr(_classe, "exec"):
             _classe.exec = _classe.exec_
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)

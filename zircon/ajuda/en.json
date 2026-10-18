@@ -35,25 +35,26 @@
   {
    "id": "importar",
    "titulo": "Importing the laboratory spreadsheet",
-   "serve": "This feature is used to bring the results spreadsheet supplied by the laboratory into Zircon; use it whenever you start a new project with data from a sample.",
-   "explicacao": "Zircon reads .xlsx, .xls, .ods, .csv, .txt and .tsv files. In spreadsheets, only the first sheet is read. In text files, it detects the encoding and the column separator (tab, semicolon or comma). The decimal separator (comma or point) is also detected. Title rows at the top are ignored, but the header must take up a single row. One sample per file: if there are several, all the grains go into the calculations together. The full format is described in the topic 'Preparing the spreadsheet (template)'. Columns are recognised by name (for example 207Pb/235U, 206Pb/238U, rho), and the error column must come immediately after the value. If the error header indicates 2s or 2σ, the value is divided by 2; if it indicates %, it is converted to an absolute error. Caution: a 2σ error without this indication in the header will be read as 1σ. Cells such as '<LOD', 'bdl' or 'n.d.' become missing data.",
+   "serve": "This feature is used to bring the results spreadsheet supplied by the laboratory into Zircon; use it whenever you start a new project with data from one or several samples.",
+   "explicacao": "Zircon reads .xlsx, .xls, .ods, .csv, .txt and .tsv files. In spreadsheets, only the first sheet is read. In text files, it detects the encoding and the column separator (tab, semicolon or comma). The decimal separator (comma or point) is also detected. Title rows at the top are ignored, but the header must take up a single row. A spreadsheet can contain several samples: the Sample column says which sample each analysis belongs to. With several samples, Zircon suggests in the panel splitting by sample, each with its own colour and ages. Whether to calculate each sample separately, merge several into a unit ('Groups > Merge samples into units...') or switch one off is your decision. Other spreadsheets with the same data type can be added to the project with 'File > Add spreadsheet to project...'. The full format is described in the topic 'Preparing the spreadsheet (template)'. Columns are recognised by name (for example 207Pb/235U, 206Pb/238U, rho), and the error column must come immediately after the value. If the error header indicates 2s or 2σ, the value is divided by 2; if it indicates %, it is converted to an absolute error. Caution: a 2σ error without this indication in the header will be read as 1σ. Cells such as '<LOD', 'bdl' or 'n.d.' become missing data.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
-    "If the laboratory spreadsheet has several sheets, a header spread over several rows or several samples, prepare it first with 'File > Save spreadsheet template...' (see the topic 'Preparing the spreadsheet (template)').",
+    "If the laboratory spreadsheet has several sheets or a header spread over several rows, prepare it first with 'File > Save spreadsheet template...' (see the topic 'Preparing the spreadsheet (template)').",
     "Choose 'File > New project (import spreadsheet)...' and select the file.",
     "In the 'Check import' window, read the log: separators, first data row and the column assigned to each ratio and error (1σ or 2σ, absolute or %).",
     "Check in the preview table that the numbers make sense; if something is wrong, click 'Cancel', correct the spreadsheet header and import again.",
     "If everything is correct, click 'Use this data'.",
+    "To bring another spreadsheet into the same project, for example with other samples, use 'File > Add spreadsheet to project...'. The spreadsheets must have the same data type.",
     "Afterwards, the 'Import log' tab keeps these decisions for reference."
    ]
   },
   {
    "id": "preparar_planilha",
    "titulo": "Preparing the spreadsheet (template)",
-   "serve": "This feature is used to put the laboratory spreadsheet into the format Zircon reads; use it before importing, especially when the spreadsheet has several sheets, a header spread over several rows, several samples or footnotes.",
-   "explicacao": "Zircon reads a simple table: only the first sheet, a one-row header directly above the data, one row per analysis and one sample per file. The template columns are Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ and rho. Each error sits immediately to the right of its value, and its name says whether it is 1σ or 2σ and whether it is relative (with '%') or absolute (without '%'). For Tera-Wasserburg, the ratios are 238U/206Pb and 207Pb/206Pb; if you only have ages, the columns are Age (Ma) and ± 2σ (Ma). Extra columns, such as U, Th, Th/U or the laboratory's ages, can stay to the right of the ratios. Grains you have decided to exclude come out of the table; discordant grains can stay, because Zircon separates them using the limit you choose. Mixing 1σ and 2σ errors, or absolute and relative ones, changes the ages and the MSWD, so this is the most important check.",
+   "serve": "This feature is used to put the laboratory spreadsheet into the format Zircon reads; use it before importing, especially when the spreadsheet has several sheets, a header spread over several rows or footnotes.",
+   "explicacao": "Zircon reads a simple table: only the first sheet, a one-row header directly above the data, one row per analysis and a Sample column saying which sample each analysis belongs to. There can be several samples in the same file. The template columns are Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ and rho. Each error sits immediately to the right of its value, and its name says whether it is 1σ or 2σ and whether it is relative (with '%') or absolute (without '%'). For Tera-Wasserburg, the ratios are 238U/206Pb and 207Pb/206Pb; if you only have ages, the columns are Age (Ma) and ± 2σ (Ma). Extra columns, such as U, Th, Th/U or the laboratory's ages, can stay to the right of the ratios. Grains you have decided to exclude come out of the table; discordant grains can stay, because Zircon separates them using the limit you choose. Mixing 1σ and 2σ errors, or absolute and relative ones, changes the ages and the MSWD, so this is the most important check.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
@@ -62,7 +63,7 @@
     "Open the template in Excel or LibreOffice Calc and read the 'Instructions' sheet.",
     "On the 'Data' sheet, delete the example rows and paste the columns from your spreadsheet in the template's order. Use 'Paste Special > Values' to bring in numbers rather than formulas.",
     "Check the error reported by the laboratory: if it is 1σ, change the header to '± 1σ'; if it is a percentage, to '± 2σ (%)' or '± 1σ (%)'.",
-    "Leave titles, unit rows and footnotes out of the table. If the file has several samples, make one file for each.",
+    "Leave titles, unit rows and footnotes out of the table. If there are several samples, keep them all in the same table, with the name of each one in the Sample column.",
     "Save as .xlsx and import with 'File > New project (import spreadsheet)...'. In the 'Check import' window, check the column assigned to each ratio and error."
    ]
   },
@@ -120,7 +121,7 @@
    "id": "discordancia",
    "titulo": "Discordance and grain selection",
    "serve": "This feature is used to identify and separate grains whose U-Pb ages do not agree with each other; use it whenever you calculate a sample age from individual grains.",
-   "explicacao": "A grain is concordant when its 206Pb/238U and 207Pb/206Pb ages agree, that is, when it plots on the concordia curve. Pb loss, common Pb or mixing of domains of different ages make a grain discordant. Zircon calculates discordance as 100 × (1 − t206/238 / t207/206), in %. Positive values generally indicate Pb loss; negative values, reverse discordance. Grains whose absolute discordance exceeds the 'Maximum discordance' (default 10 %) are excluded from the weighted mean and the concordia age, unless you tick 'Include discordant grains in the mean'. In young grains the relative discordance is unreliable, because the 207Pb/206Pb age has a large error. The discordia regression uses all grains.",
+   "explicacao": "A grain is concordant when its 206Pb/238U and 207Pb/206Pb ages agree, that is, when it plots on the concordia curve. Pb loss, common Pb or mixing of domains of different ages make a grain discordant. Zircon calculates discordance as 100 × (1 − t206/238 / t207/206), in %. Positive values generally indicate Pb loss; negative values, reverse discordance. Grains whose absolute discordance exceeds the 'Maximum discordance' (default 10 %) are excluded from the weighted mean and the concordia age, unless you tick 'Include discordant grains in the mean'. In young grains the relative discordance is unreliable, because the 207Pb/206Pb age has a large error. The discordia regression uses all the grains in the calculation, without the discordance filter.",
    "referencias": [
     "Spencer et al. (2016)",
     "Gehrels (2014)",
@@ -201,7 +202,7 @@
    "id": "discordia",
    "titulo": "Discordia and upper and lower intercepts",
    "serve": "This feature is used to obtain ages from grains aligned off the concordia curve; use it when several discordant grains form a straight line, as in Pb loss or mixing of two ages.",
-   "explicacao": "When grains of the same age lose different amounts of Pb in a later event, they line up along a straight line, the discordia, in the Wetherill diagram. The upper intercept with the concordia generally indicates the crystallisation age; the lower intercept, the age of the event that caused the Pb loss. Zircon fits the line by York regression, which accounts for the errors of both ratios and their correlation, and propagates the errors to the intercepts. It uses all grains, without the discordance filter. A lower intercept near zero may indicate recent Pb loss, with no event significance. A high MSWD indicates that the points do not form a single line. At least 3 grains are required.",
+   "explicacao": "When grains of the same age lose different amounts of Pb in a later event, they line up along a straight line, the discordia, in the Wetherill diagram. The upper intercept with the concordia generally indicates the crystallisation age; the lower intercept, the age of the event that caused the Pb loss. Zircon fits the line by York regression, which accounts for the errors of both ratios and their correlation, and propagates the errors to the intercepts. It uses all the grains in the calculation, or those of each data set when the calculation is done per data set, without the discordance filter. A lower intercept near zero may indicate recent Pb loss, with no event significance. A high MSWD indicates that the points do not form a single line. At least 3 grains are required.",
    "referencias": [
     "York (1968)",
     "York et al. (2004)",
@@ -213,7 +214,7 @@
     "Import data with U-Pb ratios and click 'Calculate'.",
     "In the left-hand panel, under 'What to calculate', leave 'Concordia diagram' set to 'Wetherill' to see the dashed discordia line.",
     "In the 'Results' tab, read 'Discordia: upper intercept' and 'Discordia: lower intercept', with MSWD and p.",
-    "The discordia uses all the grains in the project. To fit it to only some grains, make a copy of the spreadsheet containing just those grains and import that copy as another project."
+    "To fit the discordia to only some grains, switch the others off, or choose 'Each data set separately' under 'Calculate' to get one discordia per data set. See the topic 'Data sets in the calculation'."
    ]
   },
   {
@@ -282,31 +283,54 @@
     "Fedo et al. (2003)"
    ],
    "como_usar": [
-    "In the left-hand panel, under 'Chart colours', choose 'Age populations (automatic)' in 'Colour by'.",
+    "In the left-hand panel, under 'Grain data sets', choose 'Age populations (automatic)' in 'Split by', or 'Populations within each sample' if the spreadsheet has several samples or units.",
     "Adjust 'Minimum grains per population' (default 3).",
     "Click 'Calculate' and open the 'Age distribution' tab.",
-    "See the number of each grain in the group column of the 'Data and ages per grain' tab."
+    "See the number of each grain in the group column of the 'Data and ages per grain' tab.",
+    "To get the age of each population, choose 'Each data set separately' in 'Calculate'. See the topic 'Data sets in the calculation'."
    ]
   },
   {
    "id": "cores_grupos",
    "titulo": "Colours, symbols and groups",
    "serve": "This feature is used to highlight sets of grains in the charts and tables; use it to separate concordant from discordant grains, view populations or mark grains you interpret as belonging to the same event.",
-   "explicacao": "The 'Colour by' option has three modes. 'Concordant / discordant / rejected' colours each grain by class: concordant, discordant (above the maximum discordance) or rejected as an outlier. 'Age populations (automatic)' uses the groups from the density curve. 'Groups I choose' uses group numbers (1 to 8) that you assign to the table rows. The colours appear in the concordia, the weighted mean, the histogram and the exported Excel spreadsheet. Assigning a group only changes the colour: it does not change which grains go into the mean, which depends on the selection options. The groups are saved in the project. Each data set (class, population or group) also has a symbol, drawn at the centre of the ellipses and bars, and can have a fill pattern. In 'Data set colours and symbols...' you choose the colour, the symbol (21 options, such as circle, square, triangle, diamond and star) and the pattern of each data set; the choice applies to the whole data set, so that the legend stays correct. A single grain can also be highlighted on its own, and it then appears in the legend with its own name. In standard colour mode, any colour can be chosen. In accessible colour mode, colours come only from the chosen safe palette, while the symbol and pattern remain free: they are what helps people who cannot tell colours apart. The 'Auto (palette colours)' button restores the defaults. The choices are saved in the project and only appear in the charts after you click 'Calculate'.",
+   "explicacao": "The 'Split by' option has five modes. 'Concordant / discordant / rejected' colours each grain by class: concordant, discordant (above the maximum discordance) or rejected as an outlier. 'Age populations (automatic)' uses the groups from the density curve. 'Groups I choose' uses group numbers (1 to 8) that you assign to the table rows. 'Samples in the spreadsheet' splits the grains by the Sample column. 'Populations within each sample' splits the populations of each sample. The colours appear in the concordia, the weighted mean, the histogram and the exported Excel spreadsheet. With 'Calculate: All grains together', the data sets only change the colour; with 'Each data set separately', each data set has its own ages (see the topic 'Data sets in the calculation'). The groups are saved in the project. Each data set (class, population or group) also has a symbol, drawn at the centre of the ellipses and bars, and can have a fill pattern. In 'Use in calculation, colours and symbols...' you choose the colour, the symbol (21 options, such as circle, square, triangle, diamond and star) and the pattern of each data set; the choice applies to the whole data set, so that the legend stays correct. A single grain can also be highlighted on its own, and it then appears in the legend with its own name. In standard colour mode, any colour can be chosen. In accessible colour mode, colours come only from the chosen safe palette, while the symbol and pattern remain free: they are what helps people who cannot tell colours apart. The 'Auto (palette colours)' button restores the defaults. The choices are saved in the project and only appear in the charts after you click 'Calculate'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
     "Wong (2011)"
    ],
    "como_usar": [
-    "In the left-hand panel, under 'Chart colours', choose the mode in 'Colour by'.",
+    "In the left-hand panel, under 'Grain data sets', choose the mode in 'Split by'.",
     "For your own groups, select the rows in the 'Data and ages per grain' tab (click the row number; use Ctrl or Shift for several).",
     "Use 'Groups > Put selected rows in group...' and enter the group number.",
     "To return to the classes, use 'Groups > Revert to automatic colours'.",
-    "To choose colour, symbol and pattern, click 'Data set colours and symbols...' in the panel (or in the 'Groups' menu).",
+    "To choose colour, symbol and pattern, click 'Use in calculation, colours and symbols...' in the panel (or in the 'Groups' menu).",
     "In each row, choose the colour, the symbol and the fill pattern; 'Auto (palette colours)' undoes the choices.",
     "For a single grain, double-click it in the table after calculating. Choose colour, symbol and pattern and click 'Group' to change the whole data set, or 'Point' to highlight just that grain (a core, a rim, an unusual shape). The point gets its own line in the legend, with the name you type; 'Remove highlight' undoes it.",
-    "Click 'Use these colours and symbols' and then 'Calculate' to see the changes in the charts."
+    "Click 'Use these choices' and then 'Calculate' to see the changes in the charts."
+   ]
+  },
+  {
+   "id": "conjuntos",
+   "titulo": "Data sets in the calculation",
+   "serve": "This feature is used to choose which grains go into the calculations and to calculate each data set on its own; use it for sedimentary rocks (one age per population), metamorphic rocks (cores and rims separately) and when the spreadsheet has several samples or units.",
+   "explicacao": "A mean or a concordia only makes sense for grains from the same event. In a simple igneous rock, almost all grains date the crystallisation, and calculating them all together works. In detrital zircon, each population comes from a different source, and the mean of the whole sample has no geological meaning. In a metamorphic rock, cores and rims record different events. That is why Zircon splits the grains into data sets (classes, populations, your own groups or samples) and lets you decide two things. The first is which data sets and grains go into the calculation: a data set or grain that is switched off is left out of all calculations and shown in grey in the charts, with the entry 'Out of calculation' in the legend. This lets you, for example, switch off the concordant grains and calculate the discordia with the discordant grains only. The second is whether the calculation uses all grains together or each data set separately. When separate, each data set has its own weighted mean, concordia age and discordia, each with MSWD and n, in a 'Data set' column of the results table. When the data sets are the classes (concordant and discordant), the discordance limit is not applied within the data set, because the data set is already your choice; in the other modes, discordant grains are left out of the mean and the concordia unless you tick 'Include discordant grains in the mean'. Rejected grains are the outliers removed by the calculation itself and cannot be switched off. When the spreadsheet has several samples, Zircon identifies them by the Sample column and suggests splitting by sample. Merging samples into a unit, splitting them or switching them off is your decision, and you can change it after seeing the result. Everything is saved in the project and only changes after you click 'Calculate'.",
+   "referencias": [
+    "Corfu et al. (2003)",
+    "Fedo et al. (2003)",
+    "Gehrels (2014)",
+    "Spencer et al. (2016)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "In the left-hand panel, under 'Grain data sets', choose in 'Split by' how the data sets are formed.",
+    "In 'Calculate', choose 'All grains together' or 'Each data set separately'.",
+    "Click 'Use in calculation, colours and symbols...' and untick 'In calculation' for the data sets that should be left out.",
+    "For individual grains, select the rows in the data table, right-click and choose 'Remove selected grains from the calculation' (or 'Return selected grains to the calculation'). The same items are in the 'Groups' menu.",
+    "Click 'Calculate'. The 'In calculation' column of the table shows which grains were used.",
+    "To merge samples, for example several samples from the same layer along a section, use 'Groups > Merge samples into units...', select the samples, click 'Merge selected...' and give the unit a name. With 'Split by: Samples in the spreadsheet', the unit becomes a single data set, with one colour and one age; the data table shows the sample and the unit of each analysis.",
+    "To export a data set on its own, use 'File > Export > One data set only...'."
    ]
   },
   {
@@ -327,18 +351,19 @@
   },
   {
    "id": "exportar",
-   "titulo": "Export for publication",
+   "titulo": "Export: everything, a data set or a window",
    "serve": "This feature is used to generate all the files for a paper or report at once; use it when the results have been checked and are ready to be used outside Zircon.",
-   "explicacao": "The export for publication creates a folder containing: concordia (or isochron), weighted mean and age distribution figures at a width of 1 column (90 mm), 1.5 columns (140 mm) or 2 columns (190 mm), in 600 dpi PNG and TIFF, PDF, SVG and, if requested, EPS, following Elsevier's figure guidelines; a formatted Excel spreadsheet with results, colour-coded per-grain ages, options used, references and log; interactive HTML charts, which open without an internet connection and serve as supplementary material; CSV data with a README (LEIAME) for a repository (Mendeley Data, Zenodo, PANGAEA); and the methodology text. Check each figure before submitting it to the journal, as requirements vary.",
+   "explicacao": "Exporting the whole project creates a folder containing: concordia (or isochron), weighted mean and age distribution figures at a width of 1 column (90 mm), 1.5 columns (140 mm) or 2 columns (190 mm), in 600 dpi PNG and TIFF, PDF, SVG and, if requested, EPS, following Elsevier's figure guidelines; a formatted Excel spreadsheet with results, colour-coded per-grain ages, options used, references and log; interactive HTML charts, which open without an internet connection and serve as supplementary material; CSV data with a README (LEIAME) for a repository (Mendeley Data, Zenodo, PANGAEA); and the methodology text. Check each figure before submitting it to the journal, as requirements vary. If the calculation was done data set by data set, the folder also contains a concordia and a mean for each data set, and you can include the .zircon project and the original lab spreadsheet. 'One data set only' creates the same folder, but only with the grains and ages of one sample, population or group. 'This window only' saves what is in a window: the chart as an image (600 dpi PNG or TIFF, SVG or PDF), the table as a spreadsheet (Excel or CSV) or the text as a file.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
     "Click 'Calculate' before exporting.",
-    "Choose 'File > Export for publication (figures, Excel, interactive, methodology)...' (Ctrl+E).",
-    "Choose the 'Figure width' and tick the formats.",
+    "For everything, choose 'File > Export > Whole project...' (Ctrl+E), choose the width and formats of the figures, and tick whether you want the figures for each data set and the project with the original spreadsheet.",
     "Click 'Choose folder and export' and choose the folder; the files are placed in a subfolder named after the project.",
-    "For a single file, use the other items in the 'File' menu (Excel spreadsheet, current chart, interactive HTML or methodology)."
+    "For a data set, use 'File > Export > One data set only...' and choose the sample, population or group. Beforehand, calculate with 'Each data set separately'.",
+    "For a window, right-click its title and choose 'Export this window...', or use 'File > Export > This window only...' (Ctrl+Shift+E).",
+    "The remaining items in the 'File > Export' menu save a single file (Excel spreadsheet, chart, interactive HTML or methodology)."
    ]
   },
   {

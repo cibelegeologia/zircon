@@ -10,13 +10,14 @@ import numpy as np
 import pandas as pd
 
 from ..idiomas import N_, num, tr
+from . import grupos
 from .grupos import COR_CLASSE
 
 LARGURAS_MM = {N_("1 coluna (90 mm)"): 90, N_("1,5 coluna (140 mm)"): 140, N_("2 colunas (190 mm)"): 190}
 FORMATOS_FIGURA = {"png": 600, "tif": 600, "svg": None, "pdf": None, "eps": None}
 
 COLUNAS_SAIDA = {
-    "amostra": (N_("Amostra"), None), "analise": (N_("Análise"), None),
+    "amostra": (N_("Amostra"), None), "unidade": (N_("Unidade"), None), "analise": (N_("Análise"), None),
     "r75": ("207Pb/235U", "0.00000"), "s75": ("± 1σ", "0.00000"),
     "r68": ("206Pb/238U", "0.000000"), "s68": ("± 1σ", "0.000000"), "rho": ("rho", "0.00"),
     "r76": ("207Pb/206Pb", "0.00000"), "s76": ("± 1σ", "0.00000"),
@@ -28,7 +29,7 @@ COLUNAS_SAIDA = {
     "t76": (N_("Idade 207Pb/206Pb (Ma)"), "0.0"), "s_t76": ("± 1σ (Ma)", "0.0"),
     "melhor": (N_("Melhor idade (Ma)"), "0.0"), "s_melhor": ("± 1σ (Ma)", "0.0"),
     "discordancia": (N_("Discordância (%)"), "0.0"), "classe": (N_("Classe"), None), "grupo": (N_("Grupo"), None),
-    "valido": (N_("Usado na média"), None),
+    "valido": (N_("Usado na média"), None), "ativo": (N_("No cálculo"), None),
 }
 
 # Nomes das opções do cálculo para as tabelas exportadas
@@ -37,6 +38,7 @@ NOMES_OPCOES = {
     "media_de": N_("Média ponderada de"), "efeitos_aleatorios": N_("Efeitos aleatórios"),
     "rejeitar_outliers": N_("Rejeitar outliers"), "usar_discordantes": N_("Incluir discordantes na média"),
     "agrupar": N_("Colorir por"), "minimo_por_populacao": N_("Mínimo de grãos por população"),
+    "calcular_por": N_("Calcular"),
     "diagrama": N_("Diagrama concórdia"), "pb_comum": N_("Pb comum"),
 }
 VALORES_OPCOES = {
@@ -44,16 +46,26 @@ VALORES_OPCOES = {
     "populacoes": N_("populações"), "manual": N_("grupos escolhidos"), "tw": "Tera-Wasserburg",
     "wetherill": "Wetherill", "stacey_kramers": N_("Stacey e Kramers (1975)"),
     "fixo": N_("composição fixa (Canyon Diablo)"), "nenhuma": N_("sem correção"),
+    "amostra": N_("amostras"), "amostra_populacoes": N_("populações dentro de cada amostra"),
+    "juntos": N_("todos os grãos juntos"), "conjunto": N_("cada conjunto separado"),
 }
-COLUNAS_RESULTADO = ["Cálculo", "Idade (Ma)", "± 1σ (Ma)", "± 2σ (Ma)", "MSWD", "p", "n", "Referência"]
-N_("Cálculo"), N_("Idade (Ma)"), N_("Referência")
+COLUNAS_RESULTADO = ["Conjunto", "Cálculo", "Idade (Ma)", "± 1σ (Ma)", "± 2σ (Ma)", "MSWD", "p", "n", "Referência"]
+N_("Conjunto"), N_("Cálculo"), N_("Idade (Ma)"), N_("Referência")
 
 
 def tabela_resultados(conjunto):
-    """Tabela de resultados com nomes e referências no idioma escolhido."""
-    linhas = [{tr(k): (tr(v) if k in ("Cálculo", "Referência") and isinstance(v, str) else v)
-               for k, v in r.items()} for r in conjunto]
-    return pd.DataFrame(linhas, columns=[tr(c) for c in COLUNAS_RESULTADO])
+    """Tabela de resultados com nomes e referências no idioma escolhido.
+
+    A coluna Conjunto só aparece quando o cálculo foi feito conjunto por conjunto."""
+    from .grupos import nome_conjunto
+
+    def valor(k, v):
+        if k == "Conjunto":
+            return nome_conjunto(v)
+        return tr(v) if k in ("Cálculo", "Referência") and isinstance(v, str) else v
+    colunas = [c for c in COLUNAS_RESULTADO if c != "Conjunto" or any(r.get("Conjunto") for r in conjunto)]
+    linhas = [{tr(k): valor(k, v) for k, v in r.items()} for r in conjunto]
+    return pd.DataFrame(linhas, columns=[tr(c) for c in colunas])
 
 
 def tabela_opcoes(opcoes):
@@ -70,8 +82,9 @@ def tabela_graos(g):
     """Idades por grão com cabeçalhos e textos traduzidos."""
     cols = [c for c in COLUNAS_SAIDA if c in g]
     graos = g[cols].copy()
-    if "valido" in graos:
-        graos["valido"] = graos["valido"].map({True: tr("sim"), False: tr("não")})
+    for c in ("valido", "ativo"):
+        if c in graos:
+            graos[c] = graos[c].astype(bool).map({True: tr("sim"), False: tr("não")})
     if "classe" in graos:
         graos["classe"] = graos["classe"].map(lambda c: tr(c) if isinstance(c, str) else c)
     graos.columns = [tr(COLUNAS_SAIDA[c][0]) for c in cols]
@@ -108,8 +121,33 @@ def _estilo_publicacao():
     })
 
 
-def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pdf")):
-    """Salva concórdia, média ponderada e distribuição nos formatos pedidos."""
+def conjuntos_calculados(resultado):
+    """Chaves dos conjuntos que têm resultado próprio (cálculo por conjunto), na ordem da tabela."""
+    return list(dict.fromkeys(r["Conjunto"] for r in resultado.conjunto if r.get("Conjunto")))
+
+
+def so_conjunto(resultado, chave):
+    """Cópia do resultado só com os grãos e as idades de um conjunto, para exportar à parte."""
+    import copy
+    g = resultado.graos
+    sub = copy.copy(resultado)
+    sub.graos = g[(g["conjunto"] == chave) & g.get("ativo", True)].copy() if "conjunto" in g else g.copy()
+    sub.conjunto = [r for r in resultado.conjunto if r.get("Conjunto") == chave]
+    sub.discordias = [d for d in resultado.discordias if d.get("conjunto") == chave]
+    sub.avisos = [a for a in resultado.avisos if a.startswith(grupos.nome_conjunto(chave) + ": ")]
+    return sub
+
+
+def nome_de_arquivo(texto):
+    """Texto que serve de nome de arquivo em qualquer sistema (sem / \\ : * ? " < > |)."""
+    import re
+    return re.sub(r'[\\/:*?"<>|]+', "_", str(texto)).strip(" .") or "conjunto"
+
+
+def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pdf"), por_conjunto=True):
+    """Salva concórdia, média ponderada e distribuição nos formatos pedidos.
+
+    Com o cálculo por conjunto (e por_conjunto), também uma concórdia e uma média de cada conjunto."""
     from . import desenho as graficos
     from . import estatistica
     pasta = Path(pasta)
@@ -121,15 +159,23 @@ def figuras(pasta, resultado, opcoes, largura_mm=90, formatos=("png", "svg", "pd
     if resultado.isocrona:
         desenhos.append(("isocrona", lambda f: graficos.isocrona(f, g, resultado.isocrona)))
     elif "r75" in g:
-        disc = estatistica.discordia(g.r75, g.s75, g.r68, g.s68, g.rho) if len(g) >= 3 else None
         desenhos.append(("concordia", lambda f: graficos.concordia(f, g, opcoes.get("diagrama", "wetherill"),
-                                                                    opcoes["agrupar"], disc)))
+                                                                    opcoes["agrupar"], resultado.discordias)))
     coluna = {"68": "t68", "76": "t76", "melhor": "melhor"}[opcoes["media_de"]]
-    media = next((r for r in resultado.conjunto if r["Cálculo"].startswith("Média ponderada")), None)
     if coluna in g and not resultado.isocrona:
-        desenhos.append(("media_ponderada", lambda f: graficos.media_ponderada(f, g, coluna, media, opcoes["agrupar"])))
+        desenhos.append(("media_ponderada", lambda f: graficos.media_ponderada(f, g, coluna, resultado.medias(),
+                                                                                opcoes["agrupar"])))
     if "melhor" in g:
         desenhos.append(("distribuicao_idades", lambda f: graficos.densidade(f, g, "melhor", opcoes["agrupar"])))
+    for k in conjuntos_calculados(resultado) if por_conjunto and not resultado.isocrona else []:
+        sub = so_conjunto(resultado, k)
+        nome = nome_de_arquivo(grupos.nome_conjunto(k))
+        if "r75" in g and len(sub.graos.dropna(subset=["r75", "r68"])):
+            desenhos.append((f"concordia_{nome}", lambda f, s_=sub: graficos.concordia(
+                f, s_.graos, opcoes.get("diagrama", "wetherill"), opcoes["agrupar"], s_.discordias)))
+        if coluna in g and sub.graos[coluna].notna().any():
+            desenhos.append((f"media_ponderada_{nome}", lambda f, s_=sub: graficos.media_ponderada(
+                f, s_.graos, coluna, s_.medias(), opcoes["agrupar"])))
     with _estilo_publicacao():
         for nome, desenha in desenhos:
             folha = _Folha(largura_mm, altura)
@@ -247,8 +293,8 @@ def interativo(caminho, resultado, opcoes, titulo="Zircon"):
     nomes = ([tr("Concórdia (Wetherill, elipses 2σ)")] if tem_razoes else []) + \
         [tr("Melhor idade por grão (barras 2σ)"), tr("Distribuição de idades")]
     fig = make_subplots(rows=linhas, cols=1, subplot_titles=nomes, vertical_spacing=0.08)
-    rotulo = lambda k: tr(k) if opcoes["agrupar"] == "classe" else tr("Grupo {n}").format(n=k)  # noqa: E731
-    chave = "classe" if opcoes["agrupar"] == "classe" else "grupo"
+    chave = "conjunto" if "conjunto" in g else "classe"
+    rotulo = grupos.nome_conjunto
 
     def dica(r):
         partes = [f"<b>{r.analise}</b>", tr("melhor idade: {idade} ± {erro} Ma (2σ)").format(
@@ -284,11 +330,11 @@ def interativo(caminho, resultado, opcoes, titulo="Zircon"):
                              error_y=dict(type="data", array=erro, visible=erro is not None, color="#888"),
                              hovertext=[dica(r) for _, r in o.iterrows()], hoverinfo="text", showlegend=False),
                   row=linha, col=1)
-    media = next((r for r in resultado.conjunto if r["Cálculo"].startswith("Média ponderada")), None)
-    if media:
+    for media in resultado.medias():
+        nome = grupos.nome_conjunto(media.get("Conjunto"))
         fig.add_hline(y=media["Idade (Ma)"], line=dict(color="#333", width=1), row=linha, col=1,
-                      annotation_text=f"{num(media['Idade (Ma)'])} ± {num(media['± 2σ (Ma)'])} Ma (2σ), "
-                                      f"MSWD {num(media['MSWD'])}")
+                      annotation_text=(f"{nome}: " if nome else "") +
+                      f"{num(media['Idade (Ma)'])} ± {num(media['± 2σ (Ma)'])} Ma (2σ), MSWD {num(media['MSWD'])}")
     fig.update_yaxes(title_text=tr("idade (Ma)"), row=linha, col=1)
     fig.update_xaxes(title_text=tr("análises em ordem de idade"), row=linha, col=1)
     for k in sorted(o[chave].unique(), key=str):
@@ -351,11 +397,13 @@ def dados_repositorio(pasta, projeto, resultado, opcoes):
 
 
 def pacote(pasta, projeto, resultado, opcoes, largura_mm=90, formatos=("png", "tif", "svg", "pdf"),
-           referencias=None, arquivo_referencias=None):
-    """Gera tudo numa pasta: figuras/, interativo/, dados_repositorio/, planilha Excel e metodologia."""
+           referencias=None, arquivo_referencias=None, por_conjunto=True, projeto_e_original=False):
+    """Gera tudo numa pasta: figuras/, interativo/, dados_repositorio/, planilha Excel e metodologia.
+
+    projeto_e_original: também o projeto .zircon e a planilha original do laboratório, em projeto/."""
     pasta = Path(pasta)
     pasta.mkdir(parents=True, exist_ok=True)
-    figuras(pasta / "figuras", resultado, opcoes, largura_mm, formatos)
+    figuras(pasta / "figuras", resultado, opcoes, largura_mm, formatos, por_conjunto)
     excel(pasta / f"{projeto.nome}_tabelas.xlsx", projeto, resultado, opcoes, referencias)
     (pasta / "interativo").mkdir(exist_ok=True)
     interativo(pasta / "interativo" / f"{projeto.nome}_graficos_interativos.html", resultado, opcoes,
@@ -366,6 +414,14 @@ def pacote(pasta, projeto, resultado, opcoes, largura_mm=90, formatos=("png", "t
     (pasta / "metodologia.md").write_text(texto, encoding="utf-8")
     (pasta / "metodologia.txt").write_text(texto.replace("**", "").replace("*", "").replace("# ", ""),
                                            encoding="utf-8")
+    if projeto_e_original:
+        import copy
+        (pasta / "projeto").mkdir(exist_ok=True)
+        copia = copy.copy(projeto)  # salvar muda o caminho do projeto; a cópia não mexe no aberto
+        copia.salvar(pasta / "projeto" / nome_de_arquivo(projeto.nome))
+        if projeto.bytes_original and projeto.arquivo_original:
+            (pasta / "projeto" / nome_de_arquivo(Path(projeto.arquivo_original).name)).write_bytes(
+                projeto.bytes_original)
     return pasta
 
 

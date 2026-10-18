@@ -35,25 +35,26 @@
   {
    "id": "importar",
    "titulo": "Importar a planilha do laboratório",
-   "serve": "Este recurso serve para trazer para o Zircon a planilha de resultados entregue pelo laboratório; use-o sempre que começar um projeto novo com dados de uma amostra.",
-   "explicacao": "O Zircon lê arquivos .xlsx, .xls, .ods, .csv, .txt e .tsv. Em planilhas, só a primeira aba é lida. Em arquivos de texto, ele detecta a codificação e o separador de colunas (tabulação, ponto e vírgula ou vírgula). O separador decimal (vírgula ou ponto) também é detectado. Linhas de título no topo são ignoradas, mas o cabeçalho deve ocupar uma só linha. Uma amostra por arquivo: se houver várias, todos os grãos entram juntos nos cálculos. O formato completo está no tópico 'Preparar a planilha (modelo)'. As colunas são reconhecidas pelo nome (por exemplo 207Pb/235U, 206Pb/238U, rho), e a coluna de erro deve vir logo depois do valor. Se o cabeçalho do erro indicar 2s ou 2σ, o valor é dividido por 2; se indicar %, é convertido em erro absoluto. Atenção: um erro em 2σ sem essa indicação no cabeçalho será lido como 1σ. Células como '<LOD', 'bdl' ou 'n.d.' viram dado ausente.",
+   "serve": "Este recurso serve para trazer para o Zircon a planilha de resultados entregue pelo laboratório; use-o sempre que começar um projeto novo com dados de uma ou de várias amostras.",
+   "explicacao": "O Zircon lê arquivos .xlsx, .xls, .ods, .csv, .txt e .tsv. Em planilhas, só a primeira aba é lida. Em arquivos de texto, ele detecta a codificação e o separador de colunas (tabulação, ponto e vírgula ou vírgula). O separador decimal (vírgula ou ponto) também é detectado. Linhas de título no topo são ignoradas, mas o cabeçalho deve ocupar uma só linha. Uma planilha pode ter várias amostras: a coluna Amostra diz de qual é cada análise. Com várias amostras, o Zircon sugere no painel separar por amostra, cada uma com a sua cor e as suas idades. Calcular cada amostra separada, juntar várias numa unidade ('Grupos > Juntar amostras em unidades...') ou desligar alguma é decisão sua. Outras planilhas do mesmo tipo de dado podem ser somadas ao projeto com 'Arquivo > Adicionar planilha ao projeto...'. O formato completo está no tópico 'Preparar a planilha (modelo)'. As colunas são reconhecidas pelo nome (por exemplo 207Pb/235U, 206Pb/238U, rho), e a coluna de erro deve vir logo depois do valor. Se o cabeçalho do erro indicar 2s ou 2σ, o valor é dividido por 2; se indicar %, é convertido em erro absoluto. Atenção: um erro em 2σ sem essa indicação no cabeçalho será lido como 1σ. Células como '<LOD', 'bdl' ou 'n.d.' viram dado ausente.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
-    "Se a planilha do laboratório tiver várias abas, cabeçalho em várias linhas ou várias amostras, prepare-a antes com 'Arquivo > Salvar modelo de planilha...' (veja o tópico 'Preparar a planilha (modelo)').",
+    "Se a planilha do laboratório tiver várias abas ou cabeçalho em várias linhas, prepare-a antes com 'Arquivo > Salvar modelo de planilha...' (veja o tópico 'Preparar a planilha (modelo)').",
     "Escolha 'Arquivo > Novo projeto (importar planilha)...' e selecione o arquivo.",
     "Na janela 'Conferir importação', leia o registro: separadores, linha de início dos dados e a coluna atribuída a cada razão e erro (1σ ou 2σ, absoluto ou %).",
     "Confira na tabela de prévia se os números estão coerentes; se algo estiver errado, clique em 'Cancelar', corrija o cabeçalho da planilha e importe de novo.",
     "Se estiver tudo certo, clique em 'Usar estes dados'.",
+    "Para trazer outra planilha ao mesmo projeto, por exemplo com outras amostras, use 'Arquivo > Adicionar planilha ao projeto...'. As planilhas precisam ter o mesmo tipo de dado.",
     "Depois, a aba 'Registro da importação' guarda essas decisões para consulta."
    ]
   },
   {
    "id": "preparar_planilha",
    "titulo": "Preparar a planilha (modelo)",
-   "serve": "Este recurso serve para deixar a planilha do laboratório no formato que o Zircon lê; use-o antes de importar, principalmente quando a planilha tem várias abas, cabeçalho em várias linhas, várias amostras ou notas de rodapé.",
-   "explicacao": "O Zircon lê uma tabela simples: só a primeira aba, um cabeçalho de uma linha logo acima dos dados, uma linha por análise e uma amostra por arquivo. As colunas do modelo são Amostra, Análise, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ e rho. Cada erro fica logo à direita do seu valor, e o nome dele diz se é 1σ ou 2σ e se é relativo (com '%') ou absoluto (sem '%'). Para Tera-Wasserburg, as razões são 238U/206Pb e 207Pb/206Pb; se você só tem idades, as colunas são Idade (Ma) e ± 2σ (Ma). Colunas a mais, como U, Th, Th/U ou as idades do laboratório, podem ficar à direita das razões. Grãos que você decidiu excluir saem da tabela; os discordantes podem ficar, porque o Zircon os separa pelo limite que você escolhe. Misturar erros de 1σ e 2σ, ou absolutos e relativos, muda as idades e o MSWD, por isso essa é a conferência mais importante.",
+   "serve": "Este recurso serve para deixar a planilha do laboratório no formato que o Zircon lê; use-o antes de importar, principalmente quando a planilha tem várias abas, cabeçalho em várias linhas ou notas de rodapé.",
+   "explicacao": "O Zircon lê uma tabela simples: só a primeira aba, um cabeçalho de uma linha logo acima dos dados, uma linha por análise e a coluna Amostra dizendo de qual amostra é cada análise. Pode haver várias amostras no mesmo arquivo. As colunas do modelo são Amostra, Análise, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ e rho. Cada erro fica logo à direita do seu valor, e o nome dele diz se é 1σ ou 2σ e se é relativo (com '%') ou absoluto (sem '%'). Para Tera-Wasserburg, as razões são 238U/206Pb e 207Pb/206Pb; se você só tem idades, as colunas são Idade (Ma) e ± 2σ (Ma). Colunas a mais, como U, Th, Th/U ou as idades do laboratório, podem ficar à direita das razões. Grãos que você decidiu excluir saem da tabela; os discordantes podem ficar, porque o Zircon os separa pelo limite que você escolhe. Misturar erros de 1σ e 2σ, ou absolutos e relativos, muda as idades e o MSWD, por isso essa é a conferência mais importante.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
@@ -62,7 +63,7 @@
     "Abra o modelo no Excel ou no LibreOffice Calc e leia a aba 'Instruções'.",
     "Na aba 'Dados', apague as linhas de exemplo e cole as colunas da sua planilha na ordem do modelo. Use 'Colar especial > Valores' para trazer números, e não fórmulas.",
     "Confira o erro informado pelo laboratório: se for 1σ, troque o cabeçalho para '± 1σ'; se for em porcentagem, para '± 2σ (%)' ou '± 1σ (%)'.",
-    "Deixe fora da tabela os títulos, as linhas de unidade e as notas de rodapé. Se o arquivo tiver várias amostras, faça um arquivo para cada uma.",
+    "Deixe fora da tabela os títulos, as linhas de unidade e as notas de rodapé. Se houver várias amostras, deixe todas na mesma tabela, com o nome de cada uma na coluna Amostra.",
     "Salve como .xlsx e importe com 'Arquivo > Novo projeto (importar planilha)...'. Na janela 'Conferir importação', confira a coluna atribuída a cada razão e erro."
    ]
   },
@@ -120,7 +121,7 @@
    "id": "discordancia",
    "titulo": "Discordância e seleção dos grãos",
    "serve": "Este recurso serve para identificar e separar grãos cujas idades U-Pb não concordam entre si; use-o sempre que calcular uma idade de amostra a partir de grãos individuais.",
-   "explicacao": "Um grão é concordante quando as idades 206Pb/238U e 207Pb/206Pb coincidem, isto é, quando ele cai sobre a curva concórdia. Perda de Pb, Pb comum ou mistura de domínios de idades diferentes tornam o grão discordante. O Zircon calcula a discordância como 100 × (1 − t206/238 / t207/206), em %. Valores positivos indicam em geral perda de Pb; negativos, discordância reversa. Grãos com discordância, em valor absoluto, acima da 'Discordância máxima' (padrão 10 %) ficam fora da média ponderada e da idade concórdia, a menos que você marque 'Incluir discordantes na média'. Em grãos jovens a discordância relativa é pouco confiável, porque a idade 207Pb/206Pb tem erro grande. A regressão da discórdia usa todos os grãos.",
+   "explicacao": "Um grão é concordante quando as idades 206Pb/238U e 207Pb/206Pb coincidem, isto é, quando ele cai sobre a curva concórdia. Perda de Pb, Pb comum ou mistura de domínios de idades diferentes tornam o grão discordante. O Zircon calcula a discordância como 100 × (1 − t206/238 / t207/206), em %. Valores positivos indicam em geral perda de Pb; negativos, discordância reversa. Grãos com discordância, em valor absoluto, acima da 'Discordância máxima' (padrão 10 %) ficam fora da média ponderada e da idade concórdia, a menos que você marque 'Incluir discordantes na média'. Em grãos jovens a discordância relativa é pouco confiável, porque a idade 207Pb/206Pb tem erro grande. A regressão da discórdia usa todos os grãos que estão no cálculo, sem o filtro de discordância.",
    "referencias": [
     "Spencer et al. (2016)",
     "Gehrels (2014)",
@@ -201,7 +202,7 @@
    "id": "discordia",
    "titulo": "Discórdia e interceptos superior e inferior",
    "serve": "Este recurso serve para obter idades a partir de grãos alinhados fora da curva concórdia; use-o quando vários grãos discordantes formam uma reta, como em perda de Pb ou mistura de duas idades.",
-   "explicacao": "Quando grãos de mesma idade perdem quantidades diferentes de Pb em um evento posterior, eles se alinham numa reta, a discórdia, no diagrama de Wetherill. O intercepto superior com a concórdia indica em geral a idade de cristalização; o inferior, a idade do evento que causou a perda de Pb. O Zircon ajusta a reta por regressão de York, que considera os erros das duas razões e sua correlação, e propaga os erros aos interceptos. Usa todos os grãos, sem o filtro de discordância. Um intercepto inferior perto de zero pode indicar perda de Pb recente, sem significado de evento. MSWD alto indica que os pontos não formam uma reta única. São necessários pelo menos 3 grãos.",
+   "explicacao": "Quando grãos de mesma idade perdem quantidades diferentes de Pb em um evento posterior, eles se alinham numa reta, a discórdia, no diagrama de Wetherill. O intercepto superior com a concórdia indica em geral a idade de cristalização; o inferior, a idade do evento que causou a perda de Pb. O Zircon ajusta a reta por regressão de York, que considera os erros das duas razões e sua correlação, e propaga os erros aos interceptos. Usa todos os grãos que estão no cálculo, ou os de cada conjunto quando o cálculo é por conjunto, sem o filtro de discordância. Um intercepto inferior perto de zero pode indicar perda de Pb recente, sem significado de evento. MSWD alto indica que os pontos não formam uma reta única. São necessários pelo menos 3 grãos.",
    "referencias": [
     "York (1968)",
     "York et al. (2004)",
@@ -213,7 +214,7 @@
     "Importe dados com razões U-Pb e clique em 'Calcular'.",
     "No painel à esquerda, em 'O que calcular', deixe 'Diagrama concórdia' em 'Wetherill' para ver a reta da discórdia tracejada.",
     "Na aba 'Resultados', leia 'Discórdia: intercepto superior' e 'Discórdia: intercepto inferior', com MSWD e p.",
-    "A discórdia usa todos os grãos do projeto. Para ajustá-la só a alguns grãos, faça uma cópia da planilha só com eles e importe essa cópia como outro projeto."
+    "Para ajustar a discórdia só a alguns grãos, desligue os outros, ou escolha 'Cada conjunto separado' em 'Calcular' para ter uma discórdia por conjunto. Veja o tópico 'Conjuntos no cálculo'."
    ]
   },
   {
@@ -282,31 +283,54 @@
     "Fedo et al. (2003)"
    ],
    "como_usar": [
-    "No painel à esquerda, em 'Cores nos gráficos', escolha em 'Colorir por' 'Populações de idade (automático)'.",
+    "No painel à esquerda, em 'Conjuntos de grãos', escolha em 'Separar por' 'Populações de idade (automático)', ou 'Populações dentro de cada amostra' se a planilha tiver várias amostras ou unidades.",
     "Ajuste 'Mínimo de grãos por população' (padrão 3).",
     "Clique em 'Calcular' e abra a aba 'Distribuição de idades'.",
-    "Veja o número de cada grão na coluna de grupo da aba 'Dados e idades por grão'."
+    "Veja o número de cada grão na coluna de grupo da aba 'Dados e idades por grão'.",
+    "Para ter a idade de cada população, escolha 'Cada conjunto separado' em 'Calcular'. Veja o tópico 'Conjuntos no cálculo'."
    ]
   },
   {
    "id": "cores_grupos",
    "titulo": "Cores, símbolos e grupos",
    "serve": "Este recurso serve para destacar conjuntos de grãos nos gráficos e tabelas; use-o para separar concordantes de discordantes, ver populações ou marcar grãos que você interpreta como de um mesmo evento.",
-   "explicacao": "A opção 'Colorir por' tem três modos. 'Concordante / discordante / rejeitado' pinta cada grão pela classe: concordante, discordante (acima da discordância máxima) ou rejeitado como outlier. 'Populações de idade (automático)' usa os grupos da curva de densidade. 'Grupos que eu escolher' usa números de grupo (1 a 8) que você atribui às linhas da tabela. As cores aparecem na concórdia, na média ponderada, no histograma e na planilha Excel exportada. Atribuir um grupo só muda a cor: não muda quais grãos entram na média, que depende das opções de seleção. Os grupos ficam salvos no projeto. Cada conjunto (classe, população ou grupo) também tem um símbolo, desenhado no centro das elipses e das barras, e pode ter um padrão de preenchimento. Em 'Cores e símbolos dos conjuntos...' você escolhe a cor, o símbolo (21 opções, como círculo, quadrado, triângulo, losango e estrela) e o padrão de cada conjunto; a escolha vale para o conjunto todo, para que a legenda continue certa. Um grão também pode ser destacado sozinho, e então aparece na legenda com nome próprio. No modo de cores comuns, qualquer cor pode ser escolhida. No modo de cores acessíveis, as cores vêm só da paleta segura escolhida, e o símbolo e o padrão continuam livres: são eles que ajudam quem não distingue cores. O botão 'Auto (cores da paleta)' volta ao padrão. As escolhas ficam salvas no projeto e só aparecem nos gráficos depois de clicar em 'Calcular'.",
+   "explicacao": "A opção 'Separar por' tem cinco modos. 'Concordante / discordante / rejeitado' pinta cada grão pela classe: concordante, discordante (acima da discordância máxima) ou rejeitado como outlier. 'Populações de idade (automático)' usa os grupos da curva de densidade. 'Grupos que eu escolher' usa números de grupo (1 a 8) que você atribui às linhas da tabela. 'Amostras da planilha' separa os grãos pela coluna Amostra. 'Populações dentro de cada amostra' separa as populações de cada amostra. As cores aparecem na concórdia, na média ponderada, no histograma e na planilha Excel exportada. Com 'Calcular: Todos os grãos juntos', os conjuntos só mudam a cor; com 'Cada conjunto separado', cada conjunto tem as suas próprias idades (veja o tópico 'Conjuntos no cálculo'). Os grupos ficam salvos no projeto. Cada conjunto (classe, população ou grupo) também tem um símbolo, desenhado no centro das elipses e das barras, e pode ter um padrão de preenchimento. Em 'Usar no cálculo, cores e símbolos...' você escolhe a cor, o símbolo (21 opções, como círculo, quadrado, triângulo, losango e estrela) e o padrão de cada conjunto; a escolha vale para o conjunto todo, para que a legenda continue certa. Um grão também pode ser destacado sozinho, e então aparece na legenda com nome próprio. No modo de cores comuns, qualquer cor pode ser escolhida. No modo de cores acessíveis, as cores vêm só da paleta segura escolhida, e o símbolo e o padrão continuam livres: são eles que ajudam quem não distingue cores. O botão 'Auto (cores da paleta)' volta ao padrão. As escolhas ficam salvas no projeto e só aparecem nos gráficos depois de clicar em 'Calcular'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
     "Wong (2011)"
    ],
    "como_usar": [
-    "No painel à esquerda, em 'Cores nos gráficos', escolha o modo em 'Colorir por'.",
+    "No painel à esquerda, em 'Conjuntos de grãos', escolha o modo em 'Separar por'.",
     "Para grupos próprios, na aba 'Dados e idades por grão' selecione as linhas (clique no número da linha; use Ctrl ou Shift para várias).",
     "Use 'Grupos > Colocar linhas selecionadas no grupo...' e informe o número do grupo.",
     "Para voltar às classes, use 'Grupos > Voltar às cores automáticas'.",
-    "Para escolher cor, símbolo e padrão, clique em 'Cores e símbolos dos conjuntos...' no painel (ou no menu 'Grupos').",
+    "Para escolher cor, símbolo e padrão, clique em 'Usar no cálculo, cores e símbolos...' no painel (ou no menu 'Grupos').",
     "Em cada linha, escolha a cor, o símbolo e o padrão de preenchimento; 'Auto (cores da paleta)' desfaz as escolhas.",
     "Para um grão só, dê um duplo clique nele na tabela, depois de calcular. Escolha cor, símbolo e padrão e clique em 'Grupo' para mudar o conjunto todo, ou em 'Ponto' para destacar só aquele grão (um núcleo, uma borda, uma forma curiosa). O ponto ganha uma linha própria na legenda, com o nome que você escrever; 'Tirar o destaque' desfaz.",
-    "Clique em 'Usar estas cores e símbolos' e depois em 'Calcular' para ver as mudanças nos gráficos."
+    "Clique em 'Usar estas escolhas' e depois em 'Calcular' para ver as mudanças nos gráficos."
+   ]
+  },
+  {
+   "id": "conjuntos",
+   "titulo": "Conjuntos no cálculo",
+   "serve": "Este recurso serve para escolher quais grãos entram nas contas e para calcular cada conjunto à parte; use-o em rochas sedimentares (uma idade por população), metamórficas (núcleo e borda separados) e quando a planilha tem várias amostras ou unidades.",
+   "explicacao": "Uma média ou uma concórdia só faz sentido para grãos do mesmo evento. Numa rocha ígnea simples, quase todos os grãos são da cristalização, e calcular todos juntos funciona. Num zircão detrítico, cada população vem de uma fonte, e a média da amostra inteira não tem significado geológico. Num metamórfico, núcleo e borda registram eventos diferentes. Por isso o Zircon separa os grãos em conjuntos (classes, populações, grupos seus ou amostras) e deixa você decidir duas coisas. A primeira é quais conjuntos e grãos entram no cálculo: um conjunto ou grão desligado sai de todas as contas e fica em cinza nos gráficos, com a entrada 'Fora do cálculo' na legenda. Isso permite, por exemplo, desligar os concordantes e calcular a discórdia só com os discordantes. A segunda é se o cálculo é de todos os grãos juntos ou de cada conjunto separado. Separado, cada conjunto tem a sua média ponderada, a sua idade concórdia e a sua discórdia, cada uma com MSWD e n, numa coluna 'Conjunto' da tabela de resultados. Quando os conjuntos são as classes (concordante e discordante), o limite de discordância não se aplica dentro do conjunto, porque o conjunto já é a sua escolha; nos outros modos, os discordantes ficam fora da média e da concórdia, a menos que você marque 'Incluir discordantes na média'. Os rejeitados são os outliers tirados pelo próprio cálculo e não podem ser desligados. Quando a planilha tem várias amostras, o Zircon as identifica pela coluna Amostra e sugere separar por amostra. Juntar amostras numa unidade, separar ou desligar é decisão sua, e pode ser mudada depois de ver o resultado. Tudo fica salvo no projeto e só muda depois de clicar em 'Calcular'.",
+   "referencias": [
+    "Corfu et al. (2003)",
+    "Fedo et al. (2003)",
+    "Gehrels (2014)",
+    "Spencer et al. (2016)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "No painel à esquerda, em 'Conjuntos de grãos', escolha em 'Separar por' como formar os conjuntos.",
+    "Em 'Calcular', escolha 'Todos os grãos juntos' ou 'Cada conjunto separado'.",
+    "Clique em 'Usar no cálculo, cores e símbolos...' e desmarque 'No cálculo' nos conjuntos que devem ficar de fora.",
+    "Para grãos soltos, selecione as linhas na tabela de dados, clique com o botão direito e escolha 'Tirar do cálculo os grãos selecionados' (ou 'Voltar ao cálculo os grãos selecionados'). Os mesmos itens estão no menu 'Grupos'.",
+    "Clique em 'Calcular'. A coluna 'No cálculo' da tabela mostra quem entrou.",
+    "Para juntar amostras, por exemplo várias amostras da mesma camada ao longo de um perfil, use 'Grupos > Juntar amostras em unidades...', selecione as amostras, clique em 'Juntar as selecionadas...' e dê um nome à unidade. Com 'Separar por: Amostras da planilha', a unidade vira um conjunto só, com uma cor e uma idade; a tabela de dados mostra a amostra e a unidade de cada análise.",
+    "Para exportar um conjunto sozinho, use 'Arquivo > Exportar > Só um conjunto...'."
    ]
   },
   {
@@ -327,18 +351,19 @@
   },
   {
    "id": "exportar",
-   "titulo": "Exportar para publicação",
+   "titulo": "Exportar: tudo, um conjunto ou uma janela",
    "serve": "Este recurso serve para gerar de uma vez os arquivos de um artigo ou relatório; use-o quando os resultados estiverem conferidos e prontos para uso fora do Zircon.",
-   "explicacao": "A exportação para publicação cria uma pasta com: figuras da concórdia (ou isócrona), média ponderada e distribuição de idades na largura de 1 coluna (90 mm), 1,5 coluna (140 mm) ou 2 colunas (190 mm), em PNG e TIFF 600 dpi, PDF, SVG e, se pedido, EPS, seguindo as instruções de figuras da Elsevier; planilha Excel formatada com resultados, idades por grão coloridas, opções usadas, referências e registro; gráficos interativos em HTML, que abrem sem internet e servem como material suplementar; dados em CSV com LEIAME para repositório (Mendeley Data, Zenodo, PANGAEA); e o texto de metodologia. Confira cada figura antes de enviar à revista, pois exigências variam.",
+   "explicacao": "A exportação de tudo do projeto cria uma pasta com: figuras da concórdia (ou isócrona), média ponderada e distribuição de idades na largura de 1 coluna (90 mm), 1,5 coluna (140 mm) ou 2 colunas (190 mm), em PNG e TIFF 600 dpi, PDF, SVG e, se pedido, EPS, seguindo as instruções de figuras da Elsevier; planilha Excel formatada com resultados, idades por grão coloridas, opções usadas, referências e registro; gráficos interativos em HTML, que abrem sem internet e servem como material suplementar; dados em CSV com LEIAME para repositório (Mendeley Data, Zenodo, PANGAEA); e o texto de metodologia. Confira cada figura antes de enviar à revista, pois exigências variam. Se o cálculo foi feito conjunto por conjunto, a pasta também traz uma concórdia e uma média de cada conjunto, e você pode incluir o projeto .zircon e a planilha original do laboratório. 'Só um conjunto' gera a mesma pasta, mas só com os grãos e as idades de uma amostra, população ou grupo. 'Só esta janela' salva o que está numa janela: o gráfico como imagem (PNG ou TIFF 600 dpi, SVG ou PDF), a tabela como planilha (Excel ou CSV) ou o texto como arquivo.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
     "Clique em 'Calcular' antes de exportar.",
-    "Escolha 'Arquivo > Exportar para publicação (figuras, Excel, interativo, metodologia)...' (Ctrl+E).",
-    "Escolha a 'Largura das figuras' e marque os formatos.",
+    "Para tudo, escolha 'Arquivo > Exportar > Tudo do projeto...' (Ctrl+E), escolha a largura e os formatos das figuras e marque se quer as figuras de cada conjunto e o projeto com a planilha original.",
     "Clique em 'Escolher pasta e exportar' e escolha a pasta; os arquivos ficam numa subpasta com o nome do projeto.",
-    "Para um só arquivo, use os outros itens do menu 'Arquivo' (planilha Excel, gráfico atual, HTML interativo ou metodologia)."
+    "Para um conjunto, use 'Arquivo > Exportar > Só um conjunto...' e escolha a amostra, a população ou o grupo. Antes, calcule com 'Cada conjunto separado'.",
+    "Para uma janela, clique com o botão direito no título dela e escolha 'Exportar esta janela...', ou use 'Arquivo > Exportar > Só esta janela...' (Ctrl+Shift+E).",
+    "Os itens restantes do menu 'Arquivo > Exportar' salvam um arquivo só (planilha Excel, gráfico, HTML interativo ou metodologia)."
    ]
   },
   {

@@ -17,7 +17,9 @@ _GRAOS = ((598.0, 2.2, 1.6, 0.55), (603.5, 2.0, 1.5, 0.61), (600.8, 2.6, 1.8, 0.
 INSTRUCOES = (
     N_("Esta planilha mostra o formato que o Zircon lê. Apague as linhas de exemplo e cole os seus dados no lugar."),
     N_("O Zircon lê só a primeira aba. Deixe os dados na primeira aba e as anotações em outras abas."),
-    N_("Uma amostra por arquivo. Se o laboratório mandou várias amostras, faça um arquivo para cada uma."),
+    N_("A coluna Amostra diz de qual amostra é cada análise. Pode haver várias amostras no mesmo arquivo: o Zircon "
+       "dá uma cor a cada uma, e você decide se calcula cada amostra separada ou se junta várias numa unidade "
+       "(por exemplo, amostras da mesma camada). Também dá para adicionar outras planilhas ao mesmo projeto."),
     N_("O cabeçalho ocupa uma única linha, logo acima dos dados. Não mescle células nem ponha a unidade numa "
        "segunda linha: escreva a unidade no próprio nome da coluna, como \"± 2σ (%)\"."),
     N_("Uma linha por análise, sem linhas em branco no meio e sem notas embaixo da tabela."),

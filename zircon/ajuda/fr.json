@@ -35,25 +35,26 @@
   {
    "id": "importar",
    "titulo": "Importer le tableur du laboratoire",
-   "serve": "Cette fonction sert à charger dans Zircon le tableur de résultats fourni par le laboratoire ; utilisez-la chaque fois que vous commencez un nouveau projet avec les données d'un échantillon.",
-   "explicacao": "Zircon lit les fichiers .xlsx, .xls, .ods, .csv, .txt et .tsv. Dans les classeurs, seul le premier onglet est lu. Dans les fichiers texte, il détecte l'encodage et le séparateur de colonnes (tabulation, point-virgule ou virgule). Le séparateur décimal (virgule ou point) est également détecté. Les lignes de titre en haut sont ignorées, mais l'en-tête doit tenir sur une seule ligne. Un échantillon par fichier : s'il y en a plusieurs, tous les grains entrent ensemble dans les calculs. Le format complet est décrit dans la rubrique 'Préparer le tableur (modèle)'. Les colonnes sont reconnues par leur nom (par exemple 207Pb/235U, 206Pb/238U, rho), et la colonne d'erreur doit suivre immédiatement la valeur. Si l'en-tête de l'erreur indique 2s ou 2σ, la valeur est divisée par 2 ; s'il indique %, elle est convertie en erreur absolue. Attention : une erreur à 2σ sans cette indication dans l'en-tête sera lue comme 1σ. Les cellules telles que '<LOD', 'bdl' ou 'n.d.' deviennent des données manquantes.",
+   "serve": "Cette fonction sert à charger dans Zircon le tableur de résultats fourni par le laboratoire ; utilisez-la chaque fois que vous commencez un nouveau projet avec les données d'un ou de plusieurs échantillons.",
+   "explicacao": "Zircon lit les fichiers .xlsx, .xls, .ods, .csv, .txt et .tsv. Dans les classeurs, seul le premier onglet est lu. Dans les fichiers texte, il détecte l'encodage et le séparateur de colonnes (tabulation, point-virgule ou virgule). Le séparateur décimal (virgule ou point) est également détecté. Les lignes de titre en haut sont ignorées, mais l'en-tête doit tenir sur une seule ligne. Un tableur peut contenir plusieurs échantillons : la colonne Échantillon indique à quel échantillon appartient chaque analyse. Avec plusieurs échantillons, Zircon propose dans le panneau de séparer par échantillon, chacun avec sa couleur et ses âges. C'est à vous de décider si vous calculez chaque échantillon séparément, si vous en regroupez plusieurs en une unité ('Groupes > Regrouper des échantillons en unités...') ou si vous en désactivez un. D'autres tableurs du même type de données peuvent être ajoutés au projet avec 'Fichier > Ajouter un tableur au projet...'. Le format complet est décrit dans la rubrique 'Préparer le tableur (modèle)'. Les colonnes sont reconnues par leur nom (par exemple 207Pb/235U, 206Pb/238U, rho), et la colonne d'erreur doit suivre immédiatement la valeur. Si l'en-tête de l'erreur indique 2s ou 2σ, la valeur est divisée par 2 ; s'il indique %, elle est convertie en erreur absolue. Attention : une erreur à 2σ sans cette indication dans l'en-tête sera lue comme 1σ. Les cellules telles que '<LOD', 'bdl' ou 'n.d.' deviennent des données manquantes.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
-    "Si le tableur du laboratoire comporte plusieurs onglets, un en-tête sur plusieurs lignes ou plusieurs échantillons, préparez-le d'abord avec 'Fichier > Enregistrer le modèle de tableur...' (voir la rubrique 'Préparer le tableur (modèle)').",
+    "Si le tableur du laboratoire comporte plusieurs onglets ou un en-tête sur plusieurs lignes, préparez-le d'abord avec 'Fichier > Enregistrer le modèle de tableur...' (voir la rubrique 'Préparer le tableur (modèle)').",
     "Choisissez 'Fichier > Nouveau projet (importer un tableur)...' et sélectionnez le fichier.",
     "Dans la fenêtre 'Vérifier l'importation', lisez le journal : séparateurs, ligne de début des données et colonne attribuée à chaque rapport et à chaque erreur (1σ ou 2σ, absolue ou en %).",
     "Vérifiez dans le tableau d'aperçu que les nombres sont cohérents ; en cas d'erreur, cliquez sur 'Annuler', corrigez l'en-tête du tableur et importez-le à nouveau.",
     "Si tout est correct, cliquez sur 'Utiliser ces données'.",
+    "Pour ajouter un autre tableur au même projet, par exemple avec d'autres échantillons, utilisez 'Fichier > Ajouter un tableur au projet...'. Les tableurs doivent avoir le même type de données.",
     "Ensuite, l'onglet 'Journal d'importation' conserve ces décisions pour consultation."
    ]
   },
   {
    "id": "preparar_planilha",
    "titulo": "Préparer le tableur (modèle)",
-   "serve": "Cette fonction sert à mettre le tableur du laboratoire au format lu par Zircon ; utilisez-la avant l'importation, surtout lorsque le tableur comporte plusieurs onglets, un en-tête sur plusieurs lignes, plusieurs échantillons ou des notes de bas de page.",
-   "explicacao": "Zircon lit un tableau simple : seulement le premier onglet, un en-tête d'une ligne juste au-dessus des données, une ligne par analyse et un échantillon par fichier. Les colonnes du modèle sont Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ et rho. Chaque erreur se trouve juste à droite de sa valeur, et son nom indique s'il s'agit de 1σ ou de 2σ et si elle est relative (avec '%') ou absolue (sans '%'). Pour Tera-Wasserburg, les rapports sont 238U/206Pb et 207Pb/206Pb ; si vous n'avez que des âges, les colonnes sont Age (Ma) et ± 2σ (Ma). Les colonnes supplémentaires, comme U, Th, Th/U ou les âges du laboratoire, peuvent rester à droite des rapports. Les grains que vous avez décidé d'exclure sortent du tableau ; les grains discordants peuvent rester, car Zircon les sépare selon la limite que vous choisissez. Mélanger des erreurs à 1σ et à 2σ, ou absolues et relatives, modifie les âges et le MSWD : c'est donc la vérification la plus importante.",
+   "serve": "Cette fonction sert à mettre le tableur du laboratoire au format lu par Zircon ; utilisez-la avant l'importation, surtout lorsque le tableur comporte plusieurs onglets, un en-tête sur plusieurs lignes ou des notes de bas de page.",
+   "explicacao": "Zircon lit un tableau simple : seulement le premier onglet, un en-tête d'une ligne juste au-dessus des données, une ligne par analyse et la colonne Échantillon indiquant à quel échantillon appartient chaque analyse. Un même fichier peut contenir plusieurs échantillons. Les colonnes du modèle sont Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ et rho. Chaque erreur se trouve juste à droite de sa valeur, et son nom indique s'il s'agit de 1σ ou de 2σ et si elle est relative (avec '%') ou absolue (sans '%'). Pour Tera-Wasserburg, les rapports sont 238U/206Pb et 207Pb/206Pb ; si vous n'avez que des âges, les colonnes sont Age (Ma) et ± 2σ (Ma). Les colonnes supplémentaires, comme U, Th, Th/U ou les âges du laboratoire, peuvent rester à droite des rapports. Les grains que vous avez décidé d'exclure sortent du tableau ; les grains discordants peuvent rester, car Zircon les sépare selon la limite que vous choisissez. Mélanger des erreurs à 1σ et à 2σ, ou absolues et relatives, modifie les âges et le MSWD : c'est donc la vérification la plus importante.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
@@ -62,7 +63,7 @@
     "Ouvrez le modèle dans Excel ou LibreOffice Calc et lisez l'onglet 'Instructions'.",
     "Dans l'onglet 'Données', supprimez les lignes d'exemple et collez les colonnes de votre tableur dans l'ordre du modèle. Utilisez 'Collage spécial > Valeurs' pour importer des nombres et non des formules.",
     "Vérifiez l'erreur indiquée par le laboratoire : si elle est à 1σ, remplacez l'en-tête par '± 1σ' ; si elle est en pourcentage, par '± 2σ (%)' ou '± 1σ (%)'.",
-    "Laissez hors du tableau les titres, les lignes d'unités et les notes de bas de page. Si le fichier contient plusieurs échantillons, faites un fichier pour chacun.",
+    "Laissez hors du tableau les titres, les lignes d'unités et les notes de bas de page. S'il y a plusieurs échantillons, gardez-les tous dans le même tableau, avec le nom de chacun dans la colonne Échantillon.",
     "Enregistrez au format .xlsx et importez avec 'Fichier > Nouveau projet (importer un tableur)...'. Dans la fenêtre 'Vérifier l'importation', vérifiez la colonne attribuée à chaque rapport et à chaque erreur."
    ]
   },
@@ -120,7 +121,7 @@
    "id": "discordancia",
    "titulo": "Discordance et sélection des grains",
    "serve": "Cette fonction sert à identifier et à écarter les grains dont les âges U-Pb ne concordent pas entre eux ; utilisez-la chaque fois que vous calculez un âge d'échantillon à partir de grains individuels.",
-   "explicacao": "Un grain est concordant lorsque ses âges 206Pb/238U et 207Pb/206Pb coïncident, c'est-à-dire lorsqu'il se place sur la courbe concordia. Une perte de Pb, du Pb commun ou le mélange de domaines d'âges différents rendent le grain discordant. Zircon calcule la discordance comme 100 × (1 − t206/238 / t207/206), en %. Des valeurs positives indiquent en général une perte de Pb ; des valeurs négatives, une discordance inverse. Les grains dont la discordance, en valeur absolue, dépasse la 'Discordance maximale' (10 % par défaut) sont exclus de la moyenne pondérée et de l'âge concordia, sauf si vous cochez 'Inclure les discordants dans la moyenne'. Dans les grains jeunes, la discordance relative est peu fiable, car l'âge 207Pb/206Pb a une grande erreur. La régression de la discordia utilise tous les grains.",
+   "explicacao": "Un grain est concordant lorsque ses âges 206Pb/238U et 207Pb/206Pb coïncident, c'est-à-dire lorsqu'il se place sur la courbe concordia. Une perte de Pb, du Pb commun ou le mélange de domaines d'âges différents rendent le grain discordant. Zircon calcule la discordance comme 100 × (1 − t206/238 / t207/206), en %. Des valeurs positives indiquent en général une perte de Pb ; des valeurs négatives, une discordance inverse. Les grains dont la discordance, en valeur absolue, dépasse la 'Discordance maximale' (10 % par défaut) sont exclus de la moyenne pondérée et de l'âge concordia, sauf si vous cochez 'Inclure les discordants dans la moyenne'. Dans les grains jeunes, la discordance relative est peu fiable, car l'âge 207Pb/206Pb a une grande erreur. La régression de la discordia utilise tous les grains qui sont dans le calcul, sans filtre de discordance.",
    "referencias": [
     "Spencer et al. (2016)",
     "Gehrels (2014)",
@@ -201,7 +202,7 @@
    "id": "discordia",
    "titulo": "Discordia et intercepts supérieur et inférieur",
    "serve": "Cette fonction sert à obtenir des âges à partir de grains alignés en dehors de la courbe concordia ; utilisez-la lorsque plusieurs grains discordants forment une droite, comme lors d'une perte de Pb ou d'un mélange de deux âges.",
-   "explicacao": "Lorsque des grains de même âge perdent des quantités différentes de Pb lors d'un événement ultérieur, ils s'alignent sur une droite, la discordia, dans le diagramme de Wetherill. L'intercept supérieur avec la concordia indique en général l'âge de cristallisation ; l'intercept inférieur, l'âge de l'événement responsable de la perte de Pb. Zircon ajuste la droite par régression de York, qui tient compte des erreurs des deux rapports et de leur corrélation, et propage les erreurs aux intercepts. Il utilise tous les grains, sans filtre de discordance. Un intercept inférieur proche de zéro peut indiquer une perte de Pb récente, sans signification d'événement. Un MSWD élevé indique que les points ne forment pas une droite unique. Au moins 3 grains sont nécessaires.",
+   "explicacao": "Lorsque des grains de même âge perdent des quantités différentes de Pb lors d'un événement ultérieur, ils s'alignent sur une droite, la discordia, dans le diagramme de Wetherill. L'intercept supérieur avec la concordia indique en général l'âge de cristallisation ; l'intercept inférieur, l'âge de l'événement responsable de la perte de Pb. Zircon ajuste la droite par régression de York, qui tient compte des erreurs des deux rapports et de leur corrélation, et propage les erreurs aux intercepts. Il utilise tous les grains qui sont dans le calcul, ou ceux de chaque ensemble lorsque le calcul se fait par ensemble, sans filtre de discordance. Un intercept inférieur proche de zéro peut indiquer une perte de Pb récente, sans signification d'événement. Un MSWD élevé indique que les points ne forment pas une droite unique. Au moins 3 grains sont nécessaires.",
    "referencias": [
     "York (1968)",
     "York et al. (2004)",
@@ -213,7 +214,7 @@
     "Importez des données avec des rapports U-Pb et cliquez sur 'Calculer'.",
     "Dans le panneau de gauche, sous 'Que calculer', laissez 'Diagramme concordia' sur 'Wetherill' pour voir la droite discordia en tirets.",
     "Dans l'onglet 'Résultats', lisez 'Discordia : intercept supérieur' et 'Discordia : intercept inférieur', avec le MSWD et le p.",
-    "La discordia utilise tous les grains du projet. Pour l'ajuster à quelques grains seulement, faites une copie du tableur ne contenant que ces grains et importez cette copie comme un autre projet."
+    "Pour ajuster la discordia à quelques grains seulement, désactivez les autres, ou choisissez 'Chaque ensemble séparément' dans 'Calculer' pour obtenir une discordia par ensemble. Voir la rubrique 'Ensembles dans le calcul'."
    ]
   },
   {
@@ -282,31 +283,54 @@
     "Fedo et al. (2003)"
    ],
    "como_usar": [
-    "Dans le panneau de gauche, sous 'Couleurs des graphiques', choisissez dans 'Colorer par' 'Populations d'âge (automatique)'.",
+    "Dans le panneau de gauche, sous 'Ensembles de grains', choisissez dans 'Séparer par' 'Populations d'âge (automatique)', ou 'Populations au sein de chaque échantillon' si le tableur contient plusieurs échantillons ou unités.",
     "Réglez 'Nombre minimal de grains par population' (3 par défaut).",
     "Cliquez sur 'Calculer' et ouvrez l'onglet 'Distribution des âges'.",
-    "Consultez le numéro de chaque grain dans la colonne de groupe de l'onglet 'Données et âges par grain'."
+    "Consultez le numéro de chaque grain dans la colonne de groupe de l'onglet 'Données et âges par grain'.",
+    "Pour obtenir l'âge de chaque population, choisissez 'Chaque ensemble séparément' dans 'Calculer'. Voir la rubrique 'Ensembles dans le calcul'."
    ]
   },
   {
    "id": "cores_grupos",
    "titulo": "Couleurs, symboles et groupes",
    "serve": "Cette fonction sert à mettre en évidence des ensembles de grains dans les graphiques et les tableaux ; utilisez-la pour séparer les concordants des discordants, voir les populations ou marquer les grains que vous interprétez comme issus d'un même événement.",
-   "explicacao": "L'option 'Colorer par' propose trois modes. 'Concordant / discordant / rejeté' colore chaque grain selon sa classe : concordant, discordant (au-delà de la discordance maximale) ou rejeté comme valeur aberrante. 'Populations d'âge (automatique)' utilise les groupes issus de la courbe de densité. 'Groupes que je choisis' utilise des numéros de groupe (1 à 8) que vous attribuez aux lignes du tableau. Les couleurs apparaissent dans la concordia, la moyenne pondérée, l'histogramme et le classeur Excel exporté. Attribuer un groupe ne change que la couleur : cela ne modifie pas les grains retenus dans la moyenne, qui dépendent des options de sélection. Les groupes sont enregistrés dans le projet. Chaque ensemble (classe, population ou groupe) possède aussi un symbole, dessiné au centre des ellipses et des barres, et peut avoir un motif de remplissage. Dans 'Couleurs et symboles des ensembles...', vous choisissez la couleur, le symbole (21 options, comme cercle, carré, triangle, losange et étoile) et le motif de chaque ensemble ; le choix s'applique à tout l'ensemble, pour que la légende reste correcte. Un grain peut aussi être mis en évidence seul ; il apparaît alors dans la légende avec son propre nom. En mode couleurs standard, n'importe quelle couleur peut être choisie. En mode couleurs accessibles, les couleurs proviennent uniquement de la palette adaptée choisie, et le symbole et le motif restent libres : ce sont eux qui aident les personnes qui ne distinguent pas les couleurs. Le bouton 'Auto (couleurs de la palette)' rétablit les valeurs par défaut. Les choix sont enregistrés dans le projet et n'apparaissent dans les graphiques qu'après avoir cliqué sur 'Calculer'.",
+   "explicacao": "L'option 'Séparer par' propose cinq modes. 'Concordant / discordant / rejeté' colore chaque grain selon sa classe : concordant, discordant (au-delà de la discordance maximale) ou rejeté comme valeur aberrante. 'Populations d'âge (automatique)' utilise les groupes issus de la courbe de densité. 'Groupes que je choisis' utilise des numéros de groupe (1 à 8) que vous attribuez aux lignes du tableau. 'Échantillons du tableur' sépare les grains selon la colonne Échantillon. 'Populations au sein de chaque échantillon' sépare les populations de chaque échantillon. Les couleurs apparaissent dans la concordia, la moyenne pondérée, l'histogramme et le classeur Excel exporté. Avec 'Calculer : Tous les grains ensemble', les ensembles ne changent que la couleur ; avec 'Chaque ensemble séparément', chaque ensemble a ses propres âges (voir la rubrique 'Ensembles dans le calcul'). Les groupes sont enregistrés dans le projet. Chaque ensemble (classe, population ou groupe) possède aussi un symbole, dessiné au centre des ellipses et des barres, et peut avoir un motif de remplissage. Dans 'Utilisation dans le calcul, couleurs et symboles...', vous choisissez la couleur, le symbole (21 options, comme cercle, carré, triangle, losange et étoile) et le motif de chaque ensemble ; le choix s'applique à tout l'ensemble, pour que la légende reste correcte. Un grain peut aussi être mis en évidence seul ; il apparaît alors dans la légende avec son propre nom. En mode couleurs standard, n'importe quelle couleur peut être choisie. En mode couleurs accessibles, les couleurs proviennent uniquement de la palette adaptée choisie, et le symbole et le motif restent libres : ce sont eux qui aident les personnes qui ne distinguent pas les couleurs. Le bouton 'Auto (couleurs de la palette)' rétablit les valeurs par défaut. Les choix sont enregistrés dans le projet et n'apparaissent dans les graphiques qu'après avoir cliqué sur 'Calculer'.",
    "referencias": [
     "Spencer et al. (2016)",
     "Vermeesch (2012)",
     "Wong (2011)"
    ],
    "como_usar": [
-    "Dans le panneau de gauche, sous 'Couleurs des graphiques', choisissez le mode dans 'Colorer par'.",
+    "Dans le panneau de gauche, sous 'Ensembles de grains', choisissez le mode dans 'Séparer par'.",
     "Pour vos propres groupes, sélectionnez les lignes dans l'onglet 'Données et âges par grain' (cliquez sur le numéro de ligne ; Ctrl ou Maj pour en sélectionner plusieurs).",
     "Utilisez 'Groupes > Placer les lignes sélectionnées dans le groupe...' et indiquez le numéro du groupe.",
     "Pour revenir aux classes, utilisez 'Groupes > Revenir aux couleurs automatiques'.",
-    "Pour choisir couleur, symbole et motif, cliquez sur 'Couleurs et symboles des ensembles...' dans le panneau (ou dans le menu 'Groupes').",
+    "Pour choisir couleur, symbole et motif, cliquez sur 'Utilisation dans le calcul, couleurs et symboles...' dans le panneau (ou dans le menu 'Groupes').",
     "Sur chaque ligne, choisissez la couleur, le symbole et le motif de remplissage ; 'Auto (couleurs de la palette)' annule les choix.",
     "Pour un seul grain, double-cliquez dessus dans le tableau, après le calcul. Choisissez couleur, symbole et motif, puis cliquez sur 'Groupe' pour modifier tout l'ensemble, ou sur 'Point' pour mettre en évidence ce seul grain (un cœur, une bordure, une forme curieuse). Le point obtient sa propre ligne dans la légende, avec le nom que vous saisissez ; 'Retirer la mise en évidence' l'annule.",
-    "Cliquez sur 'Utiliser ces couleurs et symboles' puis sur 'Calculer' pour voir les changements dans les graphiques."
+    "Cliquez sur 'Utiliser ces choix', puis sur 'Calculer' pour voir les changements dans les graphiques."
+   ]
+  },
+  {
+   "id": "conjuntos",
+   "titulo": "Ensembles dans le calcul",
+   "serve": "Cette fonction sert à choisir les grains qui entrent dans les calculs et à calculer chaque ensemble à part ; utilisez-la pour les roches sédimentaires (un âge par population), les roches métamorphiques (cœurs et bordures séparés) et lorsque le tableur contient plusieurs échantillons ou unités.",
+   "explicacao": "Une moyenne ou une concordia n'a de sens que pour des grains d'un même événement. Dans une roche ignée simple, presque tous les grains datent la cristallisation, et les calculer tous ensemble fonctionne. Dans le zircon détritique, chaque population provient d'une source, et la moyenne de l'échantillon entier n'a pas de signification géologique. Dans une roche métamorphique, le cœur et la bordure enregistrent des événements différents. C'est pourquoi Zircon répartit les grains en ensembles (classes, populations, vos propres groupes ou échantillons) et vous laisse décider de deux choses. La première est de savoir quels ensembles et quels grains entrent dans le calcul : un ensemble ou un grain désactivé sort de tous les calculs et apparaît en gris dans les graphiques, avec l'entrée 'Hors calcul' dans la légende. Cela permet, par exemple, de désactiver les concordants et de calculer la discordia avec les seuls discordants. La seconde est de savoir si le calcul porte sur tous les grains ensemble ou sur chaque ensemble séparément. En mode séparé, chaque ensemble a sa propre moyenne pondérée, son âge concordia et sa discordia, chacun avec MSWD et n, dans une colonne 'Ensemble' du tableau des résultats. Lorsque les ensembles sont les classes (concordant et discordant), la limite de discordance ne s'applique pas à l'intérieur de l'ensemble, car l'ensemble est déjà votre choix ; dans les autres modes, les discordants restent hors de la moyenne et de la concordia, sauf si vous cochez 'Inclure les discordants dans la moyenne'. Les rejetés sont les valeurs aberrantes retirées par le calcul lui-même et ne peuvent pas être désactivés. Lorsque le tableur contient plusieurs échantillons, Zircon les identifie grâce à la colonne Échantillon et propose de séparer par échantillon. Regrouper des échantillons en une unité, les séparer ou les désactiver est votre décision, et vous pouvez la changer après avoir vu le résultat. Tout est enregistré dans le projet et ne change qu'après avoir cliqué sur 'Calculer'.",
+   "referencias": [
+    "Corfu et al. (2003)",
+    "Fedo et al. (2003)",
+    "Gehrels (2014)",
+    "Spencer et al. (2016)",
+    "Vermeesch (2021a)"
+   ],
+   "como_usar": [
+    "Dans le panneau de gauche, sous 'Ensembles de grains', choisissez dans 'Séparer par' comment former les ensembles.",
+    "Dans 'Calculer', choisissez 'Tous les grains ensemble' ou 'Chaque ensemble séparément'.",
+    "Cliquez sur 'Utilisation dans le calcul, couleurs et symboles...' et décochez 'Dans le calcul' pour les ensembles à exclure.",
+    "Pour des grains isolés, sélectionnez les lignes dans le tableau des données, faites un clic droit et choisissez 'Retirer du calcul les grains sélectionnés' (ou 'Remettre dans le calcul les grains sélectionnés'). Les mêmes commandes se trouvent dans le menu 'Groupes'.",
+    "Cliquez sur 'Calculer'. La colonne 'Dans le calcul' du tableau indique les grains retenus.",
+    "Pour regrouper des échantillons, par exemple plusieurs échantillons de la même couche le long d'un profil, utilisez 'Groupes > Regrouper des échantillons en unités...', sélectionnez les échantillons, cliquez sur 'Regrouper la sélection...' et donnez un nom à l'unité. Avec 'Séparer par : Échantillons du tableur', l'unité devient un seul ensemble, avec une couleur et un âge ; le tableau des données indique l'échantillon et l'unité de chaque analyse.",
+    "Pour exporter un ensemble seul, utilisez 'Fichier > Exporter > Un seul ensemble...'."
    ]
   },
   {
@@ -327,18 +351,19 @@
   },
   {
    "id": "exportar",
-   "titulo": "Exporter pour publication",
+   "titulo": "Exporter : tout, un ensemble ou une fenêtre",
    "serve": "Cette fonction sert à générer en une seule fois les fichiers d'un article ou d'un rapport ; utilisez-la lorsque les résultats ont été vérifiés et sont prêts à être utilisés en dehors de Zircon.",
-   "explicacao": "L'export pour publication crée un dossier contenant : les figures de la concordia (ou de l'isochrone), de la moyenne pondérée et de la distribution des âges, à la largeur de 1 colonne (90 mm), 1,5 colonne (140 mm) ou 2 colonnes (190 mm), en PNG et TIFF 600 dpi, PDF, SVG et, sur demande, EPS, selon les instructions d'Elsevier pour les figures ; un classeur Excel mis en forme avec les résultats, les âges par grain en couleur, les options utilisées, les références et le journal ; des graphiques interactifs en HTML, consultables hors ligne et utilisables comme matériel supplémentaire ; les données en CSV avec un fichier LEIAME pour dépôt (Mendeley Data, Zenodo, PANGAEA) ; et le texte de méthodologie. Vérifiez chaque figure avant de l'envoyer à la revue, car les exigences varient.",
+   "explicacao": "L'export de tout le projet crée un dossier contenant : les figures de la concordia (ou de l'isochrone), de la moyenne pondérée et de la distribution des âges, à la largeur de 1 colonne (90 mm), 1,5 colonne (140 mm) ou 2 colonnes (190 mm), en PNG et TIFF 600 dpi, PDF, SVG et, sur demande, EPS, selon les instructions d'Elsevier pour les figures ; un classeur Excel mis en forme avec les résultats, les âges par grain en couleur, les options utilisées, les références et le journal ; des graphiques interactifs en HTML, consultables hors ligne et utilisables comme matériel supplémentaire ; les données en CSV avec un fichier LEIAME pour dépôt (Mendeley Data, Zenodo, PANGAEA) ; et le texte de méthodologie. Vérifiez chaque figure avant de l'envoyer à la revue, car les exigences varient. Si le calcul a été fait ensemble par ensemble, le dossier contient aussi une concordia et une moyenne pour chaque ensemble, et vous pouvez inclure le projet .zircon et le tableur original du laboratoire. 'Un seul ensemble' génère le même dossier, mais uniquement avec les grains et les âges d'un échantillon, d'une population ou d'un groupe. 'Cette fenêtre seulement' enregistre le contenu d'une fenêtre : le graphique en image (PNG ou TIFF 600 dpi, SVG ou PDF), le tableau en classeur (Excel ou CSV) ou le texte en fichier.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
     "Cliquez sur 'Calculer' avant d'exporter.",
-    "Choisissez 'Fichier > Exporter pour publication (figures, Excel, interactif, méthodologie)...' (Ctrl+E).",
-    "Choisissez la 'Largeur des figures' et cochez les formats.",
+    "Pour tout exporter, choisissez 'Fichier > Exporter > Tout le projet...' (Ctrl+E), choisissez la largeur et les formats des figures, et cochez si vous voulez les figures de chaque ensemble et le projet avec le tableur original.",
     "Cliquez sur 'Choisir le dossier et exporter' et choisissez le dossier ; les fichiers sont placés dans un sous-dossier portant le nom du projet.",
-    "Pour un seul fichier, utilisez les autres commandes du menu 'Fichier' (classeur Excel, graphique actuel, HTML interactif ou méthodologie)."
+    "Pour un ensemble, utilisez 'Fichier > Exporter > Un seul ensemble...' et choisissez l'échantillon, la population ou le groupe. Au préalable, calculez avec 'Chaque ensemble séparément'.",
+    "Pour une fenêtre, faites un clic droit sur son titre et choisissez 'Exporter cette fenêtre...', ou utilisez 'Fichier > Exporter > Cette fenêtre seulement...' (Ctrl+Shift+E).",
+    "Les autres commandes du menu 'Fichier > Exporter' enregistrent un seul fichier (classeur Excel, graphique, HTML interactif ou méthodologie)."
    ]
   },
   {

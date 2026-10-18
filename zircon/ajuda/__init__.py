@@ -23,7 +23,7 @@ TOPICO_DA_OPCAO = {
     "media_de": "media_ponderada", "corte_76": "melhor_idade", "limite_discordancia": "discordancia",
     "rejeitar_outliers": "outliers", "efeitos_aleatorios": "efeitos_aleatorios", "agrupar": "cores_grupos",
     "pb_comum": "pb_comum", "diagrama": "diagramas", "usar_discordantes": "discordancia",
-    "minimo_por_populacao": "populacoes", "paleta": "acessibilidade",
+    "minimo_por_populacao": "populacoes", "paleta": "acessibilidade", "calcular_por": "conjuntos",
 }
 _cache = {}
 

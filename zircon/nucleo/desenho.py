@@ -14,6 +14,9 @@ from ..idiomas import figura as F
 from . import idades
 from . import grupos
 
+COR_FORA = "#B0B0B0"  # a mesma de calculo.COR_FORA
+COR_DISCORDIA = "#D55E00"
+
 # Fontes com chinês para os gráficos; o matplotlib usa a primeira que existir
 # no computador para cada letra (Windows, Mac, Linux).
 FONTES = ["DejaVu Sans", "Microsoft YaHei", "SimHei", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
@@ -110,12 +113,17 @@ def _legenda(ax, graos, agrupar, com_destaques=True):
     if agrupar == "classe":
         nomes = [(c, F(c), grupos.hachura(classe=c)) for c in ("concordante", "discordante", "rejeitado")]
         chave = graos.classe
+    elif "conjunto" in graos:
+        nomes = [(k, grupos.nome_conjunto(k, F), grupos.hachura(grupo=grupos.numero_conjunto(k)))
+                 for k in sorted(graos.conjunto.unique(), key=grupos.ordem_conjunto)]
+        chave = graos.conjunto
     else:
         nomes = [(g, F("Grupo {n}").format(n=int(g)), grupos.hachura(grupo=int(g)))
                  for g in sorted(graos.grupo.unique())]
         chave = graos.grupo
     alcas, rotulos = [], []
     destaque = graos["destaque"].astype(str).to_numpy() if "destaque" in graos else np.full(len(graos), "")
+    ativo = graos["ativo"].to_numpy(bool) if "ativo" in graos else np.full(len(graos), True)
     hach = list(graos["hachura"]) if "hachura" in graos else None
 
     def alca(i, h):
@@ -125,17 +133,33 @@ def _legenda(ax, graos, agrupar, com_destaques=True):
             return (p, Line2D([], [], linestyle="none", markersize=6, **_formato(s_, c)))
         return p
     for k, nome, h in nomes:
-        sel = np.flatnonzero((chave == k).to_numpy() & (destaque == ""))
+        sel = np.flatnonzero((chave == k).to_numpy() & (destaque == "") & ativo)
         if len(sel):
             alcas.append(alca(sel[0], h))
             rotulos.append(nome)
-    for i in np.flatnonzero(destaque != "") if com_destaques else []:  # cada grão destacado tem a sua linha na legenda
+    for i in np.flatnonzero((destaque != "") & ativo) if com_destaques else []:  # cada grão destacado tem a sua linha
         alcas.append(alca(i, ""))
         rotulos.append(destaque[i])
+    if not ativo.all():
+        alcas.append(Patch(facecolor=COR_FORA + "80", edgecolor=COR_FORA))
+        rotulos.append(F("Fora do cálculo"))
     ax.legend(alcas, rotulos, loc="best", fontsize="small")
 
 
-def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=None):
+def _cor_do_conjunto(graos, chave):
+    """Cor de um conjunto no gráfico (de um grão dele no cálculo e sem destaque individual)."""
+    if chave is None or "conjunto" not in graos:
+        return COR_DISCORDIA
+    sel = graos["conjunto"] == chave
+    if "ativo" in graos:
+        sel &= graos["ativo"].astype(bool)
+    if "destaque" in graos and (sel & (graos["destaque"] == "")).any():
+        sel &= graos["destaque"] == ""
+    return graos.cor[sel].iloc[0] if sel.any() else COR_DISCORDIA
+
+
+def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordias=()):
+    """discordias: retas calculadas (uma por conjunto, ou uma só para todos os grãos juntos)."""
     graf.figura.clear()
     ax = graf.figura.add_subplot()
     g = graos.dropna(subset=["r75", "r68"])
@@ -164,9 +188,12 @@ def concordia(graf, graos, diagrama="wetherill", agrupar="classe", discordia=Non
         mx, my = curva(tm)
         ax.plot(mx, my, "o", color=_tinta(), ms=3)
         ax.annotate(f"{tm:g}", (mx, my), fontsize="small", xytext=(3, -8), textcoords="offset points")
-    if discordia and diagrama == "wetherill" and "superior" in discordia:
-        xx = np.linspace(xmin, xmax, 10)
-        ax.plot(xx, discordia["a"] + discordia["b"] * xx, "--", color="#D55E00", lw=1)
+    if isinstance(discordias, dict):
+        discordias = [discordias]
+    for d in discordias or []:
+        if diagrama == "wetherill" and "superior" in d:
+            xx = np.linspace(xmin, xmax, 10)
+            ax.plot(xx, d["a"] + d["b"] * xx, "--", color=_cor_do_conjunto(graos, d.get("conjunto")), lw=1)
     dx, dy = xmax - xmin, ymax - ymin
     ax.set_xlim(xmin - 0.1 * dx, xmax + 0.1 * dx)
     ax.set_ylim(ymin - 0.1 * dy, ymax + 0.1 * dy)
@@ -184,7 +211,8 @@ def _marcas(tmin, tmax):
     return np.arange(np.ceil(tmin / passo) * passo, tmax, passo)
 
 
-def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
+def media_ponderada(graf, graos, coluna, medias=(), agrupar="classe"):
+    """medias: linhas de média ponderada da tabela de resultados (uma por conjunto, ou uma só)."""
     graf.figura.clear()
     ax = graf.figura.add_subplot()
     g = graos.dropna(subset=[coluna]).sort_values(coluna)
@@ -201,12 +229,25 @@ def media_ponderada(graf, graos, coluna, media=None, agrupar="classe"):
         pontos = ax.scatter(pos, g[coluna], c=list(g.cor), s=0 if "simbolo" in g else None)
         _guarda_info(ax, [(pontos, [info_grao(r) for _, r in g.iterrows()])], [list(g.index)])
         _simbolos(ax, pos, g[coluna], g, tamanho=6)
-    if media is not None:
+    if isinstance(medias, dict):
+        medias = [medias]
+    medias = [m for m in medias or [] if m is not None]
+    for media in medias:
         m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
-        ax.axhspan(m - e, m + e, color="#999999", alpha=0.35, zorder=0)
-        ax.axhline(m, color=_tinta(), lw=matplotlib.rcParams["lines.linewidth"] * 0.7)
+        k = media.get("Conjunto")
+        cor = "#999999" if k is None else _cor_do_conjunto(g, k)
+        ax.axhspan(m - e, m + e, color=cor, alpha=0.25, zorder=0)
+        ax.axhline(m, color=_tinta() if k is None else cor, lw=matplotlib.rcParams["lines.linewidth"] * 0.7)
+        if k is not None:
+            ax.annotate(f"{grupos.nome_conjunto(k, F)}: {num(m)} ± {num(e)}", (1, m), xycoords=("axes fraction", "data"),
+                        xytext=(-4, 3), textcoords="offset points", ha="right", fontsize="small", color=_tinta())
+    if len(medias) == 1 and medias[0].get("Conjunto") is None:
+        media = medias[0]
+        m, e = media["Idade (Ma)"], media["± 2σ (Ma)"]
         ax.set_title(f"{F(media['Cálculo'])}: {num(m)} ± {num(e)} Ma (2σ), MSWD {num(media['MSWD'])}, "
                      f"n = {media['n']}", fontsize="medium")
+    elif medias:
+        ax.set_title(F("Médias ponderadas por conjunto (2σ)"), fontsize="medium")
     ax.set_xlabel(F("análises em ordem de idade (barras 2σ)"))
     ax.set_ylabel(F("idade (Ma)"))
     _legenda(ax, g, agrupar)
@@ -217,6 +258,8 @@ def densidade(graf, graos, coluna="melhor", agrupar="classe"):
     graf.figura.clear()
     ax = graf.figura.add_subplot()
     g = graos.dropna(subset=[coluna])
+    if "ativo" in g:
+        g = g[g["ativo"].astype(bool)]  # só os grãos que estão no cálculo
     t = g[coluna].to_numpy(float)
     if len(t) < 2:
         graf.limpar(N_("Poucas idades para a curva de densidade"))

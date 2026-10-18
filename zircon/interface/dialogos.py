@@ -185,10 +185,10 @@ def sobre_texto():
 class ExportaPublicacao(QDialog):
     """Escolha da largura das figuras e dos formatos."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, titulo=None, com_projeto=True):
         from ..nucleo.exportacao import LARGURAS_MM
         super().__init__(parent)
-        self.setWindowTitle(tr("Exportar para publicação"))
+        self.setWindowTitle(titulo or tr("Exportar tudo do projeto"))
         lay = QVBoxLayout(self)
         texto = QLabel(tr("Gera uma pasta com: figuras nos formatos escolhidos; planilha Excel formatada com as "
                           "referências; gráficos interativos em HTML (material suplementar, abrem sem internet); "
@@ -213,6 +213,15 @@ class ExportaPublicacao(QDialog):
             self.c_fmt[fmt] = c
         nota = QLabel("<small>" + tr("Larguras e resoluções seguem as instruções de figuras da Elsevier.") + "</small>")
         lay.addWidget(nota)
+        self.c_por_conjunto = QCheckBox(tr("Também uma concórdia e uma média de cada conjunto (quando o cálculo é "
+                                           "por conjunto)"))
+        self.c_por_conjunto.setChecked(True)
+        self.c_por_conjunto.setVisible(com_projeto)
+        lay.addWidget(self.c_por_conjunto)
+        self.c_projeto = QCheckBox(tr("Incluir o projeto .zircon e a planilha original do laboratório"))
+        self.c_projeto.setChecked(com_projeto)
+        self.c_projeto.setVisible(com_projeto)
+        lay.addWidget(self.c_projeto)
         botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         botoes.button(QDialogButtonBox.Ok).setText(tr("Escolher pasta e exportar"))
         botoes.button(QDialogButtonBox.Cancel).setText(tr("Cancelar"))
@@ -225,3 +234,79 @@ class ExportaPublicacao(QDialog):
 
     def formatos(self):
         return tuple(f for f, c in self.c_fmt.items() if c.isChecked())
+
+
+class JuntaAmostras(QDialog):
+    """Uma linha por amostra da planilha, com a unidade em que ela entra no cálculo.
+
+    Amostras com a mesma unidade viram um conjunto só (por exemplo, várias amostras de uma camada).
+    A decisão é do pesquisador: o Zircon só separa pela coluna Amostra.
+    """
+
+    def __init__(self, contagem, unidades, parent=None):
+        from .qt import QAbstractItemView, QInputDialog, QTableWidget, QTableWidgetItem
+        super().__init__(parent)
+        self._pede_nome = QInputDialog.getText
+        self.setWindowTitle(tr("Juntar amostras em unidades"))
+        self.resize(560, 460)
+        lay = QVBoxLayout(self)
+        texto = QLabel(tr("Cada amostra da planilha é um conjunto, com cor própria. Para tratar várias amostras como "
+                          "uma coisa só (por exemplo, várias amostras da mesma camada ao longo de um perfil), "
+                          "selecione-as e clique em \"Juntar as selecionadas...\". Elas passam a ser uma unidade, "
+                          "com uma cor e uma idade. As amostras continuam identificadas na tabela de dados."))
+        texto.setWordWrap(True)
+        lay.addWidget(texto)
+        self.tabela = QTableWidget(len(contagem), 3)
+        self.tabela.setHorizontalHeaderLabels([tr("Amostra"), tr("Análises"), tr("Unidade")])
+        self.tabela.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tabela.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.EditKeyPressed)
+        for i, (amostra, n) in enumerate(contagem.items()):
+            for j, v in enumerate((amostra, str(n), unidades.get(amostra, ""))):
+                item = QTableWidgetItem(v)
+                if j < 2:
+                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                self.tabela.setItem(i, j, item)
+        self.tabela.resizeColumnsToContents()
+        self.tabela.horizontalHeader().setStretchLastSection(True)
+        lay.addWidget(self.tabela)
+        linha = QHBoxLayout()
+        b_juntar = QPushButton(tr("Juntar as selecionadas..."))
+        b_juntar.clicked.connect(self._juntar)
+        b_separar = QPushButton(tr("Separar as selecionadas"))
+        b_separar.clicked.connect(lambda: self._marca(""))
+        linha.addWidget(b_juntar)
+        linha.addWidget(b_separar)
+        linha.addStretch()
+        lay.addLayout(linha)
+        botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        botoes.button(QDialogButtonBox.Ok).setText(tr("Usar estas unidades"))
+        botoes.button(QDialogButtonBox.Cancel).setText(tr("Cancelar"))
+        botoes.accepted.connect(self.accept)
+        botoes.rejected.connect(self.reject)
+        lay.addWidget(botoes)
+
+    def _linhas(self):
+        return sorted({i.row() for i in self.tabela.selectionModel().selectedRows()})
+
+    def _marca(self, nome):
+        for i in self._linhas():
+            self.tabela.item(i, 2).setText(nome)
+
+    def _juntar(self):
+        linhas = self._linhas()
+        if not linhas:
+            return
+        sugestao = self.tabela.item(linhas[0], 2).text() or self.tabela.item(linhas[0], 0).text()
+        nome, ok = self._pede_nome(self, tr("Juntar amostras"), tr("Nome da unidade (por exemplo, a camada):"),
+                                   QLineEdit.Normal, sugestao)
+        if ok and nome.strip():
+            self._marca(nome.strip())
+
+    def unidades(self):
+        """{amostra: unidade} só das amostras que foram juntadas."""
+        u = {}
+        for i in range(self.tabela.rowCount()):
+            amostra, unidade = self.tabela.item(i, 0).text(), self.tabela.item(i, 2).text().strip()
+            if unidade and unidade != amostra:
+                u[amostra] = unidade
+        return u

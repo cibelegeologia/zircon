@@ -27,6 +27,9 @@ class Projeto:
     grupo_manual: list = None
     estilos: dict = field(default_factory=dict)  # cor, símbolo e padrão escolhidos para cada conjunto
     destaques: dict = field(default_factory=dict)  # o mesmo para grãos destacados um a um (linha -> estilo)
+    desligados: dict = field(default_factory=dict)  # {"conjuntos": [...], "graos": [linhas]} fora do cálculo
+    unidades: dict = field(default_factory=dict)  # amostra -> unidade em que o pesquisador a juntou
+    outros_originais: list = field(default_factory=list)  # [nome, bytes] das planilhas adicionadas depois
     notas: str = ""
     arquivo_original: str = ""
     bytes_original: bytes = b""
@@ -40,7 +43,8 @@ class Projeto:
         meta = {
             "versao_formato": VERSAO_FORMATO, "nome": self.nome, "tipo": self.tipo,
             "mapa": self.mapa, "log": self.log, "opcoes": self.opcoes,
-            "grupo_manual": self.grupo_manual, "estilos": self.estilos, "destaques": self.destaques, "notas": self.notas,
+            "grupo_manual": self.grupo_manual, "estilos": self.estilos, "destaques": self.destaques,
+            "desligados": self.desligados, "unidades": self.unidades, "notas": self.notas,
             "arquivo_original": self.arquivo_original, "criado": self.criado,
             "salvo": datetime.now().isoformat(timespec="seconds"),
         }
@@ -50,6 +54,8 @@ class Projeto:
                 z.writestr("dados.csv", self.dados.to_csv(index=False))
             if self.bytes_original:
                 z.writestr("original/" + Path(self.arquivo_original).name, self.bytes_original)
+            for nome, bruto in self.outros_originais:
+                z.writestr("adicionadas/" + Path(nome).name, bruto)
         self.caminho = str(caminho)
         return caminho
 
@@ -61,9 +67,11 @@ class Projeto:
                 if "dados.csv" in z.namelist() else None
             originais = [n for n in z.namelist() if n.startswith("original/")]
             bruto = z.read(originais[0]) if originais else b""
+            outros = [[n.split("/", 1)[1], z.read(n)] for n in z.namelist() if n.startswith("adicionadas/")]
         p = cls(nome=meta["nome"], tipo=meta["tipo"], dados=dados, mapa=meta["mapa"], log=meta["log"],
                 opcoes=meta["opcoes"], grupo_manual=meta.get("grupo_manual"), estilos=meta.get("estilos") or {},
-                destaques=meta.get("destaques") or {},
+                destaques=meta.get("destaques") or {}, desligados=meta.get("desligados") or {},
+                unidades=meta.get("unidades") or {}, outros_originais=outros,
                 notas=meta.get("notas", ""),
                 arquivo_original=meta.get("arquivo_original", ""), bytes_original=bruto,
                 criado=meta.get("criado", ""))
