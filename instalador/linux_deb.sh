@@ -11,6 +11,10 @@ mkdir -p "$PKG/DEBIAN" "$PKG/opt" "$PKG/usr/bin" "$PKG/usr/share/applications" "
 cp -r "$RAIZ/dist/Zircon" "$PKG/opt/zircon"
 ln -s /opt/zircon/Zircon "$PKG/usr/bin/zircon"
 cp "$RAIZ/instalador/linux/zircon.desktop" "$PKG/usr/share/applications/"
+# metainfo (AppStream): sem ele a loja do Pop!_OS mostra a descrição do pacote com os acentos trocados por "?"
+mkdir -p "$PKG/usr/share/metainfo"
+sed -e "s/@VERSAO@/$VERSAO/" -e "s/@DATA@/$(date -u +%Y-%m-%d)/" "$RAIZ/instalador/linux/zircon.metainfo.xml" \
+  > "$PKG/usr/share/metainfo/io.github.cibelegeologia.zircon.metainfo.xml"
 mkdir -p "$PKG/usr/share/icons/hicolor/256x256/apps"
 python3 -c "from PIL import Image; Image.open('$RAIZ/instalador/zircon.png').resize((256, 256)).save('$PKG/usr/share/icons/hicolor/256x256/apps/zircon.png')" \
   || cp "$RAIZ/instalador/zircon.png" "$PKG/usr/share/icons/hicolor/256x256/apps/zircon.png"

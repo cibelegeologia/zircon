@@ -88,6 +88,8 @@ jobs:
           tail -15 inicio.log | sed 's/^/::warning::/'
           timeout 60 xvfb-run -a sh -c "$D/Zircon --teste-inicio"
       - run: sh instalador/linux_deb.sh "$(python -c 'import zircon; print(zircon.__version__)')"
+      - name: Conferir os acentos que a loja de aplicativos mostra
+        run: dpkg-deb --fsys-tarfile dist/Zircon-*.deb | tar -xO ./usr/share/metainfo/io.github.cibelegeologia.zircon.metainfo.xml | grep -q "zircão"
       - uses: actions/upload-artifact@v4
         with:
           name: Zircon-linux

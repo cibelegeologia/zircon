@@ -1,7 +1,15 @@
 [Desktop Entry]
 Type=Application
 Name=Zircon
-Comment=Idades U-Pb, Th-Pb e Pb-Pb em zircão
+GenericName=U-Pb zircon ages
+GenericName[pt_BR]=Idades U-Pb em zircão
+GenericName[pt_PT]=Idades U-Pb em zircão
+GenericName[es]=Edades U-Pb en circón
+Comment=U-Pb, Th-Pb and Pb-Pb ages in zircon
+Comment[pt_BR]=Idades U-Pb, Th-Pb e Pb-Pb em zircão
+Comment[pt_PT]=Idades U-Pb, Th-Pb e Pb-Pb em zircão
+Comment[es]=Edades U-Pb, Th-Pb y Pb-Pb en circón
+Keywords=geochronology;U-Pb;zircon;geocronologia;zircão;
 Exec=/opt/zircon/Zircon %f
 Icon=zircon
 StartupWMClass=Zircon

@@ -2,6 +2,11 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.10.1 (18/10/2026)
+
+- Linux: a loja de aplicativos (Pop!_Shop e outras) mostrava os acentos da descrição do Zircon como "?". O pacote .deb agora traz a ficha do programa no formato AppStream, em UTF-8, com nome, resumo e descrição em português, inglês e espanhol.
+- Política de segurança (SECURITY.md): como relatar uma vulnerabilidade em particular.
+
 ## 0.10.0 (18/10/2026)
 
 Cores e símbolos escolhidos por você.

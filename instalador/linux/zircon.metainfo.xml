@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dados que as lojas de aplicativos do Linux (Pop!_Shop, GNOME Software, Discover) mostram. -->
+<component type="desktop-application">
+  <id>io.github.cibelegeologia.zircon</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>CC0-1.0</project_license>
+  <name>Zircon</name>
+  <summary>U-Pb, Th-Pb and Pb-Pb ages in zircon</summary>
+  <summary xml:lang="pt-BR">Idades U-Pb, Th-Pb e Pb-Pb em zircão</summary>
+  <summary xml:lang="pt-PT">Idades U-Pb, Th-Pb e Pb-Pb em zircão</summary>
+  <summary xml:lang="es">Edades U-Pb, Th-Pb y Pb-Pb en circón</summary>
+  <developer id="io.github.cibelegeologia">
+    <name>Cibele</name>
+  </developer>
+  <description>
+    <p>Free program (CC0) to calculate zircon ages from U, Th and Pb isotopes, with the bibliographic reference of each method. It works offline and collects no data.</p>
+    <p xml:lang="pt-BR">Programa livre (CC0) para calcular idades por isótopos de U, Th e Pb em zircão, com a referência bibliográfica de cada método. Funciona sem internet e não coleta dados.</p>
+    <p xml:lang="pt-PT">Programa livre (CC0) para calcular idades por isótopos de U, Th e Pb em zircão, com a referência bibliográfica de cada método. Funciona sem internet e não recolhe dados.</p>
+    <p xml:lang="es">Programa libre (CC0) para calcular edades de circón a partir de los isótopos de U, Th y Pb, con la referencia bibliográfica de cada método. Funciona sin internet y no recopila datos.</p>
+  </description>
+  <launchable type="desktop-id">zircon.desktop</launchable>
+  <icon type="stock">zircon</icon>
+  <url type="homepage">https://github.com/cibelegeologia/zircon</url>
+  <url type="bugtracker">https://github.com/cibelegeologia/zircon/issues</url>
+  <categories>
+    <category>Science</category>
+    <category>Education</category>
+  </categories>
+  <keywords>
+    <keyword>geochronology</keyword>
+    <keyword>U-Pb</keyword>
+    <keyword>zircon</keyword>
+    <keyword xml:lang="pt-BR">geocronologia</keyword>
+    <keyword xml:lang="pt-BR">zircão</keyword>
+  </keywords>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="@VERSAO@" date="@DATA@"/>
+  </releases>
+</component>
