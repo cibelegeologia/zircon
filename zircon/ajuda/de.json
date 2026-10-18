@@ -36,16 +36,34 @@
    "id": "importar",
    "titulo": "Labortabelle importieren",
    "serve": "Diese Funktion dient dazu, die vom Labor gelieferte Ergebnistabelle in Zircon zu laden; verwenden Sie sie immer, wenn Sie ein neues Projekt mit den Daten einer Probe beginnen.",
-   "explicacao": "Zircon liest Dateien im Format .xlsx, .xls, .ods, .csv, .txt und .tsv. Bei Tabellenkalkulationsdateien wird nur das erste Blatt gelesen. Bei Textdateien erkennt es die Kodierung und das Spaltentrennzeichen (Tabulator, Semikolon oder Komma). Auch das Dezimaltrennzeichen (Komma oder Punkt) wird erkannt. Titelzeilen am Anfang werden übersprungen, und zweizeilige Kopfzeilen werden zusammengeführt. Die Spalten werden am Namen erkannt (zum Beispiel 207Pb/235U, 206Pb/238U, rho), und die Fehlerspalte muss direkt auf den Wert folgen. Gibt die Kopfzeile des Fehlers 2s oder 2σ an, wird der Wert durch 2 geteilt; gibt sie % an, wird er in einen absoluten Fehler umgerechnet. Achtung: Ein 2σ-Fehler ohne diese Angabe in der Kopfzeile wird als 1σ gelesen. Zellen wie '<LOD', 'bdl' oder 'n.d.' werden zu fehlenden Werten.",
+   "explicacao": "Zircon liest Dateien im Format .xlsx, .xls, .ods, .csv, .txt und .tsv. Bei Tabellenkalkulationsdateien wird nur das erste Blatt gelesen. Bei Textdateien erkennt es die Kodierung und das Spaltentrennzeichen (Tabulator, Semikolon oder Komma). Auch das Dezimaltrennzeichen (Komma oder Punkt) wird erkannt. Titelzeilen am Anfang werden übersprungen, die Kopfzeile muss aber aus einer einzigen Zeile bestehen. Eine Probe pro Datei: Sind es mehrere, gehen alle Körner gemeinsam in die Berechnungen ein. Das vollständige Format beschreibt das Thema 'Tabelle vorbereiten (Vorlage)'. Die Spalten werden am Namen erkannt (zum Beispiel 207Pb/235U, 206Pb/238U, rho), und die Fehlerspalte muss direkt auf den Wert folgen. Gibt die Kopfzeile des Fehlers 2s oder 2σ an, wird der Wert durch 2 geteilt; gibt sie % an, wird er in einen absoluten Fehler umgerechnet. Achtung: Ein 2σ-Fehler ohne diese Angabe in der Kopfzeile wird als 1σ gelesen. Zellen wie '<LOD', 'bdl' oder 'n.d.' werden zu fehlenden Werten.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
+    "Wenn die Labortabelle mehrere Blätter, eine mehrzeilige Kopfzeile oder mehrere Proben hat, bereiten Sie sie zuerst mit 'Datei > Tabellenvorlage speichern...' vor (siehe Thema 'Tabelle vorbereiten (Vorlage)').",
     "Wählen Sie 'Datei > Neues Projekt (Tabelle importieren)...' und wählen Sie die Datei aus.",
     "Lesen Sie im Fenster 'Import prüfen' das Protokoll: Trennzeichen, erste Datenzeile und die Spalte, die jedem Verhältnis und jedem Fehler zugeordnet wurde (1σ oder 2σ, absolut oder %).",
     "Prüfen Sie in der Vorschautabelle, ob die Zahlen stimmig sind; falls etwas nicht stimmt, klicken Sie auf 'Abbrechen', korrigieren Sie die Kopfzeile der Tabelle und importieren Sie erneut.",
     "Wenn alles stimmt, klicken Sie auf 'Diese Daten verwenden'.",
     "Danach bewahrt der Reiter 'Importprotokoll' diese Entscheidungen zum Nachschlagen auf."
+   ]
+  },
+  {
+   "id": "preparar_planilha",
+   "titulo": "Tabelle vorbereiten (Vorlage)",
+   "serve": "Diese Funktion dient dazu, die Labortabelle in das Format zu bringen, das Zircon liest; verwenden Sie sie vor dem Import, vor allem wenn die Tabelle mehrere Blätter, eine mehrzeilige Kopfzeile, mehrere Proben oder Fußnoten hat.",
+   "explicacao": "Zircon liest eine einfache Tabelle: nur das erste Blatt, eine einzeilige Kopfzeile direkt über den Daten, eine Zeile pro Analyse und eine Probe pro Datei. Die Spalten der Vorlage sind Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ und rho. Jeder Fehler steht direkt rechts neben seinem Wert, und sein Name gibt an, ob er 1σ oder 2σ ist und ob er relativ (mit '%') oder absolut (ohne '%') ist. Für Tera-Wasserburg sind die Verhältnisse 238U/206Pb und 207Pb/206Pb; wenn Sie nur Alter haben, sind die Spalten Age (Ma) und ± 2σ (Ma). Zusätzliche Spalten wie U, Th, Th/U oder die Alter des Labors können rechts von den Verhältnissen bleiben. Körner, die Sie ausschließen wollen, kommen aus der Tabelle heraus; diskordante Körner können bleiben, weil Zircon sie anhand der von Ihnen gewählten Grenze trennt. Werden 1σ- und 2σ-Fehler oder absolute und relative Fehler vermischt, ändern sich die Alter und der MSWD; deshalb ist dies die wichtigste Prüfung.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Wählen Sie 'Datei > Tabellenvorlage speichern...' und speichern Sie die Vorlage in einem eigenen Ordner.",
+    "Öffnen Sie die Vorlage in Excel oder LibreOffice Calc und lesen Sie das Blatt 'Anleitung'.",
+    "Löschen Sie im Blatt 'Daten' die Beispielzeilen und fügen Sie die Spalten Ihrer Tabelle in der Reihenfolge der Vorlage ein. Verwenden Sie 'Inhalte einfügen > Werte', um Zahlen statt Formeln zu übernehmen.",
+    "Prüfen Sie den vom Labor angegebenen Fehler: Ist er 1σ, ändern Sie die Kopfzeile in '± 1σ'; ist er in Prozent angegeben, in '± 2σ (%)' oder '± 1σ (%)'.",
+    "Lassen Sie Titel, Einheitenzeilen und Fußnoten außerhalb der Tabelle. Enthält die Datei mehrere Proben, legen Sie für jede eine eigene Datei an.",
+    "Speichern Sie als .xlsx und importieren Sie mit 'Datei > Neues Projekt (Tabelle importieren)...'. Prüfen Sie im Fenster 'Import prüfen' die Spalte, die jedem Verhältnis und jedem Fehler zugeordnet wurde."
    ]
   },
   {
@@ -195,7 +213,7 @@
     "Importieren Sie Daten mit U-Pb-Verhältnissen und klicken Sie auf 'Berechnen'.",
     "Lassen Sie im linken Bedienfeld unter 'Was berechnen' das 'Konkordiadiagramm' auf 'Wetherill', um die gestrichelte Diskordia zu sehen.",
     "Lesen Sie im Reiter 'Ergebnisse' 'Diskordia: oberer Schnittpunkt' und 'Diskordia: unterer Schnittpunkt' mit MSWD und p.",
-    "Verwenden Sie 'Gruppen > Ausgewählte Zeilen in Gruppe einordnen...', um die Körner zu markieren, die Sie zur Diskordia zählen, und die Interpretation zu bewerten."
+    "Die Diskordia verwendet alle Körner des Projekts. Um sie nur an einige Körner anzupassen, legen Sie eine Kopie der Tabelle nur mit diesen Körnern an und importieren Sie diese Kopie als weiteres Projekt."
    ]
   },
   {

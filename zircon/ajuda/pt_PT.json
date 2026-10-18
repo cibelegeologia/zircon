@@ -36,16 +36,34 @@
    "id": "importar",
    "titulo": "Importar a folha de cálculo do laboratório",
    "serve": "Este recurso serve para trazer para o Zircon a folha de cálculo de resultados fornecida pelo laboratório; use-o sempre que começar um projeto novo com dados de uma amostra.",
-   "explicacao": "O Zircon lê ficheiros .xlsx, .xls, .ods, .csv, .txt e .tsv. Nas folhas de cálculo, só a primeira folha é lida. Nos ficheiros de texto, deteta a codificação e o separador de colunas (tabulação, ponto e vírgula ou vírgula). O separador decimal (vírgula ou ponto) também é detetado. As linhas de título no topo são ignoradas, e os cabeçalhos em duas linhas são juntos. As colunas são reconhecidas pelo nome (por exemplo 207Pb/235U, 206Pb/238U, rho), e a coluna de erro deve vir logo a seguir ao valor. Se o cabeçalho do erro indicar 2s ou 2σ, o valor é dividido por 2; se indicar %, é convertido em erro absoluto. Atenção: um erro em 2σ sem essa indicação no cabeçalho será lido como 1σ. Células como '<LOD', 'bdl' ou 'n.d.' passam a dados em falta.",
+   "explicacao": "O Zircon lê ficheiros .xlsx, .xls, .ods, .csv, .txt e .tsv. Nas folhas de cálculo, só a primeira folha é lida. Nos ficheiros de texto, deteta a codificação e o separador de colunas (tabulação, ponto e vírgula ou vírgula). O separador decimal (vírgula ou ponto) também é detetado. As linhas de título no topo são ignoradas, mas o cabeçalho deve ocupar uma só linha. Uma amostra por ficheiro: se houver várias, todos os grãos entram juntos nos cálculos. O formato completo está no tópico 'Preparar a folha de cálculo (modelo)'. As colunas são reconhecidas pelo nome (por exemplo 207Pb/235U, 206Pb/238U, rho), e a coluna de erro deve vir logo a seguir ao valor. Se o cabeçalho do erro indicar 2s ou 2σ, o valor é dividido por 2; se indicar %, é convertido em erro absoluto. Atenção: um erro em 2σ sem essa indicação no cabeçalho será lido como 1σ. Células como '<LOD', 'bdl' ou 'n.d.' passam a dados em falta.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
+    "Se a folha de cálculo do laboratório tiver várias folhas, cabeçalho em várias linhas ou várias amostras, prepare-a antes com 'Ficheiro > Guardar modelo de folha de cálculo...' (veja o tópico 'Preparar a folha de cálculo (modelo)').",
     "Escolha 'Ficheiro > Novo projeto (importar folha de cálculo)...' e selecione o ficheiro.",
     "Na janela 'Verificar importação', leia o registo: separadores, linha de início dos dados e a coluna atribuída a cada razão e erro (1σ ou 2σ, absoluto ou %).",
     "Verifique na tabela de pré-visualização se os números são coerentes; se algo estiver errado, clique em 'Cancelar', corrija o cabeçalho da folha de cálculo e importe de novo.",
     "Se estiver tudo certo, clique em 'Usar estes dados'.",
     "Depois, o separador 'Registo da importação' guarda essas decisões para consulta."
+   ]
+  },
+  {
+   "id": "preparar_planilha",
+   "titulo": "Preparar a folha de cálculo (modelo)",
+   "serve": "Este recurso serve para pôr a folha de cálculo do laboratório no formato que o Zircon lê; use-o antes de importar, sobretudo quando a folha de cálculo tem várias folhas, cabeçalho em várias linhas, várias amostras ou notas de rodapé.",
+   "explicacao": "O Zircon lê uma tabela simples: só a primeira folha, um cabeçalho de uma linha logo acima dos dados, uma linha por análise e uma amostra por ficheiro. As colunas do modelo são Amostra, Análise, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ e rho. Cada erro fica logo à direita do seu valor, e o nome dele indica se é 1σ ou 2σ e se é relativo (com '%') ou absoluto (sem '%'). Para Tera-Wasserburg, as razões são 238U/206Pb e 207Pb/206Pb; se só tiver idades, as colunas são Idade (Ma) e ± 2σ (Ma). Colunas a mais, como U, Th, Th/U ou as idades do laboratório, podem ficar à direita das razões. Os grãos que decidiu excluir saem da tabela; os discordantes podem ficar, porque o Zircon separa-os pelo limite que escolher. Misturar erros de 1σ e 2σ, ou absolutos e relativos, altera as idades e o MSWD, por isso esta é a verificação mais importante.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Escolha 'Ficheiro > Guardar modelo de folha de cálculo...' e guarde o modelo numa pasta sua.",
+    "Abra o modelo no Excel ou no LibreOffice Calc e leia a folha 'Instruções'.",
+    "Na folha 'Dados', apague as linhas de exemplo e cole as colunas da sua folha de cálculo pela ordem do modelo. Use 'Colar especial > Valores' para trazer números, e não fórmulas.",
+    "Verifique o erro indicado pelo laboratório: se for 1σ, mude o cabeçalho para '± 1σ'; se for em percentagem, para '± 2σ (%)' ou '± 1σ (%)'.",
+    "Deixe fora da tabela os títulos, as linhas de unidades e as notas de rodapé. Se o ficheiro tiver várias amostras, crie um ficheiro para cada uma.",
+    "Guarde como .xlsx e importe com 'Ficheiro > Novo projeto (importar folha de cálculo)...'. Na janela 'Verificar importação', verifique a coluna atribuída a cada razão e erro."
    ]
   },
   {
@@ -195,7 +213,7 @@
     "Importe dados com razões U-Pb e clique em 'Calcular'.",
     "No painel à esquerda, em 'O que calcular', deixe 'Diagrama concórdia' em 'Wetherill' para ver a reta da discórdia a tracejado.",
     "No separador 'Resultados', leia 'Discórdia: intercepto superior' e 'Discórdia: intercepto inferior', com MSWD e p.",
-    "Use 'Grupos > Colocar linhas selecionadas no grupo...' para marcar os grãos que considera parte da discórdia e avaliar a interpretação."
+    "A discórdia usa todos os grãos do projeto. Para a ajustar só a alguns grãos, faça uma cópia da folha de cálculo só com eles e importe essa cópia como outro projeto."
    ]
   },
   {

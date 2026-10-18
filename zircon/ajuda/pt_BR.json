@@ -36,16 +36,34 @@
    "id": "importar",
    "titulo": "Importar a planilha do laboratório",
    "serve": "Este recurso serve para trazer para o Zircon a planilha de resultados entregue pelo laboratório; use-o sempre que começar um projeto novo com dados de uma amostra.",
-   "explicacao": "O Zircon lê arquivos .xlsx, .xls, .ods, .csv, .txt e .tsv. Em planilhas, só a primeira aba é lida. Em arquivos de texto, ele detecta a codificação e o separador de colunas (tabulação, ponto e vírgula ou vírgula). O separador decimal (vírgula ou ponto) também é detectado. Linhas de título no topo são ignoradas, e cabeçalhos em duas linhas são juntados. As colunas são reconhecidas pelo nome (por exemplo 207Pb/235U, 206Pb/238U, rho), e a coluna de erro deve vir logo depois do valor. Se o cabeçalho do erro indicar 2s ou 2σ, o valor é dividido por 2; se indicar %, é convertido em erro absoluto. Atenção: um erro em 2σ sem essa indicação no cabeçalho será lido como 1σ. Células como '<LOD', 'bdl' ou 'n.d.' viram dado ausente.",
+   "explicacao": "O Zircon lê arquivos .xlsx, .xls, .ods, .csv, .txt e .tsv. Em planilhas, só a primeira aba é lida. Em arquivos de texto, ele detecta a codificação e o separador de colunas (tabulação, ponto e vírgula ou vírgula). O separador decimal (vírgula ou ponto) também é detectado. Linhas de título no topo são ignoradas, mas o cabeçalho deve ocupar uma só linha. Uma amostra por arquivo: se houver várias, todos os grãos entram juntos nos cálculos. O formato completo está no tópico 'Preparar a planilha (modelo)'. As colunas são reconhecidas pelo nome (por exemplo 207Pb/235U, 206Pb/238U, rho), e a coluna de erro deve vir logo depois do valor. Se o cabeçalho do erro indicar 2s ou 2σ, o valor é dividido por 2; se indicar %, é convertido em erro absoluto. Atenção: um erro em 2σ sem essa indicação no cabeçalho será lido como 1σ. Células como '<LOD', 'bdl' ou 'n.d.' viram dado ausente.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
+    "Se a planilha do laboratório tiver várias abas, cabeçalho em várias linhas ou várias amostras, prepare-a antes com 'Arquivo > Salvar modelo de planilha...' (veja o tópico 'Preparar a planilha (modelo)').",
     "Escolha 'Arquivo > Novo projeto (importar planilha)...' e selecione o arquivo.",
     "Na janela 'Conferir importação', leia o registro: separadores, linha de início dos dados e a coluna atribuída a cada razão e erro (1σ ou 2σ, absoluto ou %).",
     "Confira na tabela de prévia se os números estão coerentes; se algo estiver errado, clique em 'Cancelar', corrija o cabeçalho da planilha e importe de novo.",
     "Se estiver tudo certo, clique em 'Usar estes dados'.",
     "Depois, a aba 'Registro da importação' guarda essas decisões para consulta."
+   ]
+  },
+  {
+   "id": "preparar_planilha",
+   "titulo": "Preparar a planilha (modelo)",
+   "serve": "Este recurso serve para deixar a planilha do laboratório no formato que o Zircon lê; use-o antes de importar, principalmente quando a planilha tem várias abas, cabeçalho em várias linhas, várias amostras ou notas de rodapé.",
+   "explicacao": "O Zircon lê uma tabela simples: só a primeira aba, um cabeçalho de uma linha logo acima dos dados, uma linha por análise e uma amostra por arquivo. As colunas do modelo são Amostra, Análise, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ e rho. Cada erro fica logo à direita do seu valor, e o nome dele diz se é 1σ ou 2σ e se é relativo (com '%') ou absoluto (sem '%'). Para Tera-Wasserburg, as razões são 238U/206Pb e 207Pb/206Pb; se você só tem idades, as colunas são Idade (Ma) e ± 2σ (Ma). Colunas a mais, como U, Th, Th/U ou as idades do laboratório, podem ficar à direita das razões. Grãos que você decidiu excluir saem da tabela; os discordantes podem ficar, porque o Zircon os separa pelo limite que você escolhe. Misturar erros de 1σ e 2σ, ou absolutos e relativos, muda as idades e o MSWD, por isso essa é a conferência mais importante.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Escolha 'Arquivo > Salvar modelo de planilha...' e salve o modelo numa pasta sua.",
+    "Abra o modelo no Excel ou no LibreOffice Calc e leia a aba 'Instruções'.",
+    "Na aba 'Dados', apague as linhas de exemplo e cole as colunas da sua planilha na ordem do modelo. Use 'Colar especial > Valores' para trazer números, e não fórmulas.",
+    "Confira o erro informado pelo laboratório: se for 1σ, troque o cabeçalho para '± 1σ'; se for em porcentagem, para '± 2σ (%)' ou '± 1σ (%)'.",
+    "Deixe fora da tabela os títulos, as linhas de unidade e as notas de rodapé. Se o arquivo tiver várias amostras, faça um arquivo para cada uma.",
+    "Salve como .xlsx e importe com 'Arquivo > Novo projeto (importar planilha)...'. Na janela 'Conferir importação', confira a coluna atribuída a cada razão e erro."
    ]
   },
   {
@@ -195,7 +213,7 @@
     "Importe dados com razões U-Pb e clique em 'Calcular'.",
     "No painel à esquerda, em 'O que calcular', deixe 'Diagrama concórdia' em 'Wetherill' para ver a reta da discórdia tracejada.",
     "Na aba 'Resultados', leia 'Discórdia: intercepto superior' e 'Discórdia: intercepto inferior', com MSWD e p.",
-    "Use 'Grupos > Colocar linhas selecionadas no grupo...' para marcar os grãos que considera parte da discórdia e avaliar a interpretação."
+    "A discórdia usa todos os grãos do projeto. Para ajustá-la só a alguns grãos, faça uma cópia da planilha só com eles e importe essa cópia como outro projeto."
    ]
   },
   {

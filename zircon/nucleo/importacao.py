@@ -44,11 +44,11 @@ SEM_DADO = re.compile(r"^\s*(<|>|bdl|lod|nd|n\.d\.|na|nan|-+|—)", re.I)
 
 
 def _normaliza(texto):
-    t = unicodedata.normalize("NFKD", str(texto)).encode("ascii", "ignore").decode()
+    # σ vira "sigma" no lugar, para "2σ (Ma)" continuar dizendo 2 sigma
+    t = str(texto).replace("σ", " sigma ")
+    t = unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode()
     if "±" in str(texto):
         t = "± " + t
-    if "σ" in str(texto):
-        t = t + " sigma"
     return re.sub(r"\s+", " ", t.strip().lower())
 
 
@@ -178,6 +178,9 @@ def _mapeia(nomes, log):
                 fator_2s = bool(re.search(r"2\s*(s|sigma|se|sd)\b|2σ", n))
                 rel = "%" in n
                 escala[alvo] = (2.0 if fator_2s else 1.0, rel)
+            continue
+        if not so_idades and PADRAO_IDADE.search(n):
+            ultimo = None  # idade calculada pelo laboratório ao lado das razões: não é razão
             continue
         achou = None
         for chave in ("amostra", "analise"):

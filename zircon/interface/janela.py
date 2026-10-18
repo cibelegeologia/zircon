@@ -16,6 +16,7 @@ from .. import __version__, atualizacao, idiomas
 from ..idiomas import N_, tr
 from ..nucleo import calculo, exportacao, grupos, metodologia
 from ..nucleo.importacao import importar
+from ..nucleo.modelo import salvar_modelo
 from ..nucleo.projeto import EXTENSAO, Projeto
 from . import ajuda as janela_ajuda, aparencia, graficos
 from .explica import ModoExplicacao
@@ -89,6 +90,9 @@ class Janela(QMainWindow):
         m = self.menuBar().addMenu(tr("&Arquivo"))
         self._acao(m, tr("&Novo projeto (importar planilha)..."), self.novo, QKeySequence.New,
                    explica=N_("Começa um projeto novo a partir da planilha do laboratório."))
+        self._acao(m, tr("Salvar modelo de planilha..."), self.salvar_modelo,
+                   explica=N_("Grava uma planilha .xlsx no formato que o Zircon lê, com exemplo e instruções, "
+                              "para você colar os seus dados."))
         self._acao(m, tr("&Abrir projeto..."), self.abrir, QKeySequence.Open,
                    explica=N_("Abre um projeto .zircon salvo, com os dados e as escolhas."))
         self.menu_recentes = m.addMenu(tr("Projetos recentes"))
@@ -665,6 +669,24 @@ class Janela(QMainWindow):
         self.projeto = Projeto(nome=Path(caminho).stem, tipo=imp.tipo, dados=imp.dados, mapa=imp.mapa, log=imp.log,
                                arquivo_original=Path(caminho).name, bytes_original=Path(caminho).read_bytes())
         self._carrega_projeto(alterado=True)
+
+    def salvar_modelo(self):
+        pasta = Path(self.config.value("pasta", str(Path.home())))
+        caminho, _ = QFileDialog.getSaveFileName(self, tr("Salvar modelo de planilha"),
+                                                 str(pasta / (tr("modelo_zircon") + ".xlsx")), "Excel (*.xlsx)")
+        if not caminho:
+            return
+        if not caminho.lower().endswith(".xlsx"):
+            caminho += ".xlsx"
+        try:
+            salvar_modelo(caminho)
+        except Exception as e:
+            QMessageBox.warning(self, tr("Não consegui salvar"), str(e))
+            return
+        self.config.setValue("pasta", str(Path(caminho).parent))
+        QMessageBox.information(self, tr("Modelo salvo"),
+                                tr("Modelo salvo em {caminho}. A aba Instruções explica cada coluna; o passo a passo "
+                                   "também está no Guia, em \"Preparar a planilha\".").format(caminho=caminho))
 
     def abrir(self, caminho=None):
         if not self._pode_descartar():

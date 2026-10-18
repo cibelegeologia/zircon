@@ -36,16 +36,34 @@
    "id": "importar",
    "titulo": "Importing the laboratory spreadsheet",
    "serve": "This feature is used to bring the results spreadsheet supplied by the laboratory into Zircon; use it whenever you start a new project with data from a sample.",
-   "explicacao": "Zircon reads .xlsx, .xls, .ods, .csv, .txt and .tsv files. In spreadsheets, only the first sheet is read. In text files, it detects the encoding and the column separator (tab, semicolon or comma). The decimal separator (comma or point) is also detected. Title rows at the top are ignored, and two-row headers are merged. Columns are recognised by name (for example 207Pb/235U, 206Pb/238U, rho), and the error column must come immediately after the value. If the error header indicates 2s or 2σ, the value is divided by 2; if it indicates %, it is converted to an absolute error. Caution: a 2σ error without this indication in the header will be read as 1σ. Cells such as '<LOD', 'bdl' or 'n.d.' become missing data.",
+   "explicacao": "Zircon reads .xlsx, .xls, .ods, .csv, .txt and .tsv files. In spreadsheets, only the first sheet is read. In text files, it detects the encoding and the column separator (tab, semicolon or comma). The decimal separator (comma or point) is also detected. Title rows at the top are ignored, but the header must take up a single row. One sample per file: if there are several, all the grains go into the calculations together. The full format is described in the topic 'Preparing the spreadsheet (template)'. Columns are recognised by name (for example 207Pb/235U, 206Pb/238U, rho), and the error column must come immediately after the value. If the error header indicates 2s or 2σ, the value is divided by 2; if it indicates %, it is converted to an absolute error. Caution: a 2σ error without this indication in the header will be read as 1σ. Cells such as '<LOD', 'bdl' or 'n.d.' become missing data.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
+    "If the laboratory spreadsheet has several sheets, a header spread over several rows or several samples, prepare it first with 'File > Save spreadsheet template...' (see the topic 'Preparing the spreadsheet (template)').",
     "Choose 'File > New project (import spreadsheet)...' and select the file.",
     "In the 'Check import' window, read the log: separators, first data row and the column assigned to each ratio and error (1σ or 2σ, absolute or %).",
     "Check in the preview table that the numbers make sense; if something is wrong, click 'Cancel', correct the spreadsheet header and import again.",
     "If everything is correct, click 'Use this data'.",
     "Afterwards, the 'Import log' tab keeps these decisions for reference."
+   ]
+  },
+  {
+   "id": "preparar_planilha",
+   "titulo": "Preparing the spreadsheet (template)",
+   "serve": "This feature is used to put the laboratory spreadsheet into the format Zircon reads; use it before importing, especially when the spreadsheet has several sheets, a header spread over several rows, several samples or footnotes.",
+   "explicacao": "Zircon reads a simple table: only the first sheet, a one-row header directly above the data, one row per analysis and one sample per file. The template columns are Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ and rho. Each error sits immediately to the right of its value, and its name says whether it is 1σ or 2σ and whether it is relative (with '%') or absolute (without '%'). For Tera-Wasserburg, the ratios are 238U/206Pb and 207Pb/206Pb; if you only have ages, the columns are Age (Ma) and ± 2σ (Ma). Extra columns, such as U, Th, Th/U or the laboratory's ages, can stay to the right of the ratios. Grains you have decided to exclude come out of the table; discordant grains can stay, because Zircon separates them using the limit you choose. Mixing 1σ and 2σ errors, or absolute and relative ones, changes the ages and the MSWD, so this is the most important check.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Choose 'File > Save spreadsheet template...' and save the template in a folder of your own.",
+    "Open the template in Excel or LibreOffice Calc and read the 'Instructions' sheet.",
+    "On the 'Data' sheet, delete the example rows and paste the columns from your spreadsheet in the template's order. Use 'Paste Special > Values' to bring in numbers rather than formulas.",
+    "Check the error reported by the laboratory: if it is 1σ, change the header to '± 1σ'; if it is a percentage, to '± 2σ (%)' or '± 1σ (%)'.",
+    "Leave titles, unit rows and footnotes out of the table. If the file has several samples, make one file for each.",
+    "Save as .xlsx and import with 'File > New project (import spreadsheet)...'. In the 'Check import' window, check the column assigned to each ratio and error."
    ]
   },
   {
@@ -195,7 +213,7 @@
     "Import data with U-Pb ratios and click 'Calculate'.",
     "In the left-hand panel, under 'What to calculate', leave 'Concordia diagram' set to 'Wetherill' to see the dashed discordia line.",
     "In the 'Results' tab, read 'Discordia: upper intercept' and 'Discordia: lower intercept', with MSWD and p.",
-    "Use 'Groups > Put selected rows in group...' to mark the grains you consider part of the discordia and assess the interpretation."
+    "The discordia uses all the grains in the project. To fit it to only some grains, make a copy of the spreadsheet containing just those grains and import that copy as another project."
    ]
   },
   {

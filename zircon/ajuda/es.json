@@ -36,16 +36,34 @@
    "id": "importar",
    "titulo": "Importar la hoja de cálculo del laboratorio",
    "serve": "Este recurso sirve para traer a Zircon la hoja de cálculo de resultados entregada por el laboratorio; úselo siempre que empiece un proyecto nuevo con datos de una muestra.",
-   "explicacao": "Zircon lee archivos .xlsx, .xls, .ods, .csv, .txt y .tsv. En las hojas de cálculo, solo se lee la primera pestaña. En los archivos de texto, detecta la codificación y el separador de columnas (tabulación, punto y coma o coma). El separador decimal (coma o punto) también se detecta. Las filas de título en la parte superior se ignoran, y los encabezados en dos filas se unen. Las columnas se reconocen por el nombre (por ejemplo 207Pb/235U, 206Pb/238U, rho), y la columna de error debe ir justo después del valor. Si el encabezado del error indica 2s o 2σ, el valor se divide entre 2; si indica %, se convierte en error absoluto. Atención: un error en 2σ sin esa indicación en el encabezado se leerá como 1σ. Celdas como '<LOD', 'bdl' o 'n.d.' se convierten en datos ausentes.",
+   "explicacao": "Zircon lee archivos .xlsx, .xls, .ods, .csv, .txt y .tsv. En las hojas de cálculo, solo se lee la primera pestaña. En los archivos de texto, detecta la codificación y el separador de columnas (tabulación, punto y coma o coma). El separador decimal (coma o punto) también se detecta. Las filas de título en la parte superior se ignoran, pero el encabezado debe ocupar una sola fila. Una muestra por archivo: si hay varias, todos los granos entran juntos en los cálculos. El formato completo está en el tema 'Preparar la hoja de cálculo (plantilla)'. Las columnas se reconocen por el nombre (por ejemplo 207Pb/235U, 206Pb/238U, rho), y la columna de error debe ir justo después del valor. Si el encabezado del error indica 2s o 2σ, el valor se divide entre 2; si indica %, se convierte en error absoluto. Atención: un error en 2σ sin esa indicación en el encabezado se leerá como 1σ. Celdas como '<LOD', 'bdl' o 'n.d.' se convierten en datos ausentes.",
    "referencias": [
     "Horstwood et al. (2016)"
    ],
    "como_usar": [
+    "Si la hoja de cálculo del laboratorio tiene varias pestañas, un encabezado en varias filas o varias muestras, prepárela antes con 'Archivo > Guardar plantilla de hoja de cálculo...' (vea el tema 'Preparar la hoja de cálculo (plantilla)').",
     "Elija 'Archivo > Nuevo proyecto (importar hoja de cálculo)...' y seleccione el archivo.",
     "En la ventana 'Revisar importación', lea el registro: separadores, fila de inicio de los datos y la columna asignada a cada razón y error (1σ o 2σ, absoluto o %).",
     "Compruebe en la tabla de vista previa que los números son coherentes; si algo está mal, haga clic en 'Cancelar', corrija el encabezado de la hoja de cálculo e importe de nuevo.",
     "Si todo está bien, haga clic en 'Usar estos datos'.",
     "Después, la pestaña 'Registro de la importación' conserva esas decisiones para consulta."
+   ]
+  },
+  {
+   "id": "preparar_planilha",
+   "titulo": "Preparar la hoja de cálculo (plantilla)",
+   "serve": "Este recurso sirve para dejar la hoja de cálculo del laboratorio en el formato que lee Zircon; úselo antes de importar, sobre todo cuando la hoja de cálculo tiene varias pestañas, un encabezado en varias filas, varias muestras o notas al pie.",
+   "explicacao": "Zircon lee una tabla sencilla: solo la primera pestaña, un encabezado de una fila justo encima de los datos, una fila por análisis y una muestra por archivo. Las columnas de la plantilla son Sample, Analysis, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ y rho. Cada error va justo a la derecha de su valor, y su nombre indica si es 1σ o 2σ y si es relativo (con '%') o absoluto (sin '%'). Para Tera-Wasserburg, las razones son 238U/206Pb y 207Pb/206Pb; si solo tiene edades, las columnas son Age (Ma) y ± 2σ (Ma). Las columnas adicionales, como U, Th, Th/U o las edades del laboratorio, pueden quedarse a la derecha de las razones. Los granos que decidió excluir salen de la tabla; los discordantes pueden quedarse, porque Zircon los separa según el límite que usted elige. Mezclar errores de 1σ y 2σ, o absolutos y relativos, cambia las edades y el MSWD, por eso esta es la comprobación más importante.",
+   "referencias": [
+    "Horstwood et al. (2016)"
+   ],
+   "como_usar": [
+    "Elija 'Archivo > Guardar plantilla de hoja de cálculo...' y guarde la plantilla en una carpeta suya.",
+    "Abra la plantilla en Excel o en LibreOffice Calc y lea la pestaña 'Instrucciones'.",
+    "En la pestaña 'Datos', borre las filas de ejemplo y pegue las columnas de su hoja de cálculo en el orden de la plantilla. Use 'Pegado especial > Valores' para traer números y no fórmulas.",
+    "Compruebe el error que indica el laboratorio: si es 1σ, cambie el encabezado a '± 1σ'; si está en porcentaje, a '± 2σ (%)' o '± 1σ (%)'.",
+    "Deje fuera de la tabla los títulos, las filas de unidades y las notas al pie. Si el archivo tiene varias muestras, haga un archivo para cada una.",
+    "Guarde como .xlsx e importe con 'Archivo > Nuevo proyecto (importar hoja de cálculo)...'. En la ventana 'Revisar importación', compruebe la columna asignada a cada razón y error."
    ]
   },
   {
@@ -195,7 +213,7 @@
     "Importe datos con razones U-Pb y haga clic en 'Calcular'.",
     "En el panel de la izquierda, en 'Qué calcular', deje 'Diagrama de concordia' en 'Wetherill' para ver la recta de la discordia discontinua.",
     "En la pestaña 'Resultados', lea 'Discordia: intercepto superior' y 'Discordia: intercepto inferior', con MSWD y p.",
-    "Use 'Grupos > Poner las filas seleccionadas en el grupo...' para marcar los granos que considera parte de la discordia y evaluar la interpretación."
+    "La discordia usa todos los granos del proyecto. Para ajustarla solo a algunos granos, haga una copia de la hoja de cálculo solo con ellos e importe esa copia como otro proyecto."
    ]
   },
   {

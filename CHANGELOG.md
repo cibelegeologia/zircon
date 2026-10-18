@@ -2,6 +2,16 @@
 
 Todas as mudanças do Zircon que o usuário percebe, da mais nova para a mais antiga. As versões seguem o padrão maior.menor.correção: o último número muda em correções, o do meio quando entra algo novo.
 
+## 0.9.0 (18/10/2026)
+
+Preparar a planilha para o Zircon.
+
+- Arquivo > Salvar modelo de planilha: grava um .xlsx com as colunas que o Zircon lê (Amostra, Análise, 207Pb/235U, ± 2σ, 206Pb/238U, ± 2σ, rho), cinco linhas de exemplo inventadas e uma aba de instruções no idioma do programa.
+- Novo tópico no guia: "Preparar a planilha (modelo)", com o passo a passo para passar a planilha do laboratório para o modelo.
+- Correção: um erro com unidade no cabeçalho, como "± 2σ (Ma)" ou "± 2σ (%)", era lido como 1σ. Agora é lido como 2σ.
+- Correção: colunas de idade calculadas pelo laboratório, à direita das razões, não são mais confundidas com a razão 207Pb/206Pb.
+- O guia corrige duas informações: o cabeçalho deve ocupar uma só linha, e a discórdia usa todos os grãos do projeto (os grupos não a restringem).
+
 ## 0.8.0 (17/10/2026)
 
 Mudanças pedidas depois do primeiro teste no Pop!_OS.
